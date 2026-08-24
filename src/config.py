@@ -11,6 +11,7 @@ REPORTS_DIR = ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
 
 RANDOM_SEED = 42
+CACHE_DB_PATH = ROOT / "regrag_cache.sqlite3"
 
 # --- ingestion / chunking ---
 # tiktoken's cl100k_base isn't the tokenizer either Claude or the embedding model actually uses —

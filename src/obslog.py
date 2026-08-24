@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS queries (
     answer TEXT NOT NULL,
     refused INTEGER NOT NULL,
     flagged_injection INTEGER NOT NULL,
+    cache_hit INTEGER NOT NULL,
     citation_count INTEGER NOT NULL,
     unverified_citation_count INTEGER NOT NULL,
     retrieved_chunk_ids TEXT NOT NULL,
@@ -49,11 +50,13 @@ def _connect():
 
 @dataclass
 class TimedRAGResult:
-    """Wraps a RAGResult with the wall-clock time answer_question() actually took — rag.py
-    itself doesn't measure latency, since that's an observability concern, not a RAG one."""
+    """Wraps a RAGResult with the wall-clock time it took and whether it came from the response
+    cache — rag.py itself doesn't measure latency or cache, since both are observability/
+    performance concerns layered on top of the RAG pipeline, not part of it."""
 
     result: RAGResult
     latency_ms: float
+    cache_hit: bool = False
 
 
 def log_query(timed: TimedRAGResult) -> None:
@@ -63,15 +66,16 @@ def log_query(timed: TimedRAGResult) -> None:
     with _connect() as conn:
         conn.execute(
             "INSERT INTO queries (timestamp, question, answer, refused, flagged_injection, "
-            "citation_count, unverified_citation_count, retrieved_chunk_ids, model, "
+            "cache_hit, citation_count, unverified_citation_count, retrieved_chunk_ids, model, "
             "input_tokens, output_tokens, cost_usd, latency_ms) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 time.time(),
                 result.question,
                 result.answer,
                 int(result.refused),
                 int(result.flagged_injection),
+                int(timed.cache_hit),
                 len(result.citations),
                 unverified,
                 json.dumps([c.chunk_id for c in result.retrieved_chunks]),
@@ -85,12 +89,23 @@ def log_query(timed: TimedRAGResult) -> None:
 
 
 def timed_answer(question: str, k: int = 5) -> TimedRAGResult:
+    from src.cache import get_cached, set_cached
     from src.rag import answer_question
 
     start = time.perf_counter()
-    result = answer_question(question, k=k)
-    latency_ms = (time.perf_counter() - start) * 1000
-    timed = TimedRAGResult(result=result, latency_ms=latency_ms)
+
+    cached = get_cached(question)
+    if cached is not None:
+        timed = TimedRAGResult(
+            result=cached, latency_ms=(time.perf_counter() - start) * 1000, cache_hit=True
+        )
+    else:
+        result = answer_question(question, k=k)
+        timed = TimedRAGResult(
+            result=result, latency_ms=(time.perf_counter() - start) * 1000, cache_hit=False
+        )
+        set_cached(question, result)
+
     log_query(timed)
     return timed
 
