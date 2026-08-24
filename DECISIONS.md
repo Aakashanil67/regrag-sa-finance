@@ -85,6 +85,25 @@ failure shape as the bug above, just a legitimate content repeat instead of a ch
 Re-running `store.py --rebuild` after editing one document still only re-embeds chunks whose
 (page, text) pair actually changed; everything else is a no-op lookup.
 
+## Retrieval benchmark
+
+**The first real run of `evals/retrieval_bench.py` scored hit-rate@5 = 55% — most of that was my
+own labeling bug, not a retrieval problem.** Four NCR guideline PDFs and one FSCA PDF have a
+title-only cover page as PDF page 1, with real content starting on page 2; I'd sourced the
+`retrieval_set.json` questions from a bulk `pdftotext -f 1 -l 2` sweep that concatenated both
+pages together and attributed everything to "page 1." Diagnosing the misses individually (dumping
+each miss's actual top-5 results) showed the correct document landing at rank 1-2 for five of the
+nine "misses," just on page 2 instead of the page 1 I'd labeled — confirmed by checking
+`pdftotext -f 2 -l 2` against each PDF directly before touching the label, not assumed. Fixing
+those five (and the same error in eleven `golden.jsonl` source references, same root cause)
+brought the honest number to hit-rate@5 = 85%, MRR 0.654. The other four "misses" survived that
+audit and are genuine: `sarb_d3_2023` (page label was independently re-verified correct; MiniLM
+just doesn't connect "which earlier directive does X replace" to prose naming "Directive
+5/2017"), `fsca_tcf_2011` (a 3-chunk slide-deck agenda losing to a much larger, topically
+overlapping FSCA document), and the "own credit" IFRS 9 phrasing. Reported as-is in
+`reports/retrieval_bench.md` rather than dropped from the question set — a benchmark that quietly
+removes the questions a system gets wrong isn't measuring anything.
+
 ## RAG core
 
 **Citations are checked against what was actually retrieved, not trusted because the model wrote
