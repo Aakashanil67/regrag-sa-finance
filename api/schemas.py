@@ -15,9 +15,19 @@ class CitationOut(BaseModel):
     verified: bool
 
 
+class RetrievedChunkOut(BaseModel):
+    doc_id: str
+    page_start: int
+    page_end: int
+    section: str
+    text: str
+    score: float
+
+
 class AskResponse(BaseModel):
     answer: str
     citations: list[CitationOut]
+    retrieved_chunks: list[RetrievedChunkOut]
     refused: bool
     latency_ms: float
     cost_usd: float

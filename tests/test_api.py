@@ -6,6 +6,7 @@ import api.main as main
 from src.llm import LLMResponse
 from src.obslog import TimedRAGResult
 from src.rag import Citation, RAGResult
+from src.retrieve import RetrievedChunk
 
 client = TestClient(main.app)
 
@@ -16,7 +17,17 @@ def _timed_result(refused=False):
             question="What must banks do?",
             answer="Banks must comply. [sarb_d3_2023, p.3]",
             citations=[] if refused else [Citation("sarb_d3_2023", 3, True)],
-            retrieved_chunks=[],
+            retrieved_chunks=[
+                RetrievedChunk(
+                    chunk_id="hash1",
+                    doc_id="sarb_d3_2023",
+                    text="Banks must comply with the directive.",
+                    page_start=3,
+                    page_end=3,
+                    section="Executive summary",
+                    score=0.87,
+                )
+            ],
             refused=refused,
             llm_response=LLMResponse(
                 text="...",
@@ -46,6 +57,7 @@ def test_ask_returns_answer_with_citations(monkeypatch):
     body = response.json()
     assert body["answer"] == "Banks must comply. [sarb_d3_2023, p.3]"
     assert body["citations"] == [{"doc_id": "sarb_d3_2023", "page": 3, "verified": True}]
+    assert body["retrieved_chunks"][0]["doc_id"] == "sarb_d3_2023"
     assert body["refused"] is False
     assert body["model"] == "claude-haiku-4-5"
 

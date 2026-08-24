@@ -13,7 +13,14 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from api.schemas import AskRequest, AskResponse, CitationOut, HealthResponse, StatsResponse
+from api.schemas import (
+    AskRequest,
+    AskResponse,
+    CitationOut,
+    HealthResponse,
+    RetrievedChunkOut,
+    StatsResponse,
+)
 from src.obslog import stats_summary, timed_answer
 
 logger = logging.getLogger("regrag.api")
@@ -51,6 +58,17 @@ def ask(request: Request, body: AskRequest) -> AskResponse | JSONResponse:
         answer=result.answer,
         citations=[
             CitationOut(doc_id=c.doc_id, page=c.page, verified=c.verified) for c in result.citations
+        ],
+        retrieved_chunks=[
+            RetrievedChunkOut(
+                doc_id=chunk.doc_id,
+                page_start=chunk.page_start,
+                page_end=chunk.page_end,
+                section=chunk.section,
+                text=chunk.text,
+                score=chunk.score,
+            )
+            for chunk in result.retrieved_chunks
         ],
         refused=result.refused,
         latency_ms=timed.latency_ms,
