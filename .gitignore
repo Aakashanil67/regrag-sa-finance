@@ -1,0 +1,37 @@
+# virtual environment
+.venv/
+venv/
+
+# vector store + local eval judge cache
+chroma/
+.cache/
+
+# secrets
+.env
+*.env.local
+
+# query log (local SQLite, grows with usage — not a build artifact worth versioning)
+*.db
+*.sqlite3
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# notebooks
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor and tool state live in ~/.gitignore_global, not here.
+
+# personal planning docs, and the regulation PDFs themselves — public documents, but
+# redistributing them isn't the point of this repo; corpus/manifest.json + corpus/README.md
+# are enough for anyone to rebuild the corpus from source
+*.pdf
+Project 4 - AUTOPILOT - RegRAG (RAG + Evals).md
