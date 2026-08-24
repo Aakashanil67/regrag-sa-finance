@@ -1,0 +1,211 @@
+[
+  {
+    "id": "sarb_g3_2025_climate_disclosures",
+    "title": "Guidance Note 3/2025: Climate-related Disclosures for Banks",
+    "issuer": "SARB Prudential Authority",
+    "category": "sarb",
+    "year": 2025,
+    "url": "https://www.resbank.co.za/content/dam/sarb/publications/prudential-authority/pa-deposit-takers/banks-guidance-notes/2025/g3-2025/G3-2025-%20Guidance%20Note%20Climate%20Disclosures%20for%20banks.pdf",
+    "referer": "https://www.resbank.co.za/",
+    "filename": "sarb_g3_2025_climate_disclosures.pdf",
+    "sha256": "fe85e2ff953e615d2fde4deb378e24d1fd1a2c67bb76a7a347e743661416b445"
+  },
+  {
+    "id": "sarb_d3_2023_accounting_provisions_ifrs9",
+    "title": "Directive 3/2023: Regulatory Treatment of Accounting Provisions (IFRS 9)",
+    "issuer": "SARB Prudential Authority",
+    "category": "sarb",
+    "year": 2023,
+    "url": "https://www.resbank.co.za/content/dam/sarb/publications/prudential-authority/pa-deposit-takers/banks-directives/2023/D3-2023-Regulatory%20treatment%20of%20accounting%20provisions.pdf",
+    "referer": "https://www.resbank.co.za/",
+    "filename": "sarb_d3_2023_accounting_provisions_ifrs9.pdf",
+    "sha256": "7c57c8b64f585361dcb1b03ef2e7ae434c8e93a78c397483280040a6cf3abf0d"
+  },
+  {
+    "id": "sarb_d8_2023_threshold_amounts",
+    "title": "Directive 8/2023: Threshold Amounts for the Revised STA/IRB Credit Risk and Liquidity Risk Frameworks",
+    "issuer": "SARB Prudential Authority",
+    "category": "sarb",
+    "year": 2023,
+    "url": "https://www.resbank.co.za/content/dam/sarb/publications/prudential-authority/pa-deposit-takers/banks-directives/2023/D8-2023%20-%20Threshold%20amounts%20related%20to%20the%20revised%20standardised%20and%20IRB%20approaches%20for%20credit%20risk%20and%20the%20liquidity%20risk%20framework.pdf",
+    "referer": "https://www.resbank.co.za/",
+    "filename": "sarb_d8_2023_threshold_amounts.pdf",
+    "sha256": "27c6f31a5565c9d05a759f1ebc6824703695ccef75668c465b1c3df5035dc56e"
+  },
+  {
+    "id": "sarb_d10_2021_operational_resilience",
+    "title": "Directive 10/2021: Principles for Operational Resilience",
+    "issuer": "SARB Prudential Authority",
+    "category": "sarb",
+    "year": 2021,
+    "url": "https://www.resbank.co.za/content/dam/sarb/publications/prudential-authority/pa-deposit-takers/banks-directives/2021/D10-2021%20-Directive%20on%20Operational%20Resilience.pdf",
+    "referer": "https://www.resbank.co.za/",
+    "filename": "sarb_d10_2021_operational_resilience.pdf",
+    "sha256": "b5fbdf06fce2819ed2ac8ad069613bb9b398bad23098667e3b6e0b5c52793708"
+  },
+  {
+    "id": "sarb_circular_19_2004_capital_hybrid_instruments",
+    "title": "Banks Act Circular 19/2004: Qualifying Capital and Reserve Funds, Hybrid Debt Instruments",
+    "issuer": "SARB Prudential Authority",
+    "category": "sarb",
+    "year": 2004,
+    "url": "https://www.resbank.co.za/content/dam/sarb/publications/prudential-authority/pa-deposit-takers/banks-circulars/2004/3928/Banks-Act-Circular-19-of-2004.pdf",
+    "referer": "https://www.resbank.co.za/",
+    "filename": "sarb_circular_19_2004_capital_hybrid_instruments.pdf",
+    "sha256": "58bd90d342bc5553d7f5d248d13e880784c0cd1168bd9f7bdb54d394f44ac1bd"
+  },
+  {
+    "id": "sarb_circular_6_2004_basel_ii_update",
+    "title": "Banks Act Circular 6/2004: Update on the New Basel Capital Accord (Basel II)",
+    "issuer": "SARB Prudential Authority",
+    "category": "sarb",
+    "year": 2004,
+    "url": "https://www.resbank.co.za/content/dam/sarb/publications/prudential-authority/pa-deposit-takers/banks-circulars/2004/3921/Banks-Act-Circular-6-of-2004.pdf",
+    "referer": "https://www.resbank.co.za/",
+    "filename": "sarb_circular_6_2004_basel_ii_update.pdf",
+    "sha256": "dd88d5c80b8bc872898220dbb416e1cf8e58ff5ce59afbe84760bde49d191867"
+  },
+  {
+    "id": "nca_act_34_2005",
+    "title": "National Credit Act 34 of 2005",
+    "issuer": "Department of Trade, Industry and Competition (dtic)",
+    "category": "nca",
+    "year": 2005,
+    "url": "https://www.thedtic.gov.za/wp-content/uploads/National_Credit_Act34of2005.pdf",
+    "referer": "https://www.thedtic.gov.za/",
+    "filename": "nca_act_34_2005.pdf",
+    "sha256": "44ac91ad3babff4093657aa7dc69de47a6cc3fffca96b6943bdd04b8026f7054"
+  },
+  {
+    "id": "nca_notebook_brochure",
+    "title": "Notebook on the National Credit Act, 2005 (plain-language explainer)",
+    "issuer": "Department of Trade, Industry and Competition (dtic)",
+    "category": "nca",
+    "year": 2006,
+    "url": "https://www.thedtic.gov.za/wp-content/uploads/NCA_Brochure.pdf",
+    "referer": "https://www.thedtic.gov.za/",
+    "filename": "nca_notebook_brochure.pdf",
+    "sha256": "faf29a23d63c20523642efba23d42ffafd063bca619605935e2bca93d8a35989"
+  },
+  {
+    "id": "ncr_guideline_june_2025_credit_info",
+    "title": "Guideline (June 2025): Implementation of Sections 69(2), 70(1), 70(2) and 71(5) of the NCA",
+    "issuer": "National Credit Regulator",
+    "category": "ncr",
+    "year": 2025,
+    "url": "https://www.ncr.org.za/documents/Guidelines/Guideline%203%20June%202025.pdf",
+    "referer": "https://www.ncr.org.za/",
+    "filename": "ncr_guideline_june_2025_credit_info.pdf",
+    "sha256": "b51d6358543af8cc3c1142cc017761ab823aaa39eee86ef4a7128b32963952b6"
+  },
+  {
+    "id": "ncr_guideline_sept_2025_debt_counsellors",
+    "title": "Guideline (September 2025): Debt Counsellor Contact Information Requirements",
+    "issuer": "National Credit Regulator",
+    "category": "ncr",
+    "year": 2025,
+    "url": "https://www.ncr.org.za/documents/Guidelines/Guideline%20September%202025.pdf",
+    "referer": "https://www.ncr.org.za/",
+    "filename": "ncr_guideline_sept_2025_debt_counsellors.pdf",
+    "sha256": "0b01fe94331a2f56059e25d14c4238f21a5acd7fe8c35730b9ddcc6c8b5d1468"
+  },
+  {
+    "id": "ncr_guideline_feb_2026_clearance_certificates",
+    "title": "Guideline (February 2026): Filing of Clearance Certificates (Form 19) via the CBA Debt Counselling Platform",
+    "issuer": "National Credit Regulator",
+    "category": "ncr",
+    "year": 2026,
+    "url": "https://www.ncr.org.za/documents/Guidelines/Guideline%20February%202026.pdf",
+    "referer": "https://www.ncr.org.za/",
+    "filename": "ncr_guideline_feb_2026_clearance_certificates.pdf",
+    "sha256": "0d9de4bd7583ed46fa6f08d2774131599d3083d36803b9cf5df2f24ea69a00fa"
+  },
+  {
+    "id": "ncr_guideline_disputed_credit_complaints",
+    "title": "Guidelines for the Submission of Complaints Relating to Disputed Consumer Credit Information",
+    "issuer": "National Credit Regulator",
+    "category": "ncr",
+    "year": 2024,
+    "url": "https://www.ncr.org.za/phocadownload/GUIDELINES%20FOR%20THE%20SUBMISSION%20OF%20COMPLAINTS%20RELATING%20TO%20DISPUTED%20CONSUMER%20CREDIT%20INFORMATION1.pdf",
+    "referer": "https://www.ncr.org.za/",
+    "filename": "ncr_guideline_disputed_credit_complaints.pdf",
+    "sha256": "baa7c634e310d35c71041c4fc6330906e5543d4960262dc1bc0b4471322d49fe"
+  },
+  {
+    "id": "fsca_press_conduct_standard_banks_2020",
+    "title": "Press Release: Conduct Standard for Banks (8 July 2020)",
+    "issuer": "Financial Sector Conduct Authority",
+    "category": "fsca",
+    "year": 2020,
+    "url": "https://www2.fsca.co.za/News%20Documents/FSCA%20Press%20Release%20-%20Conduct%20Standard%20for%20Banks%208%20July%202020.pdf",
+    "referer": "https://www.fsca.co.za/",
+    "filename": "fsca_press_conduct_standard_banks_2020.pdf",
+    "sha256": "72344f469b03a01735677aba3bf4b12e1096c9ca0796351b27e4da460fe0001c"
+  },
+  {
+    "id": "fsca_conduct_standard_otc_derivatives_2018",
+    "title": "Conduct Standard for Authorised Over-the-Counter Derivative Providers (April 2018)",
+    "issuer": "Financial Sector Conduct Authority",
+    "category": "fsca",
+    "year": 2018,
+    "url": "https://www2.fsca.co.za/Regulatory%20Frameworks/Documents%20for%20Consultation/Conduct%20Standard%20for%20authorised%20over-the-counter%20derivative%20providers%20April%202018.pdf",
+    "referer": "https://www.fsca.co.za/",
+    "filename": "fsca_conduct_standard_otc_derivatives_2018.pdf",
+    "sha256": "f7d20bf92009d964bc9fff18111345dda87497a2dff43b417543e8e2229ec997"
+  },
+  {
+    "id": "fsca_rdr_intermediary_segmentation_2019",
+    "title": "Retail Distribution Review: Intermediary Activity Segmentation and Related Matters (December 2019)",
+    "issuer": "Financial Sector Conduct Authority",
+    "category": "fsca",
+    "year": 2019,
+    "url": "https://www2.fsca.co.za/Regulatory%20Frameworks/Regulatory%20Frameworks%20Documents/Retail%20Distribution%20Review%20Intermediary%20Activity%20Segmentation%20and%20Related%20Matters%20December%202019.pdf",
+    "referer": "https://www.fsca.co.za/",
+    "filename": "fsca_rdr_intermediary_segmentation_2019.pdf",
+    "sha256": "808ef8a242d6c6e7919ed18c9e86fa4b31ccc3d02671509c0acbb63c31a552c1"
+  },
+  {
+    "id": "fsca_rdr_2014",
+    "title": "Retail Distribution Review (2014)",
+    "issuer": "Financial Services Board (FSCA predecessor)",
+    "category": "fsca",
+    "year": 2014,
+    "url": "https://www2.fsca.co.za/Regulatory%20Frameworks/Documents%20for%20Consultation/FSB%20Retail%20Distribution%20Review%202014.pdf",
+    "referer": "https://www.fsca.co.za/",
+    "filename": "fsca_rdr_2014.pdf",
+    "sha256": "4ea40072d125efea8fbea98ccc814c88f47bbb2599891d370b4e091af2618ff8"
+  },
+  {
+    "id": "fsca_tcf_2011",
+    "title": "Treating Customers Fairly (TCF) (2011)",
+    "issuer": "Financial Services Board (FSCA predecessor)",
+    "category": "fsca",
+    "year": 2011,
+    "url": "https://www2.fsca.co.za/Regulatory%20Frameworks/Archived%20Documents/2011%20-%20Treating%20Customers%20Fairly%20(TCF).pdf",
+    "referer": "https://www.fsca.co.za/",
+    "filename": "fsca_tcf_2011.pdf",
+    "sha256": "077202048278ffbb26c1435ea106416faebb7cdc7f2f7f915dd13bd7607e2c2f"
+  },
+  {
+    "id": "ifrs9_project_summary_2014",
+    "title": "IFRS 9 Financial Instruments: Project Summary (July 2014)",
+    "issuer": "IFRS Foundation",
+    "category": "ifrs9",
+    "year": 2014,
+    "url": "https://www.ifrs.org/-/media/project/fi-impairment/ifrs-standard/published-documents/project-summary-july-2014.pdf",
+    "referer": "https://www.ifrs.org/",
+    "filename": "ifrs9_project_summary_2014.pdf",
+    "sha256": "1984914d14b56cce4b3f9c5d98f37138f2aeb2afa3b9f0abc7631423d34bba8d"
+  },
+  {
+    "id": "pwc_practical_guide_ifrs9",
+    "title": "Practical Guide to IFRS 9: Financial Instruments",
+    "issuer": "PwC",
+    "category": "ifrs9",
+    "year": 2017,
+    "url": "https://www.pwc.in/services/ifrs/ifrs-assets/practical_guide_on_financial_instrument_accounting_ifrs_9.pdf",
+    "referer": "https://www.pwc.in/",
+    "filename": "pwc_practical_guide_ifrs9.pdf",
+    "sha256": "e305239237264bf17f46ef79811c4f9dc3555654005bead2f993ce3745e87008"
+  }
+]
