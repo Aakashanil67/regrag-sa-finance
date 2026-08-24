@@ -5,7 +5,13 @@ tiktoken==0.8.0
 # --- vector store + embeddings ---
 chromadb==0.5.23
 sentence-transformers==3.3.1
-numpy==1.26.4
+# numpy isn't imported directly anywhere in this project — left unpinned so pip can pick
+# whatever chromadb/sentence-transformers/pandas actually resolve to (numpy 2.x as of writing)
+# chromadb's own telemetry code calls posthog's old 3-argument capture(distinct_id, event, props)
+# signature; posthog>=4 replaced that with a single event-object argument, so leaving posthog
+# unpinned (chromadb only floors it at >=2.4.0) resolves the latest and crashes that call on
+# every operation — harmless (caught internally, doesn't affect ingestion/retrieval) but noisy.
+posthog==3.7.0
 
 # --- LLM providers (anthropic default; openai/ollama optional per .env) ---
 anthropic==0.69.0
@@ -19,10 +25,14 @@ pandas==2.2.3
 matplotlib==3.9.3
 
 # --- API + UI ---
-fastapi==0.115.6
+# fastapi/streamlit/protobuf form one resolved group, not three independent pins: chromadb's own
+# deps floor protobuf at >=6, which broke streamlit==1.40.2 (needs <6); streamlit>=1.62 needs
+# starlette>=0.46, which broke fastapi==0.115.6 (caps starlette<0.42) — so all three moved together.
+fastapi==0.141.1
 uvicorn[standard]==0.32.1
 slowapi==0.1.9
-streamlit==1.40.2
+streamlit==1.62.0
+protobuf==7.36.0
 pydantic==2.11.9
 httpx==0.27.2
 
