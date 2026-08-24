@@ -57,11 +57,33 @@ that's itself oversized. Fixed with `_hard_split_by_tokens`, a token-window fall
 fires when sentence-level packing still isn't enough. Chunk max across the whole corpus is now 572
 tokens (500 target + 75 overlap, the theoretical ceiling).
 
-**Chroma document IDs are the chunk's own content hash**, not an incrementing counter. Re-running
-`store.py --rebuild` after editing one document only re-embeds chunks whose hash actually changed;
-everything else is a no-op lookup. The cost of this: a chunk that moves to a different page (same
-text, page renumbered) gets treated as unchanged, which is correct — the text is what retrieval
-matches against, not the page number.
+**A real bug produced 24 duplicate-content chunk groups on first embedding of the full corpus**
+(1077 raw chunks, only 1015 unique — caught by diffing `chunk_corpus()`'s output against what
+`store.py` actually stored, not by a test, since none of my synthetic test paragraphs happened to
+put two oversized paragraphs back to back). Root cause: `flush()` always reseeds `current_parts`
+with an overlap tail for the *next normal chunk*, but the oversized-paragraph branch bypasses
+`current_parts` entirely (it appends pieces straight to `chunks`) without clearing that seed —
+so a stale, unrelated overlap tail from *before* the oversized paragraph would resurface as its
+own spurious mini-chunk the next time `flush()` ran, which in `nca_act_34_2005` (heavy with
+long legislative clauses that repeatedly trigger the oversized path) happened dozens of times.
+Every chunk-hash formula includes page_start too now (see below) rather than text alone, which is
+what actually surfaced this as a *correctness* bug rather than a cosmetic one: two genuinely
+different chunk positions were colliding onto one stored vector, silently keeping whichever
+page's citation got embedded first and discarding the other. Fixed by explicitly resetting and
+then reseeding `current_parts` from the oversized paragraph's own last piece; a second, narrower
+case (a very short chunk's overlap tail is the *entire* chunk, which can then re-emit verbatim if
+nothing new gets appended before the next flush) is closed with a direct
+identical-to-previous-chunk guard in `flush()`. Full corpus: 0 duplicate chunk-hash groups now,
+down from 24. Regression test: `test_two_oversized_paragraphs_in_a_row_do_not_leak_a_stale_overlap_chunk`
+— verified it actually fails against the pre-fix code before trusting it.
+
+**Chroma document IDs are `sha256(doc_id:page_start:text)`, not text alone and not an incrementing
+counter.** Text alone was the first version, and it was wrong: legislative documents genuinely
+repeat identical passages at different pages (a definitional clause quoted again in a later
+schedule), which a text-only hash silently collapses into one stored vector — exactly the same
+failure shape as the bug above, just a legitimate content repeat instead of a chunking bug.
+Re-running `store.py --rebuild` after editing one document still only re-embeds chunks whose
+(page, text) pair actually changed; everything else is a no-op lookup.
 
 ## RAG core
 
@@ -112,3 +134,30 @@ to build from source** — `chromadb`'s vector index is a compiled extension, an
 Not a chromadb bug, just an unmet system dependency this project's README now calls out explicitly
 in the setup instructions, since "pip install everything from requirements.txt" silently isn't
 sufficient on a fresh Windows machine.
+
+**After installing Build Tools, torch itself still wouldn't load** — a second, unrelated system
+policy: Windows Smart App Control (running in Evaluation mode) was blocking
+`torch_global_deps.dll` from loading at all, `OSError: [WinError 4551] An Application Control
+policy has blocked this file`. Not something to silently route around — Smart App Control is a
+real security boundary, so this stayed blocked until it was explicitly turned off in Windows
+Security rather than worked around some other way.
+
+**chromadb 0.5.23 pulls in `googleapis-common-protos` (via its OpenTelemetry OTLP exporter),
+which floors `protobuf>=6.33.5`, while Streamlit 1.40.2 caps `protobuf<6`.** No single version
+pin resolves that — it's a genuine floor-vs-ceiling conflict between the two packages' own
+dependency trees, not something `pip install` backtracking can fix by trying harder. Streamlit
+1.62.0 relaxed its cap to `<8,>=5.26.1`, which resolves it — except newer Streamlit then wants
+`starlette>=0.46`, which is above FastAPI 0.115.6's own `starlette<0.42` ceiling, so FastAPI had
+to move to 0.141.1 too. Three packages, one dependency graph — `pip check` after every bump
+until it came back clean.
+
+**chromadb's telemetry client raises on every call** (`capture() takes 1 positional argument but
+3 were given`) — a real version incompatibility, not a disabled-flag issue: chromadb 0.5.23's
+`Posthog.capture()` calls the library's old three-argument signature
+(`posthog.capture(distinct_id, event, properties)`), but chromadb only floors `posthog>=2.4.0`
+with no ceiling, so pip resolved the latest 7.x, which replaced that with a single event-object
+argument. Setting `anonymized_telemetry=False` in `store.py` didn't fix it — chromadb's own
+`capture()` method calls `posthog.capture()` unconditionally regardless of that setting, so the
+crash (caught internally, harmless) happened either way. Pinning `posthog==3.7.0` in
+requirements.txt is the actual fix; `anonymized_telemetry=False` stayed in `store.py` anyway,
+since a local research tool has no reason to phone home even with a compatible posthog version.
