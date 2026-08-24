@@ -1,0 +1,122 @@
+[
+  {
+    "id": "r01",
+    "question": "How many climate-related disclosure templates are attached to Guidance Note 3/2025 as Annexure 1?",
+    "doc_id": "sarb_g3_2025_climate_disclosures",
+    "page": 1
+  },
+  {
+    "id": "r02",
+    "question": "Which earlier directive does Directive D3/2023 on the regulatory treatment of accounting provisions replace?",
+    "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+    "page": 1
+  },
+  {
+    "id": "r03",
+    "question": "On what date did the Basel Committee issue the revised standardised and internal ratings-based approaches for credit risk referenced in Directive D8/2023?",
+    "doc_id": "sarb_d8_2023_threshold_amounts",
+    "page": 1
+  },
+  {
+    "id": "r04",
+    "question": "What seven categories does the BCBS operational resilience paper organise its principles across, per Directive D10/2021?",
+    "doc_id": "sarb_d10_2021_operational_resilience",
+    "page": 1
+  },
+  {
+    "id": "r05",
+    "question": "By what date were comments due on the proposed amendments to hybrid debt instrument rules in Banks Act Circular 19/2004?",
+    "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+    "page": 1
+  },
+  {
+    "id": "r06",
+    "question": "When did the Basel Committee confirm it would publish the full text of Basel II, according to Circular 6/2004?",
+    "doc_id": "sarb_circular_6_2004_basel_ii_update",
+    "page": 1
+  },
+  {
+    "id": "r07",
+    "question": "On what date did the National Credit Act come into commencement?",
+    "doc_id": "nca_act_34_2005",
+    "page": 1
+  },
+  {
+    "id": "r08",
+    "question": "How many business days' notice must a registrant give the National Credit Regulator before voluntarily cancelling its registration under section 58?",
+    "doc_id": "nca_act_34_2005",
+    "page": 40
+  },
+  {
+    "id": "r09",
+    "question": "According to the Notebook on the National Credit Act, what kind of credit-marketing practices does the Act prohibit?",
+    "doc_id": "nca_notebook_brochure",
+    "page": 1
+  },
+  {
+    "id": "r10",
+    "question": "Which section of the National Credit Act gives a consumer the right to challenge the accuracy of information held about them by a credit bureau?",
+    "doc_id": "ncr_guideline_disputed_credit_complaints",
+    "page": 2
+  },
+  {
+    "id": "r11",
+    "question": "How many days does a debt counsellor have to file a certified clearance certificate with credit bureaus under section 71(4) of the NCA?",
+    "doc_id": "ncr_guideline_feb_2026_clearance_certificates",
+    "page": 2
+  },
+  {
+    "id": "r12",
+    "question": "Which sections of the National Credit Act does the June 2025 NCR guideline on consumers under debt review implement?",
+    "doc_id": "ncr_guideline_june_2025_credit_info",
+    "page": 2
+  },
+  {
+    "id": "r13",
+    "question": "What is a debt counsellor required to keep up to date with the NCR under Guideline 004/2025?",
+    "doc_id": "ncr_guideline_sept_2025_debt_counsellors",
+    "page": 2
+  },
+  {
+    "id": "r14",
+    "question": "On what date did the FSCA publish the Conduct Standard for Banks?",
+    "doc_id": "fsca_press_conduct_standard_banks_2020",
+    "page": 1
+  },
+  {
+    "id": "r15",
+    "question": "Under which Act and section was the Conduct Standard for authorised OTC derivative providers published?",
+    "doc_id": "fsca_conduct_standard_otc_derivatives_2018",
+    "page": 1
+  },
+  {
+    "id": "r16",
+    "question": "What did Proposal J of the Retail Distribution Review address regarding intermediation and outsourced services?",
+    "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+    "page": 2
+  },
+  {
+    "id": "r17",
+    "question": "What regulatory approach shift does the 2014 Retail Distribution Review propose, away from a purely rules-based compliance approach?",
+    "doc_id": "fsca_rdr_2014",
+    "page": 3
+  },
+  {
+    "id": "r18",
+    "question": "What were the agenda topics of the 2011 FSB presentation on Treating Customers Fairly?",
+    "doc_id": "fsca_tcf_2011",
+    "page": 1
+  },
+  {
+    "id": "r19",
+    "question": "What is the 'own credit' issue that IFRS 9 addresses?",
+    "doc_id": "ifrs9_project_summary_2014",
+    "page": 1
+  },
+  {
+    "id": "r20",
+    "question": "How many classification categories does IFRS 9 have for financial assets, according to PwC's practical guide?",
+    "doc_id": "pwc_practical_guide_ifrs9",
+    "page": 1
+  }
+]
