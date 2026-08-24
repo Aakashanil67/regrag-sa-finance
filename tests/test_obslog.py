@@ -13,6 +13,7 @@ def _result(refused=False, citations=None, cost_usd=0.001) -> RAGResult:
         citations=citations if citations is not None else [Citation("sarb_d3_2023", 3, True)],
         retrieved_chunks=[],
         refused=refused,
+        flagged_injection=False,
         llm_response=LLMResponse(
             text="...",
             model="claude-haiku-4-5",

@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS queries (
     question TEXT NOT NULL,
     answer TEXT NOT NULL,
     refused INTEGER NOT NULL,
+    flagged_injection INTEGER NOT NULL,
     citation_count INTEGER NOT NULL,
     unverified_citation_count INTEGER NOT NULL,
     retrieved_chunk_ids TEXT NOT NULL,
@@ -61,14 +62,16 @@ def log_query(timed: TimedRAGResult) -> None:
 
     with _connect() as conn:
         conn.execute(
-            "INSERT INTO queries (timestamp, question, answer, refused, citation_count, "
-            "unverified_citation_count, retrieved_chunk_ids, model, input_tokens, output_tokens, "
-            "cost_usd, latency_ms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO queries (timestamp, question, answer, refused, flagged_injection, "
+            "citation_count, unverified_citation_count, retrieved_chunk_ids, model, "
+            "input_tokens, output_tokens, cost_usd, latency_ms) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 time.time(),
                 result.question,
                 result.answer,
                 int(result.refused),
+                int(result.flagged_injection),
                 len(result.citations),
                 unverified,
                 json.dumps([c.chunk_id for c in result.retrieved_chunks]),

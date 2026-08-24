@@ -29,6 +29,7 @@ def _timed_result(refused=False):
                 )
             ],
             refused=refused,
+            flagged_injection=False,
             llm_response=LLMResponse(
                 text="...",
                 model="claude-haiku-4-5",
