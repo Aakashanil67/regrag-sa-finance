@@ -27,3 +27,25 @@ HEADER_FOOTER_REPEAT_FRACTION = 0.4
 # a page where at least this fraction of lines look like "Section name .......... 12" is a table
 # of contents, not prose worth chunking
 TOC_DOT_LEADER_FRACTION = 0.3
+
+# --- vector store ---
+CHROMA_DIR = ROOT / "chroma"
+COLLECTION_NAME = "regrag_chunks"
+EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+
+# --- LLM ---
+DEFAULT_ANTHROPIC_MODEL = "claude-haiku-4-5"
+DEFAULT_OPENAI_MODEL = "gpt-4o-mini"
+DEFAULT_OLLAMA_MODEL = "llama3.1:8b"
+DEFAULT_OLLAMA_HOST = "http://localhost:11434"
+RAG_MAX_ANSWER_TOKENS = 1024
+
+# $ per 1M tokens (input, output) — approximate for OpenAI/Ollama, exact for Anthropic at time of
+# writing; used only for the cost-estimate column in reports/logs, never billed against directly.
+PRICING_PER_MILLION_TOKENS = {
+    "claude-haiku-4-5": (1.00, 5.00),
+    "claude-opus-5": (5.00, 25.00),
+    "claude-sonnet-5": (3.00, 15.00),
+    "gpt-4o-mini": (0.15, 0.60),
+    "gpt-4o": (2.50, 10.00),
+}
