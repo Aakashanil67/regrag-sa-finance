@@ -54,6 +54,37 @@ def test_consecutive_chunks_share_overlap_text(monkeypatch):
     assert tail_of_first == start_of_second
 
 
+def test_two_oversized_paragraphs_in_a_row_do_not_leak_a_stale_overlap_chunk(monkeypatch):
+    monkeypatch.setattr(chunking, "CHUNK_TARGET_TOKENS", 20)
+    monkeypatch.setattr(chunking, "CHUNK_OVERLAP_TOKENS", 5)
+
+    # a normal paragraph, then two back-to-back oversized ones — the shape that produced a
+    # spurious near-duplicate mini-chunk before this was fixed: flush() reseeds current_parts
+    # with an overlap tail meant for normal packing, but the oversized-paragraph branch bypassed
+    # current_parts entirely, leaving that seed (here, trailing "alpha" words) to resurface
+    # untouched — and out of order — the next time flush() ran, i.e. right after paragraph 2.
+    elements = [
+        Element(kind="paragraph", text=_words(10, word="alpha"), page=1),
+        Element(
+            kind="paragraph",
+            text=". ".join([_words(15, word="bravo") for _ in range(4)]) + ".",
+            page=1,
+        ),
+        Element(
+            kind="paragraph",
+            text=". ".join([_words(15, word="charlie") for _ in range(4)]) + ".",
+            page=1,
+        ),
+    ]
+
+    chunks = chunk_document("doc1", elements)
+
+    alpha_chunks = [i for i, c in enumerate(chunks) if "alpha" in c.text]
+    assert alpha_chunks == [
+        0
+    ], f"'alpha' content should only appear in the first chunk, found it in chunks {alpha_chunks}"
+
+
 def test_chunk_spanning_pages_records_start_and_end_page(monkeypatch):
     monkeypatch.setattr(chunking, "CHUNK_TARGET_TOKENS", 100)
     monkeypatch.setattr(chunking, "CHUNK_OVERLAP_TOKENS", 10)

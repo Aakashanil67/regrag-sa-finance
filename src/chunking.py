@@ -60,7 +60,15 @@ class Chunk:
 
     def __post_init__(self):
         self.token_count = _token_count(self.text)
-        self.chunk_hash = hashlib.sha256(f"{self.doc_id}:{self.text}".encode()).hexdigest()
+        # page_start, not just (doc_id, text): legislative documents genuinely repeat identical
+        # passages at different pages (the NCA repeats definitional clauses across schedules) —
+        # hashing on text alone would collapse two real locations into one stored vector and
+        # silently keep whichever page happened to be ingested first, breaking that location's
+        # citation. Not index: an edit earlier in the document would shift every later chunk's
+        # index and defeat idempotent re-ingestion for content that didn't actually change.
+        self.chunk_hash = hashlib.sha256(
+            f"{self.doc_id}:{self.page_start}:{self.text}".encode()
+        ).hexdigest()
 
 
 def _hard_split_by_tokens(text: str) -> list[str]:
@@ -127,6 +135,13 @@ def chunk_document(doc_id: str, elements: list[Element]) -> list[Chunk]:
         if not current_parts:
             return
         text = " ".join(current_parts)
+        if chunks and chunks[-1].text == text:
+            # current_parts is sometimes seeded verbatim from the previous chunk's own text (a
+            # short chunk's "overlap tail" is the whole chunk, since _overlap_tail only trims
+            # when there's something to trim) — if nothing new gets appended before the next
+            # flush, that seed would otherwise re-emit as a byte-identical duplicate chunk.
+            current_parts, current_tokens = [], 0
+            return
         chunk = Chunk(
             doc_id=doc_id,
             index=len(chunks),
@@ -164,6 +179,18 @@ def chunk_document(doc_id: str, elements: list[Element]) -> list[Chunk]:
 
         if paragraph_tokens > CHUNK_TARGET_TOKENS:
             flush()
+            # flush() just reseeded current_parts with an overlap tail meant for normal
+            # packing continuity — irrelevant here, since the oversized paragraph's pieces are
+            # appended directly below, bypassing current_parts entirely. Left in place, that
+            # stale seed would surface as a spurious near-duplicate mini-chunk the next time
+            # flush() runs (this bit two or more oversized paragraphs in a row in the NCA, whose
+            # long legislative sentences trigger this path often). Discard it, then reseed from
+            # the oversized paragraph's own last piece so overlap continuity carries forward
+            # correctly into whatever comes next.
+            current_parts = []
+            current_tokens = 0
+
+            last_piece_page = element.page
             for piece_text, piece_page, piece_section in _split_oversized_paragraph(
                 element.text, element.page, current_section
             ):
@@ -177,6 +204,13 @@ def chunk_document(doc_id: str, elements: list[Element]) -> list[Chunk]:
                         section=piece_section,
                     )
                 )
+                last_piece_page = piece_page
+
+            overlap_text = _overlap_tail(chunks[-1].text, CHUNK_OVERLAP_TOKENS)
+            current_parts = [overlap_text] if overlap_text else []
+            current_tokens = _token_count(overlap_text) if overlap_text else 0
+            current_page_start = last_piece_page
+            current_page_end = last_piece_page
             continue
 
         if current_tokens + paragraph_tokens > CHUNK_TARGET_TOKENS and current_parts:
