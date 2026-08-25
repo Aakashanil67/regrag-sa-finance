@@ -43,8 +43,10 @@ def get_collection():
     import chromadb
     from chromadb.config import Settings
 
-    # No reason for a local research tool to phone home — see requirements.txt's posthog pin
-    # for the separate reason chromadb's telemetry code needs a compatible posthog version too.
+    # No reason for a local research tool to phone home. Doesn't actually suppress the
+    # "Failed to send telemetry event" stderr noise chromadb's telemetry code produces against
+    # this project's pinned posthog version — see requirements.txt's posthog comment — but it's
+    # still the right default regardless of whether that call would otherwise succeed.
     client = chromadb.PersistentClient(
         path=str(CHROMA_DIR), settings=Settings(anonymized_telemetry=False)
     )

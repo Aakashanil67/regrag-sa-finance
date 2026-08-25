@@ -7,18 +7,24 @@ chromadb==0.5.23
 sentence-transformers==3.3.1
 # numpy isn't imported directly anywhere in this project — left unpinned so pip can pick
 # whatever chromadb/sentence-transformers/pandas actually resolve to (numpy 2.x as of writing)
-# chromadb's own telemetry code calls posthog's old 3-argument capture(distinct_id, event, props)
-# signature; posthog>=4 replaced that with a single event-object argument, so leaving posthog
-# unpinned (chromadb only floors it at >=2.4.0) resolves the latest and crashes that call on
-# every operation — harmless (caught internally, doesn't affect ingestion/retrieval) but noisy.
-posthog==3.7.0
 
 # --- LLM providers (anthropic default; openai/ollama optional per .env) ---
 anthropic==0.69.0
-openai==1.58.1
 python-dotenv==1.1.1
 
 # --- evaluation harness ---
+# ragas pulls langchain_openai unconditionally (its default LLM/embeddings wrapper), which floors
+# openai>=2.45.0 — above the 1.58.1 this project pinned before ragas entered the picture. Verified
+# the openai client's public surface this project's own llm.py uses (OpenAI(), chat.completions.
+# create(), response.usage.{prompt,completion}_tokens) is unchanged in 3.x before accepting the
+# bump; untested live, since only the Anthropic path has a real smoke test.
+openai==3.3.1
+# deepeval floors posthog>=7.0.0, but chromadb 0.5.23's telemetry code calls posthog's old
+# 3-argument capture(distinct_id, event, props) signature, broken by posthog>=4's single-argument
+# rewrite — the two can't both be satisfied by one posthog version. deepeval's assertions are the
+# thing this project's CI gate actually depends on; chromadb's telemetry crash is caught
+# internally and only ever produces stderr noise, so posthog>=7 wins and the noise is accepted.
+posthog==7.44.0
 ragas==0.2.15
 deepeval==4.1.10
 pandas==2.2.3
