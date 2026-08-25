@@ -61,14 +61,18 @@ class RAGResult:
 
 
 def _format_context(chunks: list[RetrievedChunk]) -> str:
+    # No numbered block index (no leading "[1]") — a live multi-document answer once cited "[1,
+    # p.2]" and "[2, p.3]" verbatim, copying the block's position instead of its doc_id, because a
+    # bracketed index sitting right next to a bracketed citation format is exactly the confusion
+    # an LLM would make. The header carries only what the citation format actually needs.
     blocks = []
-    for i, chunk in enumerate(chunks, start=1):
+    for chunk in chunks:
         pages = (
             f"p.{chunk.page_start}"
             if chunk.page_start == chunk.page_end
             else f"p.{chunk.page_start}-{chunk.page_end}"
         )
-        header = f"[{i}] ({chunk.doc_id}, {pages}{f', {chunk.section}' if chunk.section else ''})"
+        header = f"({chunk.doc_id}, {pages}{f', {chunk.section}' if chunk.section else ''})"
         blocks.append(f"{header}\n{chunk.text}")
     return "\n\n".join(blocks)
 

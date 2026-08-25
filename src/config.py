@@ -10,6 +10,10 @@ MANIFEST_PATH = CORPUS_DIR / "manifest.json"
 REPORTS_DIR = ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
 
+EVALS_DIR = ROOT / "evals"
+GOLDEN_PATH = EVALS_DIR / "golden.jsonl"
+EVAL_HISTORY_CSV = REPORTS_DIR / "eval_history.csv"
+
 RANDOM_SEED = 42
 CACHE_DB_PATH = ROOT / "regrag_cache.sqlite3"
 
