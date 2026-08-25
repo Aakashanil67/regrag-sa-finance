@@ -113,6 +113,16 @@ An LLM citing a page it wasn't shown is a hallucination even when the surroundin
 accurate — a distinct failure mode from "the answer is wrong" that a faithfulness score alone
 wouldn't isolate.
 
+**The citation checker's first live run against the real API flagged 7 of 9 genuinely correct
+citations as unverified** — not a model problem, a bug in my own verification code. `covered_pages`
+was a dict comprehension keyed on `doc_id`, so when a query retrieved several chunks from the same
+document (the ordinary case, not an edge case — this one retrieved four from
+`ifrs9_project_summary_2014`), each chunk's page range silently overwrote the previous one instead
+of accumulating, leaving `covered_pages` holding only the *last* chunk's pages. Every mocked test
+up to that point used exactly one chunk per document, so nothing caught it before a real question
+did. Fixed by unioning page ranges into a `set` per document instead of overwriting; regression
+test constructs two same-document chunks specifically to catch a return of the old behaviour.
+
 **Refusal is an exact, greppable sentence**, not "however Claude happens to phrase not knowing
 something." `INSUFFICIENT_CONTEXT_PHRASE` is checked case-insensitively as a substring, which is
 crude but deterministic — the eval harness and the regression gate both need to detect refusal
