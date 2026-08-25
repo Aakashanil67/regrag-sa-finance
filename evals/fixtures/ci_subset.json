@@ -1,0 +1,164 @@
+[
+  {
+    "id": "g01",
+    "type": "factual",
+    "question": "How many climate-related disclosure templates are attached to SARB Guidance Note 3/2025 as Annexure 1?",
+    "answer": "According to the guidance note, four disclosure templates are attached as Annexure 1 [sarb_g3_2025_climate_disclosures, p.1].",
+    "refused": false,
+    "citations": [
+      {
+        "doc_id": "sarb_g3_2025_climate_disclosures",
+        "page": 1,
+        "verified": true
+      }
+    ],
+    "faithfulness": 0.5
+  },
+  {
+    "id": "g04",
+    "type": "factual",
+    "question": "On what date did the Basel Committee issue the revised standardised and internal ratings-based approaches for credit risk referenced in Directive D8/2023?",
+    "answer": "According to the directive, the Basel Committee on Banking Supervision (BCBS) issued the revised standardised approach (STA) and internal ratings-based (IRB) approach for credit risk on 7 December 2017 [sarb_d8_2023_threshold_amounts, p.1].",
+    "refused": false,
+    "citations": [
+      {
+        "doc_id": "sarb_d8_2023_threshold_amounts",
+        "page": 1,
+        "verified": true
+      }
+    ],
+    "faithfulness": 1.0
+  },
+  {
+    "id": "g12",
+    "type": "factual",
+    "question": "On what date did the National Credit Act come into commencement?",
+    "answer": "The National Credit Act, 2005 came into commencement on 1 June, 2006 [nca_act_34_2005, p.1].",
+    "refused": false,
+    "citations": [
+      {
+        "doc_id": "nca_act_34_2005",
+        "page": 1,
+        "verified": true
+      }
+    ],
+    "faithfulness": 0.5
+  },
+  {
+    "id": "g18",
+    "type": "factual",
+    "question": "Which section of the National Credit Act gives a consumer the right to challenge the accuracy of information a credit bureau holds about them, without charge?",
+    "answer": "Section 72(1)(c) of the National Credit Act gives a consumer the right to challenge the accuracy of information a credit bureau holds about them, without charge. The section states that \"Every person has a right to challenge the accuracy of any information concerning that person...that is held by the credit bureau or national credit register, as the case may be, and require the credit bureau or National Credit Regulator, as the case may be, to investigate the accuracy of any challenged information, without charge to the consumer.\" [ncr_guideline_disputed_credit_complaints, p.2-3]",
+    "refused": false,
+    "citations": [
+      {
+        "doc_id": "ncr_guideline_disputed_credit_complaints",
+        "page": 2,
+        "verified": true
+      },
+      {
+        "doc_id": "ncr_guideline_disputed_credit_complaints",
+        "page": 3,
+        "verified": true
+      }
+    ],
+    "faithfulness": 1.0
+  },
+  {
+    "id": "g25",
+    "type": "factual",
+    "question": "On what date did the FSCA publish the Conduct Standard for Banks?",
+    "answer": "The FSCA published the Conduct Standard for Banks on 8 July 2020 [fsca_press_conduct_standard_banks_2020, p.1].",
+    "refused": false,
+    "citations": [
+      {
+        "doc_id": "fsca_press_conduct_standard_banks_2020",
+        "page": 1,
+        "verified": true
+      }
+    ],
+    "faithfulness": 0.0
+  },
+  {
+    "id": "g36",
+    "type": "multi-doc",
+    "question": "Both Directive D3/2023 and the IFRS 9 project summary describe a shift from an 'incurred loss' model to a forward-looking model. What is that forward-looking model called?",
+    "answer": "I don't have a source for that.\n\nThe context blocks provided contain information about IFRS 9 from the project summary, but they do not include any document referred to as \"Directive D3/2023.\" Therefore, I cannot answer the question as it asks me to compare both sources.\n\nRegarding IFRS 9 alone, the context does describe the shift from the incurred loss model to a forward-looking approach. According to the IFRS 9 project summary, this is called an \"expected credit loss model\" [ifrs9_project_summary_2014, p.2-3], which \"will result in more timely recognition of loan losses and is a single model that is applicable to all financial instruments subject to impairment accounting.\"",
+    "refused": true,
+    "citations": []
+  },
+  {
+    "id": "g40",
+    "type": "multi-doc",
+    "question": "How did the FSCA's 2019 intermediary activity segmentation update build on the 2014 Retail Distribution Review?",
+    "answer": "The FSCA's 2019 intermediary activity segmentation built on the 2014 Retail Distribution Review in the following ways:\n\nThe 2014 RDR \"outlined a number of key risks inherent in the current distribution landscape, including distribution relationships and intermediary remuneration models that potentially contribute to poor customer outcomes\" and \"put forward a number of proposals aimed at addressing these risks\" [fsca_rdr_intermediary_segmentation_2019, p.2-3].\n\nIn response to these RDR findings, the FSB (predecessor to the FSCA) initiated an intermediary activity segmentation project. During 2016, \"in consultation with various short-term insurers and intermediaries, [it] carried out detailed technical work to determine the types of activities for which intermediaries are currently remunerated\" [fsca_rdr_intermediary_segmentation_2019, p.2-3]. This work resulted in \"a draft intermediary activity segmentation framework relating to activities performed within the short-term insurance environment\" that demarcates between five categories of activities: Advice, Other services to the customer, Services that truly \"intermediate\" between customer and insurer, Services to the insurer (split between binder services and other outsourced services), and Other services to the insurer [fsca_rdr_intermediary_segmentation_2019, p.2-3].\n\nThe 2019 segmentation framework then translated the RDR's proposals into concrete interventions, including binder fee caps, notification requirements for insurers, and oversight requirements regarding intermediary fees [fsca_rdr_intermediary_segmentation_2019, p.3-4].",
+    "refused": false,
+    "citations": [
+      {
+        "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+        "page": 2,
+        "verified": true
+      },
+      {
+        "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+        "page": 3,
+        "verified": true
+      },
+      {
+        "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+        "page": 2,
+        "verified": true
+      },
+      {
+        "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+        "page": 3,
+        "verified": true
+      },
+      {
+        "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+        "page": 2,
+        "verified": true
+      },
+      {
+        "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+        "page": 3,
+        "verified": true
+      },
+      {
+        "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+        "page": 3,
+        "verified": true
+      },
+      {
+        "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+        "page": 4,
+        "verified": true
+      }
+    ],
+    "faithfulness": 0.7692307692307693
+  },
+  {
+    "id": "g46",
+    "type": "unanswerable",
+    "question": "What is the South African Reserve Bank's current repurchase (repo) rate?",
+    "answer": "I don't have a source for that.",
+    "refused": true,
+    "citations": []
+  },
+  {
+    "id": "g50",
+    "type": "unanswerable",
+    "question": "What is the SARB Monetary Policy Committee's current inflation target range?",
+    "answer": "I don't have a source for that.",
+    "refused": true,
+    "citations": []
+  },
+  {
+    "id": "g54",
+    "type": "unanswerable",
+    "question": "What penalties apply for insider trading under the Financial Markets Act?",
+    "answer": "I don't have a source for that.\n\nThe context blocks provided contain only information about the National Credit Act (NCA), which addresses credit regulation and related offences. They do not contain any information about the Financial Markets Act or penalties for insider trading.",
+    "refused": true,
+    "citations": []
+  }
+]
