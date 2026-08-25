@@ -16,31 +16,46 @@ from src.rag import RAGResult
 
 DB_PATH = ROOT / "regrag_log.sqlite3"
 
-_SCHEMA = """
-CREATE TABLE IF NOT EXISTS queries (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp REAL NOT NULL,
-    question TEXT NOT NULL,
-    answer TEXT NOT NULL,
-    refused INTEGER NOT NULL,
-    flagged_injection INTEGER NOT NULL,
-    cache_hit INTEGER NOT NULL,
-    citation_count INTEGER NOT NULL,
-    unverified_citation_count INTEGER NOT NULL,
-    retrieved_chunk_ids TEXT NOT NULL,
-    model TEXT NOT NULL,
-    input_tokens INTEGER NOT NULL,
-    output_tokens INTEGER NOT NULL,
-    cost_usd REAL NOT NULL,
-    latency_ms REAL NOT NULL
-);
-"""
+# (column, full column definition) — used for both CREATE TABLE and, for anything added after the
+# table already existed on disk, an ALTER TABLE migration. `flagged_injection` and `cache_hit`
+# were added in later commits than the original table; without this, CREATE TABLE IF NOT EXISTS
+# silently no-ops against an older on-disk schema and every insert starts failing at runtime
+# instead of at startup — the failure mode this project's own log file hit once already.
+_COLUMNS = [
+    ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
+    ("timestamp", "REAL NOT NULL"),
+    ("question", "TEXT NOT NULL"),
+    ("answer", "TEXT NOT NULL"),
+    ("refused", "INTEGER NOT NULL"),
+    ("flagged_injection", "INTEGER NOT NULL DEFAULT 0"),
+    ("cache_hit", "INTEGER NOT NULL DEFAULT 0"),
+    ("citation_count", "INTEGER NOT NULL"),
+    ("unverified_citation_count", "INTEGER NOT NULL"),
+    ("retrieved_chunk_ids", "TEXT NOT NULL"),
+    ("model", "TEXT NOT NULL"),
+    ("input_tokens", "INTEGER NOT NULL"),
+    ("output_tokens", "INTEGER NOT NULL"),
+    ("cost_usd", "REAL NOT NULL"),
+    ("latency_ms", "REAL NOT NULL"),
+]
+
+_CREATE_TABLE = (
+    f"CREATE TABLE IF NOT EXISTS queries ({', '.join(f'{c} {d}' for c, d in _COLUMNS)});"
+)
+
+
+def _migrate(conn: sqlite3.Connection) -> None:
+    existing = {row[1] for row in conn.execute("PRAGMA table_info(queries)")}
+    for column, definition in _COLUMNS:
+        if column not in existing:
+            conn.execute(f"ALTER TABLE queries ADD COLUMN {column} {definition}")
 
 
 @contextmanager
 def _connect():
     conn = sqlite3.connect(DB_PATH)
-    conn.execute(_SCHEMA)
+    conn.execute(_CREATE_TABLE)
+    _migrate(conn)
     try:
         yield conn
         conn.commit()

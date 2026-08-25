@@ -1,5 +1,7 @@
 """obslog.py against a throwaway SQLite file — never the real regrag_log.sqlite3."""
 
+import sqlite3
+
 import src.cache as cache_module
 import src.rag as rag_module
 from src import obslog
@@ -61,6 +63,40 @@ def test_stats_summary_on_empty_log_does_not_divide_by_zero(tmp_path, monkeypatc
         "total_cost_usd": 0.0,
         "refusal_rate": 0.0,
     }
+
+
+def test_log_query_migrates_a_table_created_before_later_columns_existed(tmp_path, monkeypatch):
+    # CREATE TABLE IF NOT EXISTS is a no-op against a table that already exists on disk with an
+    # older schema — this reproduces exactly the table this project's own dev log file had after
+    # flagged_injection/cache_hit were added in later commits, and confirms logging against it
+    # doesn't crash with "table queries has no column named ..." the way it did once already.
+    db_path = tmp_path / "old_schema.sqlite3"
+    monkeypatch.setattr(obslog, "DB_PATH", db_path)
+
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("""
+            CREATE TABLE queries (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp REAL NOT NULL,
+                question TEXT NOT NULL,
+                answer TEXT NOT NULL,
+                refused INTEGER NOT NULL,
+                citation_count INTEGER NOT NULL,
+                unverified_citation_count INTEGER NOT NULL,
+                retrieved_chunk_ids TEXT NOT NULL,
+                model TEXT NOT NULL,
+                input_tokens INTEGER NOT NULL,
+                output_tokens INTEGER NOT NULL,
+                cost_usd REAL NOT NULL,
+                latency_ms REAL NOT NULL
+            )
+        """)
+
+    log_query(TimedRAGResult(result=_result(), latency_ms=100.0, cache_hit=True))
+
+    row = recent_queries(limit=1)[0]
+    assert row["flagged_injection"] == 0
+    assert row["cache_hit"] == 1
 
 
 def test_timed_answer_skips_the_rag_pipeline_on_a_cache_hit(tmp_path, monkeypatch):
