@@ -74,9 +74,15 @@ def _format_context(chunks: list[RetrievedChunk]) -> str:
 
 
 def _extract_citations(answer: str, chunks: list[RetrievedChunk]) -> list[Citation]:
-    covered_pages = {
-        chunk.doc_id: set(range(chunk.page_start, chunk.page_end + 1)) for chunk in chunks
-    }
+    # a dict comprehension keyed on doc_id would silently overwrite the page range for every
+    # chunk but the last from the same document — and a query commonly retrieves several chunks
+    # from one document, which made this flag correct citations as unverified whenever the
+    # matching chunk wasn't the last one in the list. Union pages per document instead.
+    covered_pages: dict[str, set[int]] = {}
+    for chunk in chunks:
+        covered_pages.setdefault(chunk.doc_id, set()).update(
+            range(chunk.page_start, chunk.page_end + 1)
+        )
 
     citations = []
     for doc_id, page_start, page_end in _CITATION_PATTERN.findall(answer):

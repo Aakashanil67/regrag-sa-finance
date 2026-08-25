@@ -78,6 +78,25 @@ def test_page_range_citation_expands_to_every_covered_page(monkeypatch):
     assert all(c.verified for c in result.citations)
 
 
+def test_citation_verified_against_any_of_several_chunks_from_the_same_document(monkeypatch):
+    # a dict comprehension keyed on doc_id previously kept only the *last* chunk's page range for
+    # a document, so a citation to an earlier chunk's page was wrongly flagged unverified whenever
+    # more than one retrieved chunk came from the same doc — a common case, not an edge case
+    monkeypatch.setattr(
+        rag,
+        "retrieve",
+        lambda q, k=5: [
+            _chunk(page_start=19, page_end=19, text="first chunk"),
+            _chunk(page_start=12, page_end=14, text="second chunk"),
+        ],
+    )
+    monkeypatch.setattr(rag, "complete", _fake_llm("Some claim. [sarb_d3_2023, p.19]"))
+
+    result = rag.answer_question("What does the standard say?")
+
+    assert result.citations == [rag.Citation(doc_id="sarb_d3_2023", page=19, verified=True)]
+
+
 def test_injection_attempt_is_flagged_but_still_answered(monkeypatch):
     monkeypatch.setattr(rag, "retrieve", lambda q, k=5: [_chunk(page_start=1, page_end=1)])
     monkeypatch.setattr(rag, "complete", _fake_llm(rag.INSUFFICIENT_CONTEXT_PHRASE))
