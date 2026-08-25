@@ -148,6 +148,68 @@ exact failure before the smoke test hit it live. Three citations spot-checked wo
 against the source PDFs (`nca_act_34_2005` p.48, `fsca_conduct_standard_otc_derivatives_2018`
 p.1, `ifrs9_project_summary_2014` p.14-15) — all matched exactly.
 
+## Evaluation harness (RAGAS)
+
+**ragas 0.2.15 (the version I'd originally pinned) doesn't import at all against a current
+langchain install.** Its own `ragas.llms.base` unconditionally imports
+`langchain_community.chat_models.vertexai.ChatVertexAI` — a module `langchain_community` removed
+in its 0.4.x line, which is what pip resolves by default since ragas declares no upper bound on
+any `langchain*` dependency. Ragas 0.4.3 (current) hit the identical import error for the identical
+reason. Fix was pinning `langchain-community==0.3.31` (the last release before the module moved),
+not chasing a different ragas version — the ragas version wasn't the variable that mattered here.
+
+**ragas 0.4's newer `ragas.metrics.collections` API needs an `InstructorBaseRagasLLM`, and its
+Anthropic support has a real gap**: the instructor adapter hardcodes
+`InstructorModelArgs(temperature=0.01, top_p=0.1)` for every provider, but Claude's API rejects a
+request that sets both `temperature` and `top_p` — and rejects an explicit `top_p=None` just as
+strictly ("Input should be a valid number"), so there's no way to configure this away through
+`llm_factory`'s public kwargs. Worked around by deleting the key from the constructed LLM's own
+`model_args` dict after the fact (`del llm.model_args["top_p"]`) rather than trying to pass a
+value through — confirmed live against the real API before trusting it, not just because the
+types lined up.
+
+**The default `max_tokens=1024` on that same judge truncated Faithfulness's structured-output JSON
+mid-response** on an answer with many claims to verify — `InstructorRetryException: ... EOF while
+parsing a list`, and it happened on item 22 of a live 45-item run, not in a quick smoke check.
+Bumped to 4096. The real lesson wasn't the number, it was that a long-running scored batch job
+which only saves results after every item succeeds throws away every prior item's real API spend
+the moment one item fails for any reason — `run.py` now catches per-item exceptions and reports
+partial results with the failures listed, not silently swallowed and not fatal to the whole run.
+
+**A live RAGAS run is what caught a real citation-format bug, not the mocked test suite.** One
+multi-document answer cited `[1, p.2]` and `[2, p.3]` — the model had copied the *numbered context
+block index* `_format_context` printed for my own debugging readability, not the actual `doc_id`
+the citation format asks for. A bracketed index sitting right next to a bracketed citation format
+is exactly the confusion an LLM would make on a harder multi-source synthesis question; single-
+source answers never triggered it because there was only one block to point at either way. The
+citation verifier caught it correctly (both citations came back `verified: False`, since `"1"` and
+`"2"` never match any real `doc_id`) — the safety net worked exactly as designed — but the root
+cause was still worth fixing: dropped the numbered index from `_format_context` entirely, since
+the model never needed it. Re-running the same question afterward produced eight `verified: True`
+citations against the real document.
+
+**11 of 45 golden items scored 0.00 across all four RAGAS metrics on the first full run — every
+single one turned out to be a refusal, not a bad answer.** `run_ragas.py` didn't check
+`result.refused` before handing the response to the judge, so "I don't have a source for that."
+got scored against metrics built to evaluate a substantive, grounded answer. Filtering refusals
+out (tracked and reported separately, not silently dropped) moved the aggregate from
+faithfulness/relevancy/precision/recall of 0.771/0.615/0.538/0.778 to a materially more honest
+0.791/0.851/0.673/0.912 — the first set of numbers wasn't "the system doing worse," it was the
+measurement counting a correct behaviour as a failure. `record_fixtures.py` had the identical bug
+for the same reason (copy-pasted before the fix existed) and got the same fix.
+`test_regression.py`'s citation-presence assertion had the mirror-image version: it demanded a
+citation from every non-unanswerable item, which would fail the CI gate on a legitimate refusal
+instead of the actual regression the test exists to catch.
+
+**The CI faithfulness threshold (0.5) was picked after seeing the real number, not before.** First
+draft used 0.7, a round guess made before any data existed. The recorded 10-item CI subset's own
+non-refused mean is 0.628 — six items, one of them a genuine 0.0 outlier that a 6-item average
+can't absorb the way the full 34-item run does — so 0.7 would have failed the gate on the exact
+data used to build it. 0.5 leaves room for that outlier and for ordinary run-to-run variance
+(Claude doesn't run at temperature 0 here, and a borderline retrieval case has genuinely flipped
+between answering and refusing across separate live runs of the same question) without the gate
+firing on noise, while still catching an actual collapse in grounding.
+
 ## Guardrails
 
 **Prompt-injection detection flags, it doesn't block.** The domain (SA financial regulation Q&A)
