@@ -128,6 +128,26 @@ something." `INSUFFICIENT_CONTEXT_PHRASE` is checked case-insensitively as a sub
 crude but deterministic — the eval harness and the regression gate both need to detect refusal
 without parsing free text.
 
+**The first real smoke-test run crashed with `table queries has no column named
+flagged_injection`** — `obslog.py`'s `CREATE TABLE IF NOT EXISTS` had run against a
+`regrag_log.sqlite3` created before that column (and `cache_hit`) existed in the schema, and
+`IF NOT EXISTS` is a no-op against a table that's already there regardless of whether its columns
+match. Every insert since those columns were added would have failed the same way — a real gap,
+not just a stale local file, since anyone who ran an earlier version of this code and kept their
+log would hit it on upgrade. Fixed with an explicit migration (`PRAGMA table_info` diffed against
+the expected column list, missing ones added via `ALTER TABLE ADD COLUMN`) instead of deleting the
+file and moving on; regression test builds the old-schema table by hand and confirms logging
+against it survives.
+
+**Smoke test, 10 real questions against the live API:** 7 answered with fully-verified citations,
+2 correctly refused (genuinely unanswerable — SARB repo rate, JSE listing requirements, neither in
+this corpus), 1 refused that should have been answerable (`sarb_d3_2023`'s impairment
+classification question) — consistent with the same document's weak retrieval already surfaced in
+`reports/retrieval_bench.md`, which is the point of running both: the benchmark predicted this
+exact failure before the smoke test hit it live. Three citations spot-checked word-for-word
+against the source PDFs (`nca_act_34_2005` p.48, `fsca_conduct_standard_otc_derivatives_2018`
+p.1, `ifrs9_project_summary_2014` p.14-15) — all matched exactly.
+
 ## Guardrails
 
 **Prompt-injection detection flags, it doesn't block.** The domain (SA financial regulation Q&A)
