@@ -6,8 +6,9 @@ Runs against recorded fixtures, not a live API call: no ANTHROPIC_API_KEY needed
 every push, and no flakiness from model non-determinism. The trade-off, made deliberately rather
 than glossed over: this gate can't catch a regression the fixtures don't exercise, and it goes
 stale if rag.py changes without re-running evals/record_fixtures.py to refresh them. The full
-55-item judged run (evals/run_ragas.py) is the real measurement; this is a cheap tripwire between
-those full runs, not a replacement for them.
+45-item judged run (evals/run_ragas.py — factual + multi-doc items only, out of 55 golden items
+total) is the real measurement; this is a cheap tripwire between those full runs, not a
+replacement for them.
 """
 
 import json
@@ -16,10 +17,12 @@ from src.config import EVALS_DIR
 
 FIXTURES_PATH = EVALS_DIR / "fixtures" / "ci_subset.json"
 # 0.5, not a rounder-looking 0.7 — picked after seeing the real number, not before. The recorded
-# subset's own mean is 0.628 (six non-refused items, one of them a genuine 0.0 outlier that a
-# 6-item average can't absorb the way the full 34-item run in reports/eval_summary.md does); 0.5
-# leaves room for that outlier and for ordinary run-to-run LLM variance without the gate firing on
-# noise, while still catching an actual collapse in citation grounding.
+# subset's own mean is 0.805 (seven non-refused items, lowest individual score 0.5, from a question
+# whose answer draws on several scattered facts a 7-item average can't absorb the way the full
+# 39-item run in reports/eval_summary.md does); 0.5 leaves room for that kind of outlier and for
+# ordinary run-to-run LLM variance without the gate firing on noise, while still catching an actual
+# collapse in citation grounding. Left unchanged after the chunk_size=800+rerank change moved the
+# subset mean up from 0.628 to 0.805 — the floor exists to catch a collapse, not to track the mean.
 FAITHFULNESS_THRESHOLD = 0.5
 
 

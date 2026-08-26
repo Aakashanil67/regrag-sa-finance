@@ -210,6 +210,95 @@ data used to build it. 0.5 leaves room for that outlier and for ordinary run-to-
 between answering and refusing across separate live runs of the same question) without the gate
 firing on noise, while still catching an actual collapse in grounding.
 
+## Eval-driven improvement (Phase 8)
+
+**Chunk size and reranking were swept together, not tuned one at a time.** `scripts/sweep_chunk_size.py`
+re-chunks and re-embeds the whole corpus at 300/500/800 tokens into a throwaway Chroma collection
+(never the production one) at each size, with reranking on and off, and runs the same 20-question
+retrieval benchmark against every variant:
+
+| chunk size | rerank | chunks | hit-rate@5 | MRR |
+|---|---|---|---|---|
+| 300 | off | 1861 | 85% | 0.578 |
+| 300 | on | 1861 | 85% | 0.717 |
+| 500 | off | 1081 | 85% | 0.654 |
+| 500 | on | 1081 | 90% | 0.747 |
+| 800 | off | 635 | 90% | 0.752 |
+| 800 | on | 635 | **95%** | **0.808** |
+
+800+rerank won outright rather than by a coin-flip margin, and reranking improved every chunk
+size it was tested against — larger chunks give the cross-encoder more surrounding context to
+judge relevance from, at the direct cost of a coarser page-range citation. 500 tokens was the
+original plan's number, picked before any of this data existed; 800 is what the sweep actually
+rewarded, so `CHUNK_TARGET_TOKENS` moved from 500 to 800 and `rag.answer_question` now calls
+`retrieve(..., rerank=True)` by default. Re-embedding the full corpus at the new size dropped the
+chunk count from 1081 to 635 (fewer, larger chunks) and the retrieval benchmark against the
+rebuilt *production* store confirmed the same 95%/0.808 the throwaway sweep predicted — the sweep
+collection wasn't measuring something the real store then failed to reproduce.
+
+**A live RAGAS re-run mid-flight is what caught that `evals/run_ragas.py` appends to
+`reports/eval_history.csv`, not overwrites it** — I'd deleted the file before the "after" run to
+get a clean single row, which also erased the pre-improvement baseline row that made "before vs.
+after" a comparison instead of one number. Recovered the baseline via `git show HEAD:reports/eval_history.csv`
+(it was already committed) before re-running, rather than losing the one thing the improvement
+story depends on:
+
+| | n scored | faithfulness | answer relevancy | context precision | context recall |
+|---|---|---|---|---|---|
+| before (500 tok, no rerank) | 34 | 0.791 | 0.851 | 0.673 | 0.912 |
+| after (800 tok, rerank) | 39 | 0.829 | 0.811 | 0.790 | 0.968 |
+
+Context precision moved the most (+0.117), which tracks — cutting retrieval noise is reranking's
+whole job. Answer relevancy dipped slightly (0.851 to 0.811); left in rather than smoothed over,
+since a metric moving the "wrong" direction after a change that helped on every other measure is
+more informative than a report that only shows the numbers that agree with the story. (n scored
+also rose, 34 to 39, mostly because reranking pulled more questions from refusal into an actual
+answer — see `reports/failure_analysis.md`.)
+
+**The same heading-misclassification bug bit twice, in two different date formats, six documents
+apart.** The first instance (a bare `"08 July 2020"` press-release dateline, no punctuation)
+was caught during Phase 2 chunk-quality review and fixed by excluding date-shaped lines from
+`_is_heading` before the numbering check runs. `failure_analysis.md`'s investigation of golden
+item `g08` found the same failure mode in `sarb_circular_19_2004`: a sentence-ending date with its
+own full stop still attached (`"28 February 2005."`) didn't match the first fix's regex, which
+anchored on a bare date with nothing after the year — so it still got classified as a heading, its
+text still got dropped from the chunk, and the question that depended on it ("by what date were
+comments due") still refused for the identical underlying reason. Widened `_DATE_LIKE` to accept
+an optional trailing `.`; re-ingesting shifted 5 of 14 chunks in that document (`added 5, deleted 5,
+unchanged 630` on `store.py --rebuild`), and the same question that refused before the fix now
+answers "28 February 2005" with a verified citation. Two regression tests now guard both dates
+independently, plus an integration test against the real PDF for each — a unit test against the
+regex alone wouldn't have proven the second date's text actually survives extraction, the same gap
+that let the first fix miss this one.
+
+**RAGAS's own judge disagreed with manual inspection on at least three golden items, in both
+directions of surprise.** `g16` scored answer relevancy 0.00 despite a fully correct, correctly-
+cited answer ("unfair credit and credit-marketing practices," matching the reference exactly) —
+most likely the judge penalising the answer's own hedge ("the context does not specify which
+particular practices") as off-topic rather than as an honest scope caveat. `g41` scored context
+precision 0.00 despite both retrieved-and-cited chunks being exactly the two the question needed,
+ranked first and second out of five — a precision of 0 there is arithmetically implausible if the
+judge had actually credited either top-ranked chunk as relevant. `g40` scored faithfulness 0.26,
+the single worst score in the run, despite a specific quoted figure ("cannot exceed 9% of
+applicable premiums") that a direct dump of the retrieved chunk text confirms is a verbatim, exact
+match to the source PDF — not the shape of an actual hallucination. None of the three look like
+retrieval or generation defects; they read as instances of RAGAS's claim-decomposition and
+relevance-judging steps being noisier on longer, multi-claim, or gently-hedged answers than on
+short, clean ones. Reported as judge artifacts in `reports/failure_analysis.md` rather than treated
+as system bugs to chase — the fix for a noisy judge component is knowing which of its outputs to
+distrust, not tuning a well-functioning RAG pipeline to please it.
+
+**Two golden items refuse for a reason a fixed `k=5` retrieval call can't solve: the question
+needs one chunk from each of two documents, and one of the two (`sarb_d10_2021_operational_resilience`,
+only 3 chunks total) never makes the top 5 candidates because the other document's chunks score
+higher for the query as written.** `g37` and `g44` both ask "which body do X and Y both cite" —
+a single embedding of that sentence pulls hard toward whichever document's vocabulary the query
+text happens to resemble more, and a 3-chunk document has fewer chances to be that closest match.
+Query decomposition (retrieve once per named document, then merge context) would fix this
+directly; not built this session, since Phase 8's scope was the chunk-size/reranking sweep, not a
+retrieval-architecture change — tracked here as the concrete next improvement rather than folded
+silently into "retrieval sometimes misses."
+
 ## Guardrails
 
 **Prompt-injection detection flags, it doesn't block.** The domain (SA financial regulation Q&A)
