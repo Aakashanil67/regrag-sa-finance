@@ -26,6 +26,20 @@ import fitz  # PyMuPDF
 from src.config import HEADER_FOOTER_REPEAT_FRACTION, TOC_DOT_LEADER_FRACTION
 
 _HEADING_NUMBERING = re.compile(r"^(\d{1,2}(\.\d{1,2}){0,3})[\.\)]?\s+\S")
+# a bare "08 July 2020" satisfies _HEADING_NUMBERING too (a number, whitespace, a word) — this
+# excludes it before the numbering check runs. Caught live: this exact date, on a press release
+# with no other body text to anchor the fact, got dropped from its chunk entirely (headings carry
+# no text into chunking.py's output, only their section metadata) and the answer that depended on
+# it was only right because the model already knew the date from training, not from this corpus.
+# The trailing \.? matters: found via failure_analysis.md on a different document, where a
+# PDF-extracted sentence-ending date like "28 February 2005." kept its full stop as part of the
+# line and slipped past the first version of this pattern (which only excluded a bare date with no
+# punctuation) — same failure mode, same fix, one document over.
+_DATE_LIKE = re.compile(
+    r"^\d{1,2}\s+(January|February|March|April|May|June|July|August|September|October|"
+    r"November|December)\s+\d{4}\.?\s*$",
+    re.IGNORECASE,
+)
 _DOT_LEADER = re.compile(r"\.{4,}\s*\d{1,4}\s*$")
 _TRAILING_HYPHEN = re.compile(r"(\w)-$")
 
@@ -81,6 +95,8 @@ def _is_toc_page(page_lines: list[tuple[str, float]]) -> bool:
 
 def _is_heading(text: str, font_size: float, body_font_size: float) -> bool:
     if len(text) > 120:  # headings are short; a numbered sentence-length line isn't one
+        return False
+    if _DATE_LIKE.match(text):  # never a section heading, checked before either signal below
         return False
     if _HEADING_NUMBERING.match(text):
         return True
