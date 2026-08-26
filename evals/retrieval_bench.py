@@ -39,7 +39,9 @@ def run_benchmark() -> dict:
 
     per_question = []
     for item in questions:
-        results = retrieve(item["question"], k=MAX_K)
+        results = retrieve(
+            item["question"], k=MAX_K, rerank=True
+        )  # matches rag.py's production default
         rank = _first_hit_rank(results, item["doc_id"], item["page"])
         per_question.append({**item, "first_hit_rank": rank})
 

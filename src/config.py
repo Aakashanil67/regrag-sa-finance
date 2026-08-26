@@ -22,7 +22,13 @@ CACHE_DB_PATH = ROOT / "regrag_cache.sqlite3"
 # there's no free, dependency-light tokenizer for either — but it's a stable, fast proxy for
 # "roughly how big is this chunk", which is all the chunk-size budget needs.
 TOKENIZER_ENCODING = "cl100k_base"
-CHUNK_TARGET_TOKENS = 500
+# 800, not the originally-planned 500: reports/improvement_log.md swept 300/500/800 tokens x
+# reranking on/off against the retrieval benchmark. 800+rerank won on every measure (hit-rate@5
+# 95% vs 500's 85%, MRR 0.808 vs 0.654) and reranking improved every chunk size it was paired
+# with — larger chunks give the cross-encoder more context to judge relevance against, at the
+# cost of a coarser citation (a chunk's page range covers more ground). 500 was the more common
+# default for a first implementation; 800 is what the eval actually rewarded.
+CHUNK_TARGET_TOKENS = 800
 CHUNK_OVERLAP_TOKENS = 75
 MIN_CHUNK_TOKENS = 40  # trailing fragments below this get merged into the previous chunk
 
@@ -37,6 +43,10 @@ TOC_DOT_LEADER_FRACTION = 0.3
 CHROMA_DIR = ROOT / "chroma"
 COLLECTION_NAME = "regrag_chunks"
 EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+
+# --- retrieval / reranking ---
+CROSS_ENCODER_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+RERANK_CANDIDATE_POOL_SIZE = 20  # how many embedding-search candidates the reranker sees
 
 # --- LLM ---
 DEFAULT_ANTHROPIC_MODEL = "claude-haiku-4-5"

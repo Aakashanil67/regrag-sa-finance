@@ -99,7 +99,9 @@ def _extract_citations(answer: str, chunks: list[RetrievedChunk]) -> list[Citati
 
 def answer_question(question: str, k: int = 5) -> RAGResult:
     flagged = contains_injection_attempt(question)
-    chunks = retrieve(question, k=k)
+    # rerank=True: reports/improvement_log.md measured this against the retrieval benchmark
+    # (hit-rate@5 85% -> 95%, MRR 0.654 -> 0.808 at this chunk size) before it became the default.
+    chunks = retrieve(question, k=k, rerank=True)
 
     if not chunks:
         return RAGResult(

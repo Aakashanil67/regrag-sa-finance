@@ -4,6 +4,7 @@ venv/
 
 # vector store + local eval judge cache
 chroma/
+chroma_sweep/
 .cache/
 
 # secrets
