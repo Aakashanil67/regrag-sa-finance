@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+.git/
+.pytest_cache/
+.ruff_cache/
+.claude/
+corpus/*.pdf
+chroma/
+*.sqlite3
+.env

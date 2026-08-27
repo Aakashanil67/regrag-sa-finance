@@ -299,6 +299,62 @@ directly; not built this session, since Phase 8's scope was the chunk-size/reran
 retrieval-architecture change — tracked here as the concrete next improvement rather than folded
 silently into "retrieval sometimes misses."
 
+## Docker
+
+**Volumes bind-mount the whole repo over the image's `/app` rather than baking corpus, chroma,
+and the sqlite log/cache into the image.** All three are gitignored, locally-built artifacts
+(`corpus/` and `chroma/` via `fetch_corpus.py` + `store.py --rebuild`; the sqlite files created on
+first write) — a bind mount means a code change or a corpus re-ingest is visible on container
+restart without a rebuild, and avoids the alternative failure mode of bind-mounting individual
+files that don't exist yet on the host (Docker creates an empty *directory* at that path instead
+of a file, which then breaks `sqlite3.connect()` inside the container). Mounting the whole
+directory sidesteps that per-file gotcha entirely.
+
+**`docker compose up -d` failed on port 8501 the first time, for a reason that had nothing to do
+with the compose file** — a `streamlit run app/ops.py` I'd started directly on the host (via
+`preview_start`, to grab an ops-dashboard screenshot for the README before Docker was verified)
+was still holding that port. Not a compose bug; stopped the host process and the container came
+up clean. Real trap worth naming: verifying app code locally and verifying its Docker packaging
+are two different activities that can collide on shared ports if run back to back.
+
+**Verified with an actual `docker compose up -d --build`, not just a file review**: all three
+containers reached a running state, the api service's healthcheck (a Python `urllib` request
+against `/health`, no `curl` in the slim base image) reported healthy before `chat`/`ops` started
+via `depends_on: condition: service_healthy`, and a real `POST /ask` against the containerized API
+returned a correctly-cited, verified answer — confirming the container's Python environment
+resolves `chroma-hnswlib` and the rest of the compiled-extension dependency chain that needed
+Windows Build Tools on the host (`python:3.12-slim`'s manylinux wheels cover it; no extra apt
+packages were needed in the Dockerfile).
+
+## Agent extension (Phase 12, stretch)
+
+**Built to test one specific, already-diagnosed failure, not "agents are generally better."**
+`reports/failure_analysis.md` found that two golden items (`g37`, `g44`) refuse because a
+two-document comparison question embeds as one query, which under-retrieves whichever named
+document has fewer chunks. `src/agent.py` adds exactly one capability on top of `rag.py`: after
+retrieving, ask the model whether a named document is still missing, and if so issue one more
+targeted retrieval call before answering (capped at 2 requeries, `MAX_STEPS=3`).
+
+**Result on the 10 multi-doc golden items (`scripts/agent_eval.py` → `reports/agent_eval.md`):
+0 refusals fixed, 0 introduced, at 2.76x mean cost and 1.77x mean latency.** Both `g37` and `g44`
+did trigger the full 2 requeries each — the decision step correctly recognised the missing
+document both times, which is the mechanism working as designed — but the run still refused both.
+
+**A same-question re-run immediately afterward flipped `g44` from refused to a fully correct,
+cited answer, with the exact same code and the exact same two requery steps.** Dumping the steps
+log confirmed `sarb_d10_2021_operational_resilience` chunks were present in the merged context on
+*both* runs — so the fix that matters (getting the missing document's chunks into context) is
+working every time; what varies run-to-run is whether the final generation step commits to
+synthesizing an answer from a larger, noisier merged context or falls back to refusing. This is
+the same live non-determinism already documented in the RAGAS section (Claude isn't called at
+temperature 0 here), just landing on a different part of the pipeline — the agent moves the
+failure point from "can't find the right chunks" to "won't always commit to an answer once it has
+them," which is progress on the diagnosed retrieval problem but not yet a clean fix, and isn't
+being reported as one. Not pursued further this session (recalibrating for run-to-run variance
+would mean re-running the batch until the numbers looked good, which is the opposite of an honest
+measurement) — the negative-leaning result is reported as measured, per the plan's own instruction
+that a measured non-improvement is worth more than a silently dropped feature.
+
 ## Guardrails
 
 **Prompt-injection detection flags, it doesn't block.** The domain (SA financial regulation Q&A)
