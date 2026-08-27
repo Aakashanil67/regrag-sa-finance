@@ -355,6 +355,130 @@ would mean re-running the batch until the numbers looked good, which is the oppo
 measurement) — the negative-leaning result is reported as measured, per the plan's own instruction
 that a measured non-improvement is worth more than a silently dropped feature.
 
+## Pre-release audit
+
+Findings from reading the repo back as an unsympathetic reviewer would, after v1.0.0 was tagged.
+Four of these are defects I introduced and did not catch while building.
+
+**The headline before/after RAGAS comparison was measuring two different things at once.** The
+pre-improvement run scored 34 items, the post run 39, and I reported the mean of each side by side
+as though that were a controlled comparison. It isn't: reranking pulled six previously-refused
+questions into real answers and pushed one the other way, so the item set changed underneath the
+average. A mean over a moving population shifts for two unrelated reasons, and only one of them is
+a quality claim. Recomputing on the 33 items both runs scored (`scripts/paired_eval.py` →
+`reports/paired_comparison.md`) takes faithfulness from a reported +0.038 to +0.023 with a per-item
+split of 9 improved against 9 regressed — a sign test p of 1.00, which is to say nothing at all.
+Context recall's +0.056 becomes +0.030 with 32 of 33 items unchanged; it was already at 0.939 and
+had nowhere to go. Only context precision survives (+0.109 paired, 14 improved against 5, p=0.06),
+and that is still short of conventional significance on 33 items — I keep it because it is the one
+effect with a mechanism behind it rather than the one number that happened to move. What reranking
+actually bought, unambiguously, is coverage: five net refusals became answers, and counting a
+behaviour change needs no significance test. The README now leads with that instead of four green
+arrows. Same correction applies to the retrieval benchmark: 85%→95% is 17/20 versus 19/20, two
+questions, Wilson intervals 64–95% and 76–99%, and I should not have printed it as a clean 10-point
+gain without saying so.
+
+**The response cache was keyed on question text alone, so the Phase 8 config change never
+invalidated it.** Adopting chunk_size=800 + reranking rebuilt the vector store and changed what
+retrieval returns, but every already-cached answer kept its key and kept being served. The eval
+reports would have described the new configuration while the running API returned pre-improvement
+answers indefinitely, with nothing anywhere to indicate a mismatch. The evals themselves were never
+affected (`run_ragas.py` calls `rag.answer_question` directly, bypassing `obslog.timed_answer` and
+therefore the cache) and neither was `reports/perf.md`, which deletes the cache file before
+measuring — which is exactly why this survived: every measurement path happened to route around the
+bug, and only the product carried it. The key now includes a fingerprint of both models, the
+collection, the chunk size, and a hash of the system prompt, so any change that alters what an
+answer would be also alters the key. Old rows become unreachable rather than being deleted; that's
+the intended invalidation.
+
+**Prompt-injection flagging silently stopped working on repeat attempts.** `cache.get_cached`
+reconstructed its `RAGResult` with `flagged_injection=False` hardcoded, and `timed_answer` consults
+the cache *before* `rag.answer_question`, where the detector actually runs. So the first time an
+injection attempt arrived it was flagged, and every identical attempt afterwards logged clean.
+Repeat attempts are the entire traffic signature of someone probing a system, so the detector went
+quiet on precisely the case it exists to surface — while `reports/security_notes.md` claimed in
+writing that its purpose was giving an analyst visibility of injection attempts in the ops
+dashboard. Reproduced end to end before fixing: same question twice, `flagged_injection` True then
+False. The flag is a property of the question, not of the cached answer, so it's now recomputed on
+both paths in `timed_answer` and deliberately not stored in the cache at all.
+
+**The Docker images were 9.73GB, and 3.4GB of that was CUDA.** `torch` is an unpinned transitive
+dependency of sentence-transformers, and on Linux pip's default resolution pulls the CUDA build:
+2.7GB of `nvidia-*` packages plus 691MB of triton, in images whose only inference is two MiniLM
+models on CPU, in a compose stack with no GPU. I verified it by measuring inside the built image
+rather than assuming (`du -sh site-packages/*`) — site-packages alone was 5.9GB. Installing
+CPU-only torch from PyTorch's own index ahead of `requirements.txt` fixes it for all three images:
+rebuilt, `regrag-api` measured 3.55GB and `regrag-chat`/`regrag-ops` 3.2GB each, down from 9.73GB —
+confirmed by re-measuring the built images, not assumed from the fix alone. Both embedding models
+are now baked into the API image too, so a container starts without reaching HuggingFace; `HF_HOME`
+deliberately points outside `/app`, because compose bind-mounts the repo over `/app` and would
+otherwise shadow the cache and quietly undo the whole step.
+
+**The CI faithfulness floor had drifted into being unfirable.** 0.5 was calibrated when the
+recorded subset's mean was 0.628. After the config change that mean is 0.805, and a floor a third
+of the way below the value it guards is not a regression gate. Raised to 0.65. The gate runs
+against frozen fixtures so CI is deterministic either way — the floor only bites when someone
+regenerates fixtures, which is the moment it should.
+
+## Source authority and currency metadata
+
+Two limitations named in the README ("the corpus mixes levels of legal authority and the system
+treats them as equal," "nothing models supersession") had a straightforward fix sitting unused in
+`corpus/manifest.json`: `issuer`, `title`, and (after this change) `document_type` and
+`is_third_party` were already recorded per document and reached none of retrieval, the prompt, or
+the citation. Two additions, both kept deliberately outside the LLM's discretion:
+`_format_context` now prints each context block's type, year, issuer and title as plain,
+unbracketed text (never bracketed like `[doc_id, p.X]`, so the model can't copy fields from it into
+a citation the way it once copied a numbered index — see the RAG core section above); `_source_notices`
+generates a fixed sentence whenever a cited source is third-party commentary or a Circular,
+whether or not the model's own prose mentions it — same reasoning as `INSUFFICIENT_CONTEXT_PHRASE`
+being an exact string rather than trusted free-text: a compliance disclosure shouldn't depend on
+the model remembering to write it on any given call.
+
+**Kept as a separate `RAGResult.source_notices` field, never text appended onto `answer`.** RAGAS's
+faithfulness metric decomposes `answer` into claims and checks each against the retrieved chunk
+text — the exact mechanism that once scored a correct refusal as 0.0 faithfulness (see the
+Evaluation harness section) because the text it was given didn't match what the metric expected to
+grade. A disclaimer sentence this codebase generated, not the model, would fail that same check for
+the same reason: it isn't *in* the retrieved chunks, so RAGAS would score it as an unsupported
+claim. Every existing consumer of `RAGResult.answer` — the cache key, citation extraction, the
+refusal check, RAGAS scoring — keeps reading exactly what the model generated.
+
+**The currency notice is scoped to one document type, not a year cutoff.** Both circulars in this
+corpus are from 2004, predating the Directive/Guidance Note split the newer SARB instruments use,
+and I know Basel III superseded the Basel II-era rules those circulars describe. The National
+Credit Act is from 2005 and is still the current governing statute, amended in place rather than
+replaced — a blanket "older than N years" rule would have flagged it as dated right alongside the
+circulars, which would be wrong. The notice also doesn't name a specific successor document; this
+corpus doesn't contain one, and inventing one would be a fabrication risk for a compliance tool.
+
+**Verifying this against the live model caught a second, unrelated bug: the manifest's own document
+titles were paraphrases, not the documents' real titles.** The first version of this fix labeled
+`ncr_guideline_sept_2025_debt_counsellors` as "Guideline (September 2025): Debt Counsellor Contact
+Information Requirements" — a reasonable-sounding description I wrote, not what the document
+actually says about itself. Tested against golden item `g24` ("what is required under Guideline
+004/2025"), it still refused, because "004/2025" appears nowhere in that paraphrase. Opened the
+actual PDF: its own cover page reads "...004/2025 SEPTEMBER 2025." All four NCR guideline titles
+were paraphrased the same way; extracted the real title text from each PDF's cover page directly
+and re-verified the other 15 manifest titles against their source PDFs too, rather than assuming
+only the ones I'd already found a problem with were wrong. `g24` now answers correctly and cited.
+
+**Measured with the same paired discipline as the chunk-size change, and the RAGAS means don't move
+— which is the correct result for what this fix actually is.** `scripts/paired_eval_metadata.py` →
+`reports/paired_comparison_metadata.md`: every paired delta across all four metrics is inside sign-
+test noise (p ranging 0.36–1.00). This isn't a retrieval or generation-quality change; it's a
+disclosure change, and RAGAS's four metrics have no dimension for "did the answer correctly
+attribute what kind of document this is." One item entered the scored set (`g24`, above) and one
+left it: `g45` ("name an objective that appears in both the Act and the Notebook brochure") started
+refusing. Checked directly against `src.retrieve.retrieve` rather than assumed: the same five
+chunks come back before and after this change, and none of them is the National Credit Act's own
+text — only a DTIC brochure describing it. Before this fix, the model answered anyway, treating the
+brochure's summary as equivalent to the Act's own words; told explicitly that the source is a
+"Regulator explainer brochure," it now correctly declines to attribute a claim to "the Act itself"
+when the Act's own text was never retrieved. That's the fix working as designed, and it shows up as
+a debit in a refused/answered count — exactly the kind of thing a single metric misses, which is
+why this got checked by hand rather than left as an unexplained regression in a table.
+
 ## Guardrails
 
 **Prompt-injection detection flags, it doesn't block.** The domain (SA financial regulation Q&A)
