@@ -60,8 +60,8 @@ def _build_variant_collection(chunk_target_tokens: int):
     collection_name = f"sweep_{chunk_target_tokens}"
     try:
         client.delete_collection(collection_name)
-    except Exception:
-        pass
+    except ValueError:
+        pass  # chromadb raises plain ValueError for "collection doesn't exist" — first run, or after a manual chroma_sweep/ cleanup
     collection = client.create_collection(collection_name)
 
     embeddings = embed_texts([c.text for c in all_chunks])

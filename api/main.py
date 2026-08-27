@@ -47,6 +47,9 @@ def ask(request: Request, body: AskRequest) -> AskResponse | JSONResponse:
     try:
         timed = timed_answer(body.question)
     except Exception:
+        # the HTTP boundary: anything from here down (Anthropic API error, chroma I/O, a bad
+        # regex) becomes a clean 502 instead of a raw traceback reaching the client. Logged, not
+        # swallowed — inner code still raises specific exceptions where it can act on them.
         logger.exception("answer_question failed for question=%r", body.question)
         return JSONResponse(
             status_code=502,

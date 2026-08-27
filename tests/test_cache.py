@@ -41,8 +41,10 @@ def test_lookup_is_case_and_whitespace_insensitive(tmp_path, monkeypatch):
     monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
 
     cache.set_cached("What must banks do?", _result())
+    cached = cache.get_cached("  WHAT MUST banks DO?  ")
 
-    assert cache.get_cached("  WHAT MUST banks DO?  ") is not None
+    assert cached is not None
+    assert cached.answer == "Banks must comply. [sarb_d3_2023, p.3]"
 
 
 def test_different_question_is_a_miss(tmp_path, monkeypatch):
