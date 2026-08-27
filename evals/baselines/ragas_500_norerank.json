@@ -1,0 +1,212 @@
+{
+  "label": "chunk_size=500, rerank=off",
+  "source_commit": "9f9692a",
+  "recorded": "2026-08-25T23:13:07Z",
+  "note": "Per-item RAGAS scores from the pre-improvement run, extracted from reports/eval_summary.md as committed at 9f9692a. Kept so the before/after comparison is reproducible without digging through git history.",
+  "per_item": {
+    "g01": {
+      "faithfulness": 0.5,
+      "answer_relevancy": 0.74,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    "g04": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.89,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    "g05": {
+      "faithfulness": 0.5,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.64,
+      "context_recall": 1.0
+    },
+    "g06": {
+      "faithfulness": 0.89,
+      "answer_relevancy": 0.81,
+      "context_precision": 0.25,
+      "context_recall": 1.0
+    },
+    "g07": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.99,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    "g08": {
+      "faithfulness": 0.33,
+      "answer_relevancy": 0.96,
+      "context_precision": 0.0,
+      "context_recall": 0.0
+    },
+    "g09": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.94,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    "g10": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.88,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    "g11": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.95,
+      "context_precision": 0.92,
+      "context_recall": 1.0
+    },
+    "g12": {
+      "faithfulness": 0.5,
+      "answer_relevancy": 0.95,
+      "context_precision": 0.33,
+      "context_recall": 1.0
+    },
+    "g13": {
+      "faithfulness": 0.67,
+      "answer_relevancy": 0.95,
+      "context_precision": 0.58,
+      "context_recall": 1.0
+    },
+    "g14": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.83,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    "g15": {
+      "faithfulness": 0.91,
+      "answer_relevancy": 0.91,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    "g16": {
+      "faithfulness": 0.75,
+      "answer_relevancy": 0.8,
+      "context_precision": 0.83,
+      "context_recall": 1.0
+    },
+    "g17": {
+      "faithfulness": 0.67,
+      "answer_relevancy": 0.99,
+      "context_precision": 0.2,
+      "context_recall": 1.0
+    },
+    "g18": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.75,
+      "context_precision": 0.75,
+      "context_recall": 1.0
+    },
+    "g19": {
+      "faithfulness": 0.8,
+      "answer_relevancy": 0.94,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    "g20": {
+      "faithfulness": 0.8,
+      "answer_relevancy": 0.81,
+      "context_precision": 0.87,
+      "context_recall": 1.0
+    },
+    "g21": {
+      "faithfulness": 0.8,
+      "answer_relevancy": 0.56,
+      "context_precision": 0.92,
+      "context_recall": 1.0
+    },
+    "g22": {
+      "faithfulness": 0.5,
+      "answer_relevancy": 0.99,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    "g23": {
+      "faithfulness": 0.71,
+      "answer_relevancy": 0.89,
+      "context_precision": 0.5,
+      "context_recall": 1.0
+    },
+    "g25": {
+      "faithfulness": 0.0,
+      "answer_relevancy": 0.99,
+      "context_precision": 0.0,
+      "context_recall": 0.0
+    },
+    "g26": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.71,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    "g27": {
+      "faithfulness": 0.75,
+      "answer_relevancy": 0.86,
+      "context_precision": 0.5,
+      "context_recall": 1.0
+    },
+    "g29": {
+      "faithfulness": 0.5,
+      "answer_relevancy": 0.57,
+      "context_precision": 0.0,
+      "context_recall": 0.0
+    },
+    "g30": {
+      "faithfulness": 0.92,
+      "answer_relevancy": 0.89,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    "g33": {
+      "faithfulness": 0.85,
+      "answer_relevancy": 0.69,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    "g34": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.88,
+      "context_precision": 0.7,
+      "context_recall": 1.0
+    },
+    "g35": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.95,
+      "context_precision": 0.2,
+      "context_recall": 1.0
+    },
+    "g38": {
+      "faithfulness": 0.67,
+      "answer_relevancy": 0.91,
+      "context_precision": 0.0,
+      "context_recall": 1.0
+    },
+    "g40": {
+      "faithfulness": 0.89,
+      "answer_relevancy": 0.82,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    },
+    "g41": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.82,
+      "context_precision": 0.0,
+      "context_recall": 1.0
+    },
+    "g42": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.7,
+      "context_precision": 0.7,
+      "context_recall": 1.0
+    },
+    "g45": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.6,
+      "context_precision": 1.0,
+      "context_recall": 1.0
+    }
+  }
+}
