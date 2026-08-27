@@ -2,8 +2,25 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
+# CPU-only torch, installed before requirements.txt so sentence-transformers finds it already
+# satisfied. torch is an unpinned transitive dependency, and on Linux pip's default resolution
+# pulls the CUDA build: 2.7GB of nvidia-* packages plus 691MB of triton, in an image whose only
+# inference is a MiniLM bi-encoder and a MiniLM cross-encoder on CPU. Measured on the first build
+# of this file — 9.73GB image, 5.9GB of it site-packages. None of that CUDA payload can ever
+# execute here; there is no GPU in the compose stack and the code never asks for one.
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Bake both models into the image rather than letting them download on the first query.
+# HF_HOME deliberately sits outside /app: docker-compose.yml bind-mounts the repo over /app, which
+# would shadow a cache stored there and silently undo this whole step.
+ENV HF_HOME=/opt/hf-cache
+RUN python -c "\
+from sentence_transformers import SentenceTransformer, CrossEncoder; \
+SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2'); \
+CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')"
 
 COPY src/ ./src/
 COPY api/ ./api/
