@@ -16,14 +16,20 @@ import json
 from src.config import EVALS_DIR
 
 FIXTURES_PATH = EVALS_DIR / "fixtures" / "ci_subset.json"
-# 0.5, not a rounder-looking 0.7 — picked after seeing the real number, not before. The recorded
-# subset's own mean is 0.805 (seven non-refused items, lowest individual score 0.5, from a question
-# whose answer draws on several scattered facts a 7-item average can't absorb the way the full
-# 39-item run in reports/eval_summary.md does); 0.5 leaves room for that kind of outlier and for
-# ordinary run-to-run LLM variance without the gate firing on noise, while still catching an actual
-# collapse in citation grounding. Left unchanged after the chunk_size=800+rerank change moved the
-# subset mean up from 0.628 to 0.805 — the floor exists to catch a collapse, not to track the mean.
-FAITHFULNESS_THRESHOLD = 0.5
+# 0.65, raised from 0.5 after the chunk_size=800+rerank change moved the recorded subset's mean
+# from 0.628 to 0.805 (later 0.855 after the source-metadata fix re-recorded these fixtures again;
+# seven non-refused items either time, lowest individual score 0.5). 0.5 was calibrated against the
+# original 0.628 mean and, against either later number, had become a floor that essentially cannot
+# fire: faithfulness would have to lose more than a third of its value before CI noticed, which is
+# not a regression gate so much as a comment. The margin that matters is the one below the number
+# the gate actually guards, and 0.15-0.2 is enough to absorb LLM variance on a seven-item mean
+# without tracking it so closely that an ordinary re-record turns CI red.
+#
+# The gate runs against frozen fixtures, so CI itself is deterministic — this floor only bites when
+# someone regenerates them via evals/record_fixtures.py, which is exactly the moment you want it
+# to. Still deliberately below the observed mean rather than at it: a threshold set to the current
+# measurement is a threshold that fails on its own next run.
+FAITHFULNESS_THRESHOLD = 0.65
 
 
 def _load_fixtures() -> list[dict]:

@@ -23,6 +23,14 @@ if "history" not in st.session_state:
     st.session_state.history = []
 
 
+def render_source_notices(notices: list[str]) -> None:
+    # deterministic, code-generated disclosures (third-party source, superseded instrument type —
+    # see src/rag.py's _source_notices) rendered separately from the model's own answer text, on
+    # purpose: they're never part of what the eval harness grades as "the answer"
+    for notice in notices:
+        st.info(notice)
+
+
 def render_sources(citations: list[dict], chunks: list[dict]) -> None:
     if citations:
         labels = ", ".join(f"[{c['doc_id']}, p.{c['page']}]" for c in citations)
@@ -47,6 +55,7 @@ for turn in st.session_state.history:
     with st.chat_message(turn["role"]):
         st.write(turn["content"])
         if turn["role"] == "assistant" and turn.get("chunks"):
+            render_source_notices(turn.get("source_notices", []))
             render_sources(turn["citations"], turn["chunks"])
 
 question = st.chat_input("Ask about SARB, IFRS 9, the National Credit Act, or FSCA rules...")
@@ -65,6 +74,7 @@ if question:
             st.error(f"Couldn't reach the API at {API_URL}: {exc}")
         else:
             st.write(data["answer"])
+            render_source_notices(data.get("source_notices", []))
             render_sources(data["citations"], data["retrieved_chunks"])
             st.caption(f"{data['latency_ms']:.0f} ms · ${data['cost_usd']:.4f} · {data['model']}")
 
@@ -74,5 +84,6 @@ if question:
                     "content": data["answer"],
                     "citations": data["citations"],
                     "chunks": data["retrieved_chunks"],
+                    "source_notices": data.get("source_notices", []),
                 }
             )

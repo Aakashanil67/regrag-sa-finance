@@ -3,7 +3,7 @@
     "id": "g01",
     "type": "factual",
     "question": "How many climate-related disclosure templates are attached to SARB Guidance Note 3/2025 as Annexure 1?",
-    "answer": "According to the context, SARB Guidance Note 3/2025 includes four disclosure templates attached as Annexure 1 [sarb_g3_2025_climate_disclosures, p.1-2].",
+    "answer": "According to the guidance, there are four disclosure templates attached as Annexure 1 [sarb_g3_2025_climate_disclosures, p.1-2].",
     "refused": false,
     "citations": [
       {
@@ -17,13 +17,13 @@
         "verified": true
       }
     ],
-    "faithfulness": 0.6666666666666666
+    "faithfulness": 0.5
   },
   {
     "id": "g04",
     "type": "factual",
     "question": "On what date did the Basel Committee issue the revised standardised and internal ratings-based approaches for credit risk referenced in Directive D8/2023?",
-    "answer": "According to Directive D8/2023, the Basel Committee on Banking Supervision (BCBS) issued the revised standardised approach (STA) and internal ratings-based (IRB) approach for credit risk on 7 December 2017 [sarb_d8_2023_threshold_amounts, p.1].",
+    "answer": "According to Directive D8/2023, the Basel Committee on Banking Supervision issued the revised standardised approach (STA) and internal ratings-based (IRB) approach for credit risk on 7 December 2017 [sarb_d8_2023_threshold_amounts, p.1].",
     "refused": false,
     "citations": [
       {
@@ -38,7 +38,7 @@
     "id": "g12",
     "type": "factual",
     "question": "On what date did the National Credit Act come into commencement?",
-    "answer": "According to the context, the National Credit Act, 2005 (Act No. 34 of 2005) had a general date of commencement of **1 June, 2006** [nca_act_34_2005, p.1].\n\nHowever, different sections came into operation on different dates:\n- Sections 1–11 (Ch. 1), 12–25 and 35–38 (Ch. 2, Parts A, C and D), 39–69, 73, 134–152 (Ch. 7), 153–162, 164–170 (Ch. 8) and 171–173 (Ch. 9) commenced via Proclamation No. 22 in Government Gazette 28824 [nca_act_34_2005, p.105-106]\n- Sections 26–34 (Ch. 2, Part B), 67, 68, 70 and 72 also commenced via the same proclamation [nca_act_34_2005, p.105-106]\n- Sections 60–66 (Ch. 4, Part A), 71, 74–88 (Ch. 4, Parts C and D), 89–123 (Ch. 5), 124–133 (Ch. 6) and 163 also commenced via the same proclamation [nca_act_34_2005, p.105-106]\n\nFor example, section 60 specifically came into operation on 1 June, 2007 [nca_act_34_2005, p.41], and section 70 on 1 September, 2006 [nca_act_34_2005, p.47].",
+    "answer": "The National Credit Act 34 of 2005 came into commencement on **1 June 2006** [nca_act_34_2005, p.1].\n\nHowever, it should be noted that different sections of the Act commenced on different dates. Most sections (Chapters 1, 2 Parts A, C and D, Chapter 7, and Chapters 8 and 9) commenced on 1 June 2006, while other sections had later commencement dates, such as 1 September 2006 and 1 June 2007 [nca_act_34_2005, p.105-106].",
     "refused": false,
     "citations": [
       {
@@ -55,45 +55,15 @@
         "doc_id": "nca_act_34_2005",
         "page": 106,
         "verified": true
-      },
-      {
-        "doc_id": "nca_act_34_2005",
-        "page": 105,
-        "verified": true
-      },
-      {
-        "doc_id": "nca_act_34_2005",
-        "page": 106,
-        "verified": true
-      },
-      {
-        "doc_id": "nca_act_34_2005",
-        "page": 105,
-        "verified": true
-      },
-      {
-        "doc_id": "nca_act_34_2005",
-        "page": 106,
-        "verified": true
-      },
-      {
-        "doc_id": "nca_act_34_2005",
-        "page": 41,
-        "verified": true
-      },
-      {
-        "doc_id": "nca_act_34_2005",
-        "page": 47,
-        "verified": true
       }
     ],
-    "faithfulness": 0.8333333333333334
+    "faithfulness": 1.0
   },
   {
     "id": "g18",
     "type": "factual",
     "question": "Which section of the National Credit Act gives a consumer the right to challenge the accuracy of information a credit bureau holds about them, without charge?",
-    "answer": "Section 72(1)(c) of the National Credit Act 34 of 2005 gives a consumer the right to challenge the accuracy of information a credit bureau holds about them, without charge. \n\nSpecifically, section 72(1)(c) states that \"Every person has a right to challenge the accuracy of any information concerning that person...that is held by the credit bureau or national credit register, as the case may be, and require the credit bureau or the National Credit Regulator, as the case may be, to investigate the accuracy of any challenged information, without charge to the consumer.\" [ncr_guideline_disputed_credit_complaints, p.2-3]",
+    "answer": "Section 72(1)(c) of the National Credit Act 34 of 2005 gives a consumer the right to challenge the accuracy of information held by a credit bureau without charge. The section states that every person has a right to \"challenge the accuracy of any information concerning that person...that is held by the credit bureau or national credit register, as the case may be, and require the credit bureau or National Credit Regulator, as the case may be, to investigate the accuracy of any challenged information, without charge to the consumer.\" [ncr_guideline_disputed_credit_complaints, p.2-3]",
     "refused": false,
     "citations": [
       {
@@ -107,13 +77,13 @@
         "verified": true
       }
     ],
-    "faithfulness": 1.0
+    "faithfulness": 0.8
   },
   {
     "id": "g25",
     "type": "factual",
     "question": "On what date did the FSCA publish the Conduct Standard for Banks?",
-    "answer": "According to the context provided, the FSCA published the Conduct Standard for Banks on 08 July 2020 [fsca_press_conduct_standard_banks_2020, p.1].",
+    "answer": "The FSCA published the Conduct Standard for Banks on 8 July 2020 [fsca_press_conduct_standard_banks_2020, p.1].",
     "refused": false,
     "citations": [
       {
@@ -122,13 +92,13 @@
         "verified": true
       }
     ],
-    "faithfulness": 0.5
+    "faithfulness": 1.0
   },
   {
     "id": "g36",
     "type": "multi-doc",
     "question": "Both Directive D3/2023 and the IFRS 9 project summary describe a shift from an 'incurred loss' model to a forward-looking model. What is that forward-looking model called?",
-    "answer": "The forward-looking model is called the **Expected Credit Loss (ECL) model**.\n\nUnder IAS 39, the incurred loss model required a loss event to occur prior to a provision being raised [sarb_d3_2023_accounting_provisions_ifrs9, p.1]. IFRS 9 introduced the concept of ECL, requiring entities to \"take into account all information that is available without undue cost or effort, including that which is forward-looking when determining impairments to be raised\" [sarb_d3_2023_accounting_provisions_ifrs9, p.1].\n\nThe IFRS 9 project summary confirms this, stating that IFRS 9 implements \"a forward-looking expected credit loss model that will result in more timely recognition of loan losses and is a single model that is applicable to all financial instruments subject to impairment accounting\" [ifrs9_project_summary_2014, p.2]. Under this model, \"an entity is required to recognise expected credit losses at all times and to update the amount of expected credit losses recognised at each reporting date to reflect changes in the credit risk of financial instruments\" [ifrs9_project_summary_2014, p.14].",
+    "answer": "The forward-looking model is called the **Expected Credit Loss (ECL) model**.\n\nAccording to the SARB Directive, \"IFRS 9 requires entities to take into account all information that is available without undue cost or effort, including that which is forward-looking when determining impairments to be raised, effectively introducing the concept of ECL for financial reporting purposes\" [sarb_d3_2023_accounting_provisions_ifrs9, p.1-2].\n\nThe IFRS Foundation project summary confirms this, stating that IFRS 9 introduced \"a forward-looking expected credit loss model that will result in more timely recognition of loan losses and is a single model that is applicable to all financial instruments subject to impairment accounting\" [ifrs9_project_summary_2014, p.2-4].",
     "refused": false,
     "citations": [
       {
@@ -138,7 +108,7 @@
       },
       {
         "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
-        "page": 1,
+        "page": 2,
         "verified": true
       },
       {
@@ -148,7 +118,12 @@
       },
       {
         "doc_id": "ifrs9_project_summary_2014",
-        "page": 14,
+        "page": 3,
+        "verified": true
+      },
+      {
+        "doc_id": "ifrs9_project_summary_2014",
+        "page": 4,
         "verified": true
       }
     ],
@@ -158,31 +133,11 @@
     "id": "g40",
     "type": "multi-doc",
     "question": "How did the FSCA's 2019 intermediary activity segmentation update build on the 2014 Retail Distribution Review?",
-    "answer": "The 2019 intermediary activity segmentation update built on the 2014 Retail Distribution Review in several ways:\n\n**Foundation from RDR:** The 2014 RDR proposed an activity-based approach to categorizing intermediary services, proposing to \"clarify which services are provided to which party and what capacity an adviser or intermediary acts in when performing these activities\" [fsca_rdr_2014, p.3-5]. It outlined a framework distinguishing between advice, intermediary services, and other services provided to product suppliers.\n\n**Operationalizing RDR proposals:** The 2019 segmentation work took this conceptual framework and implemented it with greater granularity. The FSCA and industry \"carried out detailed technical work to determine the types of activities for which intermediaries are currently remunerated\" and developed \"a draft intermediary activity segmentation framework (segmentation framework) relating to activities performed within the short-term insurance environment\" [fsca_rdr_intermediary_segmentation_2019, p.2-3].\n\n**Specific regulatory interventions:** The 2019 update translated RDR proposals into concrete interventions, including \"the capping of the maximum binder fees that an insurer may pay to a non-mandated intermediary (NMI) that is authorised to render advice, at a certain maximum per function performed\" and \"the introduction of an insurer notification process to the FSCA\" for various remuneration and outsourcing arrangements [fsca_rdr_intermediary_segmentation_2019, p.2-3].\n\nThe segmentation framework demarcated activities into five categories: advice, other services to the customer, true intermediation services, services to the insurer, and other services not previously addressed [fsca_rdr_intermediary_segmentation_2019, p.2-3].",
+    "answer": "The 2019 intermediary activity segmentation update built on the 2014 Retail Distribution Review by implementing concrete regulatory reforms that the 2014 RDR had proposed.\n\nThe 2014 RDR outlined key risks in the distribution landscape, including \"distribution relationships and intermediary remuneration models that contribute to poor outcomes and mis-selling,\" and proposed \"a shift away from a purely rules-based compliance approach to one that also sees the introduction of a set of structural interventions designed to change incentives, relationships and business models\" [fsca_rdr_2014, p.3].\n\nThe 2019 update operationalized this framework by creating a detailed \"intermediary activity segmentation framework\" that \"demarcates between: Advice (a service to the customer); Other services to the customer; Services that truly 'intermediate' between the customer and the insurer; Services to the insurer (split between binder services and other outsourced services); and Other services to the insurer not explicitly provided for in the current regulatory framework\" [fsca_rdr_intermediary_segmentation_2019, p.2-3].\n\nThe 2019 update also implemented specific remuneration interventions the 2014 RDR had proposed, including \"The capping of the maximum binder fees that an insurer may pay to a non-mandated intermediary (NMI) that is authorised to render advice, at a certain maximum per function performed, the total of which cannot exceed 9% of applicable premiums if all binder functions are performed\" and \"The introduction of an insurer notification process to the FSCA\" [fsca_rdr_intermediary_segmentation_2019, p.2-3].",
     "refused": false,
     "citations": [
       {
         "doc_id": "fsca_rdr_2014",
-        "page": 3,
-        "verified": true
-      },
-      {
-        "doc_id": "fsca_rdr_2014",
-        "page": 4,
-        "verified": true
-      },
-      {
-        "doc_id": "fsca_rdr_2014",
-        "page": 5,
-        "verified": true
-      },
-      {
-        "doc_id": "fsca_rdr_intermediary_segmentation_2019",
-        "page": 2,
-        "verified": true
-      },
-      {
-        "doc_id": "fsca_rdr_intermediary_segmentation_2019",
         "page": 3,
         "verified": true
       },
@@ -207,13 +162,13 @@
         "verified": true
       }
     ],
-    "faithfulness": 0.6363636363636364
+    "faithfulness": 0.6875
   },
   {
     "id": "g46",
     "type": "unanswerable",
     "question": "What is the South African Reserve Bank's current repurchase (repo) rate?",
-    "answer": "I don't have a source for that.\n\nThe context blocks define what the repurchase rate is — \"the interest rate set by the Monetary Policy Committee of the South African Reserve Bank as its policy rate\" [nca_act_34_2005, p.104] — but they do not contain the current rate itself.",
+    "answer": "I don't have a source for that.\n\nThe context blocks mention the repurchase rate as a concept [nca_act_34_2005, p.104], defining it as \"the interest rate set by the Monetary Policy Committee of the South African Reserve Bank as its policy rate,\" but they do not provide information about what the current rate actually is.",
     "refused": true,
     "citations": []
   },
@@ -229,7 +184,7 @@
     "id": "g54",
     "type": "unanswerable",
     "question": "What penalties apply for insider trading under the Financial Markets Act?",
-    "answer": "I don't have a source for that.\n\nThe context blocks provided contain information about penalties under the National Credit Act (Act 34 of 2005), not the Financial Markets Act. There is no information about insider trading or penalties under the Financial Markets Act in the materials available to me.",
+    "answer": "I don't have a source for that.\n\nThe context provided contains only excerpts from the National Credit Act 34 of 2005. It does not include any material from the Financial Markets Act or information about insider trading penalties.",
     "refused": true,
     "citations": []
   }

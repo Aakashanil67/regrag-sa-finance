@@ -77,4 +77,5 @@ def ask(request: Request, body: AskRequest) -> AskResponse | JSONResponse:
         latency_ms=timed.latency_ms,
         cost_usd=result.llm_response.cost_usd,
         model=result.llm_response.model,
+        source_notices=result.source_notices,
     )

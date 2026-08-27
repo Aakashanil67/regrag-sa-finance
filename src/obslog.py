@@ -105,12 +105,20 @@ def log_query(timed: TimedRAGResult) -> None:
 
 def timed_answer(question: str, k: int = 5) -> TimedRAGResult:
     from src.cache import get_cached, set_cached
+    from src.guardrails import contains_injection_attempt
     from src.rag import answer_question
 
     start = time.perf_counter()
 
     cached = get_cached(question)
     if cached is not None:
+        # recomputed here, not read back from the cache: injection detection is a property of the
+        # question text, and rag.answer_question (where it normally runs) is skipped entirely on a
+        # hit. Left to the cache, the *second* time anyone sent the same injection attempt it
+        # logged as unflagged — so a probing attacker, who by definition repeats attempts, would
+        # show up in the ops dashboard exactly once and then go quiet. That silently falsified the
+        # observability claim reports/security_notes.md makes for this detector.
+        cached.flagged_injection = contains_injection_attempt(question)
         timed = TimedRAGResult(
             result=cached, latency_ms=(time.perf_counter() - start) * 1000, cache_hit=True
         )

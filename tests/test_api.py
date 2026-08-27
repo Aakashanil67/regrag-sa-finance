@@ -11,7 +11,7 @@ from src.retrieve import RetrievedChunk
 client = TestClient(main.app)
 
 
-def _timed_result(refused=False):
+def _timed_result(refused=False, source_notices=None):
     return TimedRAGResult(
         result=RAGResult(
             question="What must banks do?",
@@ -30,6 +30,7 @@ def _timed_result(refused=False):
             ],
             refused=refused,
             flagged_injection=False,
+            source_notices=source_notices or [],
             llm_response=LLMResponse(
                 text="...",
                 model="claude-haiku-4-5",
@@ -61,6 +62,23 @@ def test_ask_returns_answer_with_citations(monkeypatch):
     assert body["retrieved_chunks"][0]["doc_id"] == "sarb_d3_2023"
     assert body["refused"] is False
     assert body["model"] == "claude-haiku-4-5"
+
+
+def test_ask_response_carries_source_notices(monkeypatch):
+    notices = ["sarb_circular_19_2004_capital_hybrid_instruments is a Circular, ..."]
+    monkeypatch.setattr(main, "timed_answer", lambda q: _timed_result(source_notices=notices))
+
+    response = client.post("/ask", json={"question": "What must banks do?"})
+
+    assert response.json()["source_notices"] == notices
+
+
+def test_ask_response_source_notices_defaults_to_empty_list(monkeypatch):
+    monkeypatch.setattr(main, "timed_answer", lambda q: _timed_result())
+
+    response = client.post("/ask", json={"question": "What must banks do?"})
+
+    assert response.json()["source_notices"] == []
 
 
 def test_ask_rejects_empty_question():

@@ -19,7 +19,7 @@ convention alongside rag.py's plain completions.
 from dataclasses import dataclass, field
 
 from src.llm import LLMResponse, complete
-from src.rag import _SYSTEM_PROMPT, Citation, _extract_citations, _format_context
+from src.rag import _SYSTEM_PROMPT, Citation, _extract_citations, _format_context, _source_notices
 from src.rag import INSUFFICIENT_CONTEXT_PHRASE as REFUSAL_PHRASE
 from src.retrieve import RetrievedChunk, retrieve
 
@@ -60,6 +60,7 @@ class AgentResult:
     steps: list[AgentStep]
     decision_calls: list[LLMResponse]
     llm_response: LLMResponse  # the final answer-generating call, same shape as RAGResult's
+    source_notices: list[str] = field(default_factory=list)
 
     @property
     def total_cost_usd(self) -> float:
@@ -120,6 +121,7 @@ def answer_question(question: str, k: int = 5) -> AgentResult:
 
     refused = REFUSAL_PHRASE.lower() in llm_response.text.lower()
     citations = [] if refused else _extract_citations(llm_response.text, chunks)
+    notices = [] if refused else _source_notices(citations)
 
     return AgentResult(
         question=question,
@@ -130,4 +132,5 @@ def answer_question(question: str, k: int = 5) -> AgentResult:
         steps=steps,
         decision_calls=decision_calls,
         llm_response=llm_response,
+        source_notices=notices,
     )

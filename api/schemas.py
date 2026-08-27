@@ -32,6 +32,7 @@ class AskResponse(BaseModel):
     latency_ms: float
     cost_usd: float
     model: str
+    source_notices: list[str] = []
 
 
 class HealthResponse(BaseModel):

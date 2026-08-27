@@ -115,6 +115,97 @@ def test_injection_attempt_is_flagged_but_still_answered(monkeypatch):
     assert result.refused is True  # the system prompt's own defense, not a hard block
 
 
+def test_format_context_includes_source_type_for_a_known_document(monkeypatch):
+    # real manifest.json entries, not mocks — this is also a regression check that the manifest's
+    # own document_type/year/issuer classification hasn't drifted
+    context = rag._format_context([_chunk(doc_id="sarb_d8_2023_threshold_amounts")])
+
+    assert "Source type: Directive (2023), issued by SARB Prudential Authority." in context
+    assert "Title:" in context
+    assert "Threshold Amounts" in context
+
+
+def test_format_context_omits_source_line_for_an_unknown_doc_id(monkeypatch):
+    # a mocked/test-only doc_id (or a real drift between the vector store and manifest.json)
+    # degrades gracefully to the pre-metadata header, not a crash
+    context = rag._format_context([_chunk(doc_id="not_a_real_manifest_entry")])
+
+    assert "Source type" not in context
+
+
+def test_citing_the_third_party_guide_produces_a_source_notice(monkeypatch):
+    monkeypatch.setattr(
+        rag,
+        "retrieve",
+        lambda q, k=5, rerank=False: [_chunk(doc_id="pwc_practical_guide_ifrs9")],
+    )
+    monkeypatch.setattr(
+        rag,
+        "complete",
+        _fake_llm("IFRS 9 uses an expected-loss model. [pwc_practical_guide_ifrs9, p.1]"),
+    )
+
+    result = rag.answer_question("What impairment model does IFRS 9 use?")
+
+    assert len(result.source_notices) == 1
+    assert "third-party commentary" in result.source_notices[0]
+    assert "pwc_practical_guide_ifrs9" in result.source_notices[0]
+    # the notice is structured data, never folded into the graded answer text
+    assert "third-party" not in result.answer
+
+
+def test_citing_a_circular_produces_a_superseded_instrument_notice(monkeypatch):
+    monkeypatch.setattr(
+        rag,
+        "retrieve",
+        lambda q, k=5, rerank=False: [
+            _chunk(doc_id="sarb_circular_19_2004_capital_hybrid_instruments")
+        ],
+    )
+    monkeypatch.setattr(
+        rag,
+        "complete",
+        _fake_llm(
+            "Comments were due by 28 February 2005. [sarb_circular_19_2004_capital_hybrid_instruments, p.1]"
+        ),
+    )
+
+    result = rag.answer_question("By what date were comments due?")
+
+    assert len(result.source_notices) == 1
+    assert "Circular" in result.source_notices[0]
+    assert "sarb_circular_19_2004_capital_hybrid_instruments" in result.source_notices[0]
+
+
+def test_citing_a_current_directive_produces_no_notices(monkeypatch):
+    monkeypatch.setattr(
+        rag,
+        "retrieve",
+        lambda q, k=5, rerank=False: [_chunk(doc_id="sarb_d8_2023_threshold_amounts")],
+    )
+    monkeypatch.setattr(
+        rag, "complete", _fake_llm("Banks must comply. [sarb_d8_2023_threshold_amounts, p.1]")
+    )
+
+    result = rag.answer_question("What must banks do?")
+
+    assert result.source_notices == []
+
+
+def test_a_refusal_produces_no_source_notices_even_for_a_flagged_document_type(monkeypatch):
+    monkeypatch.setattr(
+        rag,
+        "retrieve",
+        lambda q, k=5, rerank=False: [_chunk(doc_id="pwc_practical_guide_ifrs9")],
+    )
+    monkeypatch.setattr(rag, "complete", _fake_llm(rag.INSUFFICIENT_CONTEXT_PHRASE))
+
+    result = rag.answer_question("An unrelated question")
+
+    assert result.refused is True
+    assert result.source_notices == []
+
+
 def test_ordinary_question_is_not_flagged(monkeypatch):
     monkeypatch.setattr(
         rag, "retrieve", lambda q, k=5, rerank=False: [_chunk(page_start=1, page_end=1)]
