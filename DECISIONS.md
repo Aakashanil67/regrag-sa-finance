@@ -470,14 +470,20 @@ test noise (p ranging 0.36–1.00). This isn't a retrieval or generation-quality
 disclosure change, and RAGAS's four metrics have no dimension for "did the answer correctly
 attribute what kind of document this is." One item entered the scored set (`g24`, above) and one
 left it: `g45` ("name an objective that appears in both the Act and the Notebook brochure") started
-refusing. Checked directly against `src.retrieve.retrieve` rather than assumed: the same five
-chunks come back before and after this change, and none of them is the National Credit Act's own
-text — only a DTIC brochure describing it. Before this fix, the model answered anyway, treating the
-brochure's summary as equivalent to the Act's own words; told explicitly that the source is a
-"Regulator explainer brochure," it now correctly declines to attribute a claim to "the Act itself"
-when the Act's own text was never retrieved. That's the fix working as designed, and it shows up as
-a debit in a refused/answered count — exactly the kind of thing a single metric misses, which is
-why this got checked by hand rather than left as an unexplained regression in a table.
+refusing. Checked directly against `src.retrieve.retrieve` at both stages rather than assumed: the
+Act's own stated-purpose chunk (`nca_act_34_2005` p.1-2) ranks 2nd by bi-encoder similarity for this
+query — comfortably inside a top-5 — but the cross-encoder reranker demotes it to 6th, below four
+NCR guideline chunks it judges more relevant, pushing it out of the k=5 the production pipeline
+uses. That's a reranker misjudgment on this specific query, and it predates this session's
+metadata fix entirely — the retrieval code didn't change. What changed is what the model does with
+only the brochure in front of it: before, it answered anyway, treating the brochure's summary as
+equivalent to the Act's own words; told explicitly that the source is a "Regulator explainer
+brochure," it now correctly declines to attribute a claim to "the Act itself" when the Act's own
+text was never retrieved. The metadata fix didn't create this gap, it stopped the model from
+quietly answering around it — which shows up as a debit in a refused/answered count, exactly the
+kind of thing a single metric misses and why this got checked by hand instead of left as an
+unexplained regression in a table. The reranker's behaviour on this class of comparison question is
+now a distinct, still-open finding in its own right, separate from the metadata fix.
 
 ## Guardrails
 

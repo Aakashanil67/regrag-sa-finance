@@ -5,13 +5,15 @@ two different item sets and call it a result.
 This comparison's answer is different in shape from the chunk-size one, though. There the paired
 RAGAS deltas were mostly noise and the real, defensible win was retrieval coverage (refusals
 converted to answers). Here even that's mostly absent — the paired RAGAS deltas are smaller still,
-and the one refusal that changed direction (g45) isn't a capability loss at all: retrieval for that
-question returns the exact same five chunks before and after this change (verified directly against
-src.retrieve.retrieve, not inferred), none of which is the National Credit Act's own text — only a
-DTIC brochure *about* it. Before this fix, the model treated the brochure's summary as equivalent to
-"the Act states X." After, told explicitly that source is a "Regulator explainer brochure," it
-correctly refused to claim the Act's own text says something it never saw. That's the fix working
-as designed, showing up as a debit in the crude refused/answered ledger.
+and the one refusal that changed direction (g45) isn't a capability loss introduced by this fix: the
+cross-encoder reranker demotes the National Credit Act's own text below four NCR guideline chunks
+for that specific query (checked directly against src.retrieve.retrieve — the Act's stated-purpose
+chunk ranks 2nd by bi-encoder score but 6th after reranking, outside the k=5 the pipeline uses), a
+pre-existing weakness this session's retrieval code doesn't touch. Before this fix, the model
+answered anyway from a DTIC brochure describing the Act, treating its summary as equivalent to "the
+Act states X." After, told explicitly that source is a "Regulator explainer brochure," it correctly
+declines to attribute a claim to the Act's own text when that text was never retrieved. The fix
+didn't create the reranker gap; it stopped the model from papering over it.
 
     python -m scripts.paired_eval_metadata
 """
@@ -124,15 +126,23 @@ def write_report(r: dict) -> None:
         "paraphrased — the first attempt at this fix used paraphrased titles and didn't work, "
         "which is how the paraphrasing was caught) fixed it directly.",
         "",
-        "**`g45` went the other way, and it's not a capability loss.** Retrieval for that question "
-        "returns the same five chunks before and after this change — verified directly against "
-        "`src.retrieve.retrieve`, not inferred from the score — and none of them is the National "
-        "Credit Act's own text, only a DTIC brochure describing it. Before this fix, the model "
-        "answered anyway, treating the brochure's summary as equivalent to the Act's own words. "
-        'After, told explicitly that the source is a "Regulator explainer brochure," it correctly '
-        'refused to attribute a claim to "the Act itself" when the Act\'s own text was never in '
-        "front of it. That's the fix working as designed. It reads as a regression only if refusal "
-        "count is the metric, which is exactly the kind of thing a metric-only readout misses.",
+        "**`g45` went the other way, and it's a pre-existing reranker weakness this fix exposed "
+        "rather than one it caused.** Checked directly against `src.retrieve.retrieve` at both "
+        "stages, not inferred from the score: without reranking, `nca_act_34_2005` p.1-2 — the "
+        "Act's own stated-purpose section — ranks 2nd by bi-encoder similarity, comfortably inside "
+        "a top-5. The cross-encoder reranker demotes it to 6th, below four NCR guideline chunks it "
+        "judges more relevant to this comparison question, pushing it out of the k=5 the "
+        "production pipeline uses. That's a reranker misjudgment on this specific query, not a "
+        "bi-encoder retrieval miss, and it predates this session's metadata fix — the retrieval "
+        "code hasn't changed. What changed is what the model does about it: before, given only the "
+        "brochure, it answered anyway, treating its summary as equivalent to the Act's own words. "
+        'After, told explicitly the source is a "Regulator explainer brochure," it correctly '
+        'declines to attribute a claim to "the Act itself" when the Act\'s own text was never '
+        "retrieved. The metadata fix didn't introduce this gap; it stopped the model from quietly "
+        "answering around it. It reads as a regression only if refusal count is the metric, which "
+        "is exactly the kind of thing a metric-only readout misses — and it's a genuine, still-open "
+        "finding in its own right: this reranker weakness on comparison-style questions is worth "
+        "its own investigation.",
         "",
         "Live-verified separately (not part of this batch, checked by hand against the model's "
         "actual output): citing the PwC IFRS 9 guide now attaches a third-party-source notice, and "
