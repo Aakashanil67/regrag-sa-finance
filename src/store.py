@@ -20,6 +20,9 @@ of a document.
 """
 
 import argparse
+import json
+import os
+import tempfile
 import time
 
 from src.chunking import Chunk, chunk_corpus
@@ -96,18 +99,41 @@ def rebuild() -> dict:
             metadatas=[_chunk_metadata(c) for c in chunks_to_add],
         )
 
-    return {
+    stats = {
         "added": len(to_add_ids),
         "deleted": len(to_delete),
         "unchanged": len(desired) - len(to_add_ids),
         "total": collection.count(),
         "embed_seconds": embed_seconds,
     }
+    _write_build_record(stats["total"])
+    return stats
+
+
+def _write_build_record(chunk_count: int) -> None:
+    """Written last, after ingestion has already succeeded, and via a temp-file-then-replace swap
+    so an interrupted rebuild can never leave a build.json that claims a build finished when it
+    didn't — see src/provenance.py, which readiness/release tooling trusts this file to reflect."""
+    from src.provenance import store_build_record
+
+    record = store_build_record(chunk_count=chunk_count)
+    CHROMA_DIR.mkdir(parents=True, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(dir=CHROMA_DIR, prefix=".build_", suffix=".json.tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(record, f, indent=2, sort_keys=True)
+        os.replace(tmp_path, CHROMA_DIR / "build.json")
+    except BaseException:
+        os.unlink(tmp_path)
+        raise
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--rebuild", action="store_true", help="ingest new/changed chunks")
+    parser.add_argument(
+        "--check", action="store_true", help="verify store provenance matches current config"
+    )
     args = parser.parse_args()
 
     if args.rebuild:
@@ -117,6 +143,21 @@ def main() -> None:
             f"unchanged {stats['unchanged']}, total {stats['total']} chunks "
             f"(embedding took {stats['embed_seconds']:.1f}s)"
         )
+    elif args.check:
+        from src.provenance import (
+            StoreProvenanceError,
+            assert_store_compatible,
+            pipeline_fingerprint,
+        )
+
+        try:
+            assert_store_compatible()
+        except StoreProvenanceError as e:
+            print(f"store provenance check failed: {e}")
+            raise SystemExit(1) from e
+        collection = get_collection()
+        print(f"collection '{COLLECTION_NAME}': {collection.count()} chunks stored")
+        print(f"fingerprint: {pipeline_fingerprint(k=5)[:16]}...")
     else:
         collection = get_collection()
         print(f"collection '{COLLECTION_NAME}': {collection.count()} chunks stored")

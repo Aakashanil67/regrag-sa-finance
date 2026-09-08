@@ -50,6 +50,10 @@ from src.retrieve import RetrievedChunk, retrieve
 
 INSUFFICIENT_CONTEXT_PHRASE = "I don't have a source for that."
 
+# Bump when validate_generated_answer's rules change in a way that would make an old cached or
+# recorded answer's pass/fail outcome no longer reproducible under the current contract.
+CITATION_CONTRACT_VERSION = 1
+
 
 class RefusalReason(StrEnum):
     NO_CONTEXT = "no_context"
