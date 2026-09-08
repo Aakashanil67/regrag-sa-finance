@@ -60,7 +60,7 @@ page, which matters more for a retrieval/chunking corpus than currency does.
 | Document | Year |
 |---|---|
 | [IFRS 9 Financial Instruments: Project Summary](https://www.ifrs.org/-/media/project/fi-impairment/ifrs-standard/published-documents/project-summary-july-2014.pdf) | 2014 |
-| [PwC: Practical Guide to IFRS 9 Financial Instruments](https://www.pwc.in/services/ifrs/ifrs-assets/practical_guide_on_financial_instrument_accounting_ifrs_9.pdf) | 2017 |
+| [PwC: Practical Guide to IFRS 9 Financial Instruments](https://www.pwc.in/services/ifrs/ifrs-assets/practical_guide_on_financial_instrument_accounting_ifrs_9.pdf) | 2011 |
 
 The full IFRS 9 standard text itself isn't included — the IFRS Foundation licenses that
 separately and doesn't distribute it freely; the Project Summary and the PwC/Big-4 practitioner
