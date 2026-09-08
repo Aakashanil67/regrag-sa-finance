@@ -67,12 +67,59 @@ def test_validator_refuses_malformed_refusal_text():
     assert result.refusal_reason == rag.RefusalReason.MALFORMED_REFUSAL
 
 
+def test_validator_refuses_a_citation_to_a_doc_id_never_retrieved():
+    text = "Banks must comply. [never_retrieved_doc, p.1]"
+    result = rag.validate_generated_answer(text, [_chunk(doc_id="sarb_d3_2023")])
+
+    assert result.refused is True
+    assert result.refusal_reason == rag.RefusalReason.UNVERIFIED_CITATION
+
+
+def test_validator_accepts_a_verified_page_range_citation():
+    text = "The rules apply broadly. [sarb_d3_2023, p.5-7]"
+    result = rag.validate_generated_answer(text, [_chunk(page_start=5, page_end=7)])
+
+    assert result.refused is False
+    assert {c.page for c in result.citations} == {5, 6, 7}
+
+
 def test_never_returns_the_raw_invalid_model_text_in_the_validated_answer():
     text = "Unverifiable claim with a hallucinated page. [sarb_d3_2023, p.999]"
     result = rag.validate_generated_answer(text, [_chunk(page_start=1, page_end=1)])
 
     assert text not in result.answer
     assert result.answer == rag.INSUFFICIENT_CONTEXT_PHRASE
+
+
+def test_rag_no_retrieved_context_refuses_with_no_context_reason(monkeypatch):
+    monkeypatch.setattr(rag, "retrieve", lambda q, k=5, rerank=True: [])
+
+    result = rag.answer_question("An unanswerable question")
+
+    assert result.refused is True
+    assert result.refusal_reason == rag.RefusalReason.NO_CONTEXT
+
+
+def test_rag_valid_multi_document_answer_is_accepted(monkeypatch):
+    text = "Both instruments address credit risk. [sarb_d3_2023, p.1] [sarb_d8_2023, p.2]"
+    chunks = [
+        _chunk(doc_id="sarb_d3_2023"),
+        _chunk(doc_id="sarb_d8_2023", page_start=2, page_end=2),
+    ]
+    monkeypatch.setattr(rag, "retrieve", lambda q, k=5, rerank=True: chunks)
+
+    def fake_complete(system, user, max_tokens=1024):
+        from src.llm import LLMResponse
+
+        return LLMResponse(text=text, model="fake", input_tokens=1, output_tokens=1, cost_usd=0.0)
+
+    monkeypatch.setattr(rag, "complete", fake_complete)
+
+    result = rag.answer_question("Compare them")
+
+    assert result.refused is False
+    assert len(result.citations) == 2
+    assert all(c.verified for c in result.citations)
 
 
 def test_agent_final_answer_fails_closed_on_an_uncited_answer_even_after_a_requery(monkeypatch):

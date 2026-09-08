@@ -7,7 +7,12 @@ on:
     branches: [main]
 
 jobs:
-  lint-and-test:
+  # Offline contracts only — linting, formatting, manifest validation, and tests against frozen
+  # fixtures/mocks. No API key, no live LLM call, no paid RAGAS judge run on every push. That
+  # means this job proves the citation contract, corpus schema, and recorded-snapshot invariants
+  # still hold; it does not measure current hosted-model quality — that's `evals/run_release.py`,
+  # an explicit, paid, local/manual command (see regrag-release-hardening-spec.md).
+  offline-contracts:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,6 +24,7 @@ jobs:
 
       - run: pip install -r requirements.txt
 
+      - run: python -m scripts.validate_manifest
       - run: ruff check .
       - run: ruff format --check .
 

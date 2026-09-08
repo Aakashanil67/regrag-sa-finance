@@ -17,14 +17,11 @@ import json
 from ragas.metrics.collections import Faithfulness
 
 from evals._ragas_judge import build_judge
+from evals.snapshot import CI_SUBSET_IDS, compute_snapshot_metadata
 from src.config import EVALS_DIR, GOLDEN_DEV_PATH
 from src.rag import answer_question
 
 FIXTURES_PATH = EVALS_DIR / "fixtures" / "ci_subset.json"
-
-# a fixed, deliberately mixed subset — not "the first 10 lines" — so the CI gate exercises both
-# refusal (unanswerable) and citation (factual/multi-doc) behaviour every run
-CI_SUBSET_IDS = ["g01", "g04", "g12", "g18", "g25", "g36", "g40", "g46", "g50", "g54"]
 
 
 async def record_one(item: dict, faithfulness) -> dict:
@@ -73,9 +70,10 @@ async def run() -> list[dict]:
 
 def main() -> None:
     records = asyncio.run(run())
+    fixture = {"metadata": compute_snapshot_metadata(), "records": records}
     FIXTURES_PATH.parent.mkdir(parents=True, exist_ok=True)
     FIXTURES_PATH.write_text(
-        json.dumps(records, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        json.dumps(fixture, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
     print(f"wrote {FIXTURES_PATH.relative_to(EVALS_DIR.parent)} ({len(records)} records)")
 

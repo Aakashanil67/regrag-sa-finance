@@ -1,191 +1,206 @@
-[
-  {
-    "id": "g01",
-    "type": "factual",
-    "question": "How many climate-related disclosure templates are attached to SARB Guidance Note 3/2025 as Annexure 1?",
-    "answer": "According to the guidance, there are four disclosure templates attached as Annexure 1 [sarb_g3_2025_climate_disclosures, p.1-2].",
-    "refused": false,
-    "citations": [
-      {
-        "doc_id": "sarb_g3_2025_climate_disclosures",
-        "page": 1,
-        "verified": true
-      },
-      {
-        "doc_id": "sarb_g3_2025_climate_disclosures",
-        "page": 2,
-        "verified": true
-      }
-    ],
-    "faithfulness": 0.5
+{
+  "metadata": {
+    "schema": 1,
+    "file_sha256": {
+      "src/rag.py": "69154d525c11e6bc501ce4c0482536bfa506789996e003fe0862455864b14e1c",
+      "src/retrieve.py": "afe2b6c2c37db3f4519ea5a53e364ca388734f9113a6ae6cae093fc9e6567281",
+      "src/chunking.py": "a6e7c7c003f6df0ebdba5d016a75e7ba407a32864cd51df70cb67f3b3d30275c",
+      "src/ingest.py": "8168a95a22f1c68d6de2ae98e4275cc1643056678fa43c4089a3904ac7817d37",
+      "src/config.py": "035df95d365812600a832a2915341572925d6d9315c8d637b4860add482d03b9"
+    },
+    "manifest_sha256": "89a1c45e3b0a4606f03a89cd1d4fcfb079b5b09f44c66d4c1f512e514a857bbd",
+    "prompt_sha256": "379fcbc86a919d07bcf00517ef36512e94bb78b4143a6059831789ef56e16741",
+    "citation_contract_version": 1,
+    "provider": "anthropic",
+    "model": "claude-haiku-4-5",
+    "temperature": 0.0,
+    "golden_subset_sha256": "a951c325df789d55669859776e93bbbb914f18e058b5edc2379295eabeb4420f",
+    "requirements_sha256": {
+      "requirements.txt": "b39a034757b16bc1a1ee33f9ef5ec092518b9427c5bddf1a36db6df9c60ed27e"
+    }
   },
-  {
-    "id": "g04",
-    "type": "factual",
-    "question": "On what date did the Basel Committee issue the revised standardised and internal ratings-based approaches for credit risk referenced in Directive D8/2023?",
-    "answer": "According to Directive D8/2023, the Basel Committee on Banking Supervision issued the revised standardised approach (STA) and internal ratings-based (IRB) approach for credit risk on 7 December 2017 [sarb_d8_2023_threshold_amounts, p.1].",
-    "refused": false,
-    "citations": [
-      {
-        "doc_id": "sarb_d8_2023_threshold_amounts",
-        "page": 1,
-        "verified": true
-      }
-    ],
-    "faithfulness": 1.0
-  },
-  {
-    "id": "g12",
-    "type": "factual",
-    "question": "On what date did the National Credit Act come into commencement?",
-    "answer": "The National Credit Act 34 of 2005 came into commencement on **1 June 2006** [nca_act_34_2005, p.1].\n\nHowever, it should be noted that different sections of the Act commenced on different dates. Most sections (Chapters 1, 2 Parts A, C and D, Chapter 7, and Chapters 8 and 9) commenced on 1 June 2006, while other sections had later commencement dates, such as 1 September 2006 and 1 June 2007 [nca_act_34_2005, p.105-106].",
-    "refused": false,
-    "citations": [
-      {
-        "doc_id": "nca_act_34_2005",
-        "page": 1,
-        "verified": true
-      },
-      {
-        "doc_id": "nca_act_34_2005",
-        "page": 105,
-        "verified": true
-      },
-      {
-        "doc_id": "nca_act_34_2005",
-        "page": 106,
-        "verified": true
-      }
-    ],
-    "faithfulness": 1.0
-  },
-  {
-    "id": "g18",
-    "type": "factual",
-    "question": "Which section of the National Credit Act gives a consumer the right to challenge the accuracy of information a credit bureau holds about them, without charge?",
-    "answer": "Section 72(1)(c) of the National Credit Act 34 of 2005 gives a consumer the right to challenge the accuracy of information held by a credit bureau without charge. The section states that every person has a right to \"challenge the accuracy of any information concerning that person...that is held by the credit bureau or national credit register, as the case may be, and require the credit bureau or National Credit Regulator, as the case may be, to investigate the accuracy of any challenged information, without charge to the consumer.\" [ncr_guideline_disputed_credit_complaints, p.2-3]",
-    "refused": false,
-    "citations": [
-      {
-        "doc_id": "ncr_guideline_disputed_credit_complaints",
-        "page": 2,
-        "verified": true
-      },
-      {
-        "doc_id": "ncr_guideline_disputed_credit_complaints",
-        "page": 3,
-        "verified": true
-      }
-    ],
-    "faithfulness": 0.8
-  },
-  {
-    "id": "g25",
-    "type": "factual",
-    "question": "On what date did the FSCA publish the Conduct Standard for Banks?",
-    "answer": "The FSCA published the Conduct Standard for Banks on 8 July 2020 [fsca_press_conduct_standard_banks_2020, p.1].",
-    "refused": false,
-    "citations": [
-      {
-        "doc_id": "fsca_press_conduct_standard_banks_2020",
-        "page": 1,
-        "verified": true
-      }
-    ],
-    "faithfulness": 1.0
-  },
-  {
-    "id": "g36",
-    "type": "multi-doc",
-    "question": "Both Directive D3/2023 and the IFRS 9 project summary describe a shift from an 'incurred loss' model to a forward-looking model. What is that forward-looking model called?",
-    "answer": "The forward-looking model is called the **Expected Credit Loss (ECL) model**.\n\nAccording to the SARB Directive, \"IFRS 9 requires entities to take into account all information that is available without undue cost or effort, including that which is forward-looking when determining impairments to be raised, effectively introducing the concept of ECL for financial reporting purposes\" [sarb_d3_2023_accounting_provisions_ifrs9, p.1-2].\n\nThe IFRS Foundation project summary confirms this, stating that IFRS 9 introduced \"a forward-looking expected credit loss model that will result in more timely recognition of loan losses and is a single model that is applicable to all financial instruments subject to impairment accounting\" [ifrs9_project_summary_2014, p.2-4].",
-    "refused": false,
-    "citations": [
-      {
-        "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
-        "page": 1,
-        "verified": true
-      },
-      {
-        "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
-        "page": 2,
-        "verified": true
-      },
-      {
-        "doc_id": "ifrs9_project_summary_2014",
-        "page": 2,
-        "verified": true
-      },
-      {
-        "doc_id": "ifrs9_project_summary_2014",
-        "page": 3,
-        "verified": true
-      },
-      {
-        "doc_id": "ifrs9_project_summary_2014",
-        "page": 4,
-        "verified": true
-      }
-    ],
-    "faithfulness": 1.0
-  },
-  {
-    "id": "g40",
-    "type": "multi-doc",
-    "question": "How did the FSCA's 2019 intermediary activity segmentation update build on the 2014 Retail Distribution Review?",
-    "answer": "The 2019 intermediary activity segmentation update built on the 2014 Retail Distribution Review by implementing concrete regulatory reforms that the 2014 RDR had proposed.\n\nThe 2014 RDR outlined key risks in the distribution landscape, including \"distribution relationships and intermediary remuneration models that contribute to poor outcomes and mis-selling,\" and proposed \"a shift away from a purely rules-based compliance approach to one that also sees the introduction of a set of structural interventions designed to change incentives, relationships and business models\" [fsca_rdr_2014, p.3].\n\nThe 2019 update operationalized this framework by creating a detailed \"intermediary activity segmentation framework\" that \"demarcates between: Advice (a service to the customer); Other services to the customer; Services that truly 'intermediate' between the customer and the insurer; Services to the insurer (split between binder services and other outsourced services); and Other services to the insurer not explicitly provided for in the current regulatory framework\" [fsca_rdr_intermediary_segmentation_2019, p.2-3].\n\nThe 2019 update also implemented specific remuneration interventions the 2014 RDR had proposed, including \"The capping of the maximum binder fees that an insurer may pay to a non-mandated intermediary (NMI) that is authorised to render advice, at a certain maximum per function performed, the total of which cannot exceed 9% of applicable premiums if all binder functions are performed\" and \"The introduction of an insurer notification process to the FSCA\" [fsca_rdr_intermediary_segmentation_2019, p.2-3].",
-    "refused": false,
-    "citations": [
-      {
-        "doc_id": "fsca_rdr_2014",
-        "page": 3,
-        "verified": true
-      },
-      {
-        "doc_id": "fsca_rdr_intermediary_segmentation_2019",
-        "page": 2,
-        "verified": true
-      },
-      {
-        "doc_id": "fsca_rdr_intermediary_segmentation_2019",
-        "page": 3,
-        "verified": true
-      },
-      {
-        "doc_id": "fsca_rdr_intermediary_segmentation_2019",
-        "page": 2,
-        "verified": true
-      },
-      {
-        "doc_id": "fsca_rdr_intermediary_segmentation_2019",
-        "page": 3,
-        "verified": true
-      }
-    ],
-    "faithfulness": 0.6875
-  },
-  {
-    "id": "g46",
-    "type": "unanswerable",
-    "question": "What is the South African Reserve Bank's current repurchase (repo) rate?",
-    "answer": "I don't have a source for that.\n\nThe context blocks mention the repurchase rate as a concept [nca_act_34_2005, p.104], defining it as \"the interest rate set by the Monetary Policy Committee of the South African Reserve Bank as its policy rate,\" but they do not provide information about what the current rate actually is.",
-    "refused": true,
-    "citations": []
-  },
-  {
-    "id": "g50",
-    "type": "unanswerable",
-    "question": "What is the SARB Monetary Policy Committee's current inflation target range?",
-    "answer": "I don't have a source for that.",
-    "refused": true,
-    "citations": []
-  },
-  {
-    "id": "g54",
-    "type": "unanswerable",
-    "question": "What penalties apply for insider trading under the Financial Markets Act?",
-    "answer": "I don't have a source for that.\n\nThe context provided contains only excerpts from the National Credit Act 34 of 2005. It does not include any material from the Financial Markets Act or information about insider trading penalties.",
-    "refused": true,
-    "citations": []
-  }
-]
+  "records": [
+    {
+      "id": "g01",
+      "type": "factual",
+      "question": "How many climate-related disclosure templates are attached to SARB Guidance Note 3/2025 as Annexure 1?",
+      "answer": "I don't have a source for that.",
+      "refused": true,
+      "citations": []
+    },
+    {
+      "id": "g04",
+      "type": "factual",
+      "question": "On what date did the Basel Committee issue the revised standardised and internal ratings-based approaches for credit risk referenced in Directive D8/2023?",
+      "answer": "On 7 December 2017, the BCBS issued the revised standardised approach (STA) and internal ratings-based (IRB) approach for credit risk. [sarb_d8_2023_threshold_amounts, p.1-2]",
+      "refused": false,
+      "citations": [
+        {
+          "doc_id": "sarb_d8_2023_threshold_amounts",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_d8_2023_threshold_amounts",
+          "page": 2,
+          "verified": true
+        }
+      ],
+      "faithfulness": 1.0
+    },
+    {
+      "id": "g12",
+      "type": "factual",
+      "question": "On what date did the National Credit Act come into commencement?",
+      "answer": "The National Credit Act came into commencement on 1 June, 2006. [nca_act_34_2005, p.1]",
+      "refused": false,
+      "citations": [
+        {
+          "doc_id": "nca_act_34_2005",
+          "page": 1,
+          "verified": true
+        }
+      ],
+      "faithfulness": 1.0
+    },
+    {
+      "id": "g18",
+      "type": "factual",
+      "question": "Which section of the National Credit Act gives a consumer the right to challenge the accuracy of information a credit bureau holds about them, without charge?",
+      "answer": "Section 72(1)(c) of the National Credit Act 34 of 2005 gives every person a right to challenge the accuracy of any information concerning that person that is held by the credit bureau or national credit register, as the case may be, and require the credit bureau or National Credit Regulator to investigate the accuracy of any challenged information, without charge to the consumer. [nca_act_34_2005, p.50]",
+      "refused": false,
+      "citations": [
+        {
+          "doc_id": "nca_act_34_2005",
+          "page": 50,
+          "verified": true
+        }
+      ],
+      "faithfulness": 1.0
+    },
+    {
+      "id": "g25",
+      "type": "factual",
+      "question": "On what date did the FSCA publish the Conduct Standard for Banks?",
+      "answer": "The FSCA published the Conduct Standard for Banks on 8 July 2020. [fsca_press_conduct_standard_banks_2020, p.1]",
+      "refused": false,
+      "citations": [
+        {
+          "doc_id": "fsca_press_conduct_standard_banks_2020",
+          "page": 1,
+          "verified": true
+        }
+      ],
+      "faithfulness": 1.0
+    },
+    {
+      "id": "g36",
+      "type": "multi-doc",
+      "question": "Both Directive D3/2023 and the IFRS 9 project summary describe a shift from an 'incurred loss' model to a forward-looking model. What is that forward-looking model called?",
+      "answer": "The forward-looking model is called the Expected Credit Loss (ECL) model. [sarb_d3_2023_accounting_provisions_ifrs9, p.1-2] IFRS 9 requires entities to recognise expected credit losses at all times and to update the amount of expected credit losses recognised at each reporting date to reflect changes in the credit risk of financial instruments. [ifrs9_project_summary_2014, p.14-15]",
+      "refused": false,
+      "citations": [
+        {
+          "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "ifrs9_project_summary_2014",
+          "page": 14,
+          "verified": true
+        },
+        {
+          "doc_id": "ifrs9_project_summary_2014",
+          "page": 15,
+          "verified": true
+        }
+      ],
+      "faithfulness": 1.0
+    },
+    {
+      "id": "g40",
+      "type": "multi-doc",
+      "question": "How did the FSCA's 2019 intermediary activity segmentation update build on the 2014 Retail Distribution Review?",
+      "answer": "The 2014 Retail Distribution Review proposed an activity-based approach to categorizing intermediary services, distinguishing between advice (a service to the customer), intermediary services (services connecting product suppliers and customers), and other services provided by advisers and intermediaries (services to product suppliers). [fsca_rdr_2014, p.3-5]\n\nThe 2019 intermediary activity segmentation update built on this foundation by developing a more granular segmentation framework that demarcates between: Advice (a service to the customer); Other services to the customer; Services that truly \"intermediate\" between the customer and the insurer; Services to the insurer (split between binder services and other outsourced services); and Other services to the insurer not explicitly provided for in the current regulatory framework. [fsca_rdr_intermediary_segmentation_2019, p.2-3]\n\nThe 2019 update operationalized the RDR's structural interventions by implementing specific regulatory measures, including the capping of maximum binder fees that an insurer may pay to a non-mandated intermediary authorized to render advice at a maximum of 9% of applicable premiums if all binder functions are performed. [fsca_rdr_intermediary_segmentation_2019, p.2-3]\n\nThe 2019 update also introduced an insurer notification process to the FSCA in respect of arrangements where an insurer intends to pay remuneration to an independent intermediary or representative for functions other than services as intermediary or binder functions, including other outsourcing arrangements. [fsca_rdr_intermediary_segmentation_2019, p.2-3]",
+      "refused": false,
+      "citations": [
+        {
+          "doc_id": "fsca_rdr_2014",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_2014",
+          "page": 4,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_2014",
+          "page": 5,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+          "page": 3,
+          "verified": true
+        }
+      ],
+      "faithfulness": 0.7647058823529411
+    },
+    {
+      "id": "g46",
+      "type": "unanswerable",
+      "question": "What is the South African Reserve Bank's current repurchase (repo) rate?",
+      "answer": "I don't have a source for that.",
+      "refused": true,
+      "citations": []
+    },
+    {
+      "id": "g50",
+      "type": "unanswerable",
+      "question": "What is the SARB Monetary Policy Committee's current inflation target range?",
+      "answer": "I don't have a source for that.",
+      "refused": true,
+      "citations": []
+    },
+    {
+      "id": "g54",
+      "type": "unanswerable",
+      "question": "What penalties apply for insider trading under the Financial Markets Act?",
+      "answer": "I don't have a source for that.",
+      "refused": true,
+      "citations": []
+    }
+  ]
+}
