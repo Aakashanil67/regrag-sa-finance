@@ -23,6 +23,7 @@ from src.rag import (
     _SYSTEM_PROMPT,
     Citation,
     RefusalReason,
+    SourceNotice,
     _format_context,
     _source_notices,
     validate_generated_answer,
@@ -67,7 +68,7 @@ class AgentResult:
     steps: list[AgentStep]
     decision_calls: list[LLMResponse]
     llm_response: LLMResponse  # the final answer-generating call, same shape as RAGResult's
-    source_notices: list[str] = field(default_factory=list)
+    source_notices: list[SourceNotice] = field(default_factory=list)
     refusal_reason: RefusalReason | None = None
 
     @property

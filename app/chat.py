@@ -34,12 +34,22 @@ if "history" not in st.session_state:
     st.session_state.history = []
 
 
-def render_source_notices(notices: list[str]) -> None:
-    # deterministic, code-generated disclosures (third-party source, superseded instrument type —
-    # see src/rag.py's _source_notices) rendered separately from the model's own answer text, on
-    # purpose: they're never part of what the eval harness grades as "the answer"
+def render_source_notices(notices: list[dict]) -> None:
+    # deterministic, code-generated disclosures (third-party source, withdrawn/superseded/draft
+    # status — see src/rag.py's _source_notices) rendered separately from the model's own answer
+    # text, on purpose: they're never part of what the eval harness grades as "the answer".
+    # Ordinary historical context (e.g. a dated snapshot) uses info styling; withdrawn/superseded/
+    # non-final sources get warning styling — a strong colour reserved for the cases that matter.
+    strong_warning_kinds = {"withdrawn_source", "superseded_source", "non_final_source"}
     for notice in notices:
-        st.info(notice)
+        label = "Source status: " + notice["text"]
+        if notice["evidence"]:
+            refs = ", ".join(f"[{e['doc_id']}, p.{e['page']}]" for e in notice["evidence"])
+            label += f" (evidence: {refs})"
+        if notice["kind"] in strong_warning_kinds:
+            st.warning(label)
+        else:
+            st.info(label)
 
 
 def render_sources(citations: list[dict], chunks: list[dict]) -> None:

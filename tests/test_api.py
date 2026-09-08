@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 import api.main as main
 from src.llm import LLMResponse
 from src.obslog import TimedRAGResult
-from src.rag import Citation, RAGResult, RefusalReason
+from src.rag import Citation, RAGResult, RefusalReason, SourceNotice, SourceReference
 from src.retrieve import RetrievedChunk
 
 client = TestClient(main.app)
@@ -79,12 +79,25 @@ def test_ask_response_carries_the_refusal_reason(monkeypatch):
 
 
 def test_ask_response_carries_source_notices(monkeypatch):
-    notices = ["sarb_circular_19_2004_capital_hybrid_instruments is a Circular, ..."]
+    notices = [
+        SourceNotice(
+            kind="withdrawn_source",
+            text="sarb_circular_19_2004_capital_hybrid_instruments is treated as withdrawn.",
+            evidence=[SourceReference("sarb_c1_2026_status_of_circulars", 1)],
+        )
+    ]
     monkeypatch.setattr(main, "timed_answer", lambda q: _timed_result(source_notices=notices))
 
     response = client.post("/ask", json={"question": "What must banks do?"})
 
-    assert response.json()["source_notices"] == notices
+    body_notices = response.json()["source_notices"]
+    assert body_notices == [
+        {
+            "kind": "withdrawn_source",
+            "text": "sarb_circular_19_2004_capital_hybrid_instruments is treated as withdrawn.",
+            "evidence": [{"doc_id": "sarb_c1_2026_status_of_circulars", "page": 1}],
+        }
+    ]
 
 
 def test_ask_response_source_notices_defaults_to_empty_list(monkeypatch):

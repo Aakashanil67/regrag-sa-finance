@@ -64,13 +64,6 @@ class RefusalReason(StrEnum):
     UNVERIFIED_CITATION = "unverified_citation"
 
 
-# SARB circulars predate the Directive (binding, s6(6)) / Guidance Note (non-binding, s6(5)) split
-# introduced later under the Banks Act framework — both circulars in this corpus are from 2004,
-# Basel II-era capital rules. This is a fact about this specific instrument type in this specific
-# corpus, not a generic "old = outdated" heuristic (the National Credit Act is from 2005 and is
-# still current law, just amended in place rather than replaced).
-_DATED_DOCUMENT_TYPES = {"Circular"}
-
 _SYSTEM_PROMPT = f"""You are a compliance research assistant answering questions about South \
 African financial regulation (SARB, IFRS 9, the National Credit Act, FSCA) from the numbered \
 context blocks below. Follow these rules exactly:
@@ -106,6 +99,19 @@ class Citation:
     verified: bool
 
 
+@dataclass(frozen=True)
+class SourceReference:
+    doc_id: str
+    page: int
+
+
+@dataclass(frozen=True)
+class SourceNotice:
+    kind: str
+    text: str
+    evidence: list[SourceReference]
+
+
 @dataclass
 class RAGResult:
     question: str
@@ -115,7 +121,7 @@ class RAGResult:
     refused: bool
     flagged_injection: bool
     llm_response: LLMResponse
-    source_notices: list[str] = field(default_factory=list)
+    source_notices: list[SourceNotice] = field(default_factory=list)
     refusal_reason: RefusalReason | None = None
 
 
@@ -177,39 +183,81 @@ def _format_context(chunks: list[RetrievedChunk]) -> str:
     return "\n\n".join(blocks)
 
 
-def _source_notices(citations: list[Citation]) -> list[str]:
-    """Fixed, code-generated disclosure sentences for any cited source that needs one — same
+def _status_notice(doc_id: str, doc: dict, meta: dict[str, dict]) -> SourceNotice:
+    """A non-current source gets a notice that names its own evidence — the specific document and
+    page that support the status claim — rather than a generic disclaimer. When the manifest
+    records no corpus document as evidence (status_source_id unset), the notice says so plainly
+    instead of inventing a successor; see corpus/manifest.json's status_source_url for the
+    (external, non-corpus) evidence in that case.
+    """
+    status = doc["current_status"]
+    as_of = doc["status_as_of"]
+    source_id = doc.get("status_source_id")
+    source_page = doc.get("status_source_page")
+
+    evidence: list[SourceReference] = []
+    if source_id and source_page:
+        evidence.append(SourceReference(doc_id=source_id, page=source_page))
+        source_title = meta.get(source_id, {}).get("title", source_id)
+        evidence_clause = f", per {source_title}"
+    else:
+        evidence_clause = " (no corpus document confirms this; see the manifest's external source)"
+
+    verbs = {
+        "withdrawn": "treated as withdrawn",
+        "superseded": "treated as superseded by a later instrument",
+        "historical_snapshot": "a dated historical snapshot that may not reflect later amendments",
+        "unknown": "of unconfirmed current status",
+    }
+    text = f"{doc_id} is {verbs[status]} as of {as_of}{evidence_clause}."
+    return SourceNotice(kind=f"{status}_source", text=text, evidence=evidence)
+
+
+def _source_notices(citations: list[Citation]) -> list[SourceNotice]:
+    """Fixed, code-generated disclosure notices for any cited source that needs one — same
     philosophy as INSUFFICIENT_CONTEXT_PHRASE being an exact string rather than trusting free-text
     phrasing: a disclosure that matters for a compliance tool shouldn't depend on the model
     choosing to mention it on any given call. Kept structurally separate from `answer` — see the
-    module docstring for why these must never be concatenated into the text RAGAS grades."""
+    module docstring for why these must never be concatenated into the text RAGAS grades.
+
+    Driven entirely by corpus/manifest.json's reviewed authority fields, not by a document-type
+    heuristic — a prior version of this function assumed every "Circular" was superseded by newer
+    SARB instrument types "as a category", which was never true and this corpus never had evidence
+    for. Status claims now come only from a manifest field with its own recorded evidence.
+    """
     meta = _doc_metadata()
-    cited_doc_ids = {c.doc_id for c in citations}
+    cited_doc_ids = sorted({c.doc_id for c in citations})
     notices = []
 
-    third_party_ids = sorted(
-        doc_id for doc_id in cited_doc_ids if meta.get(doc_id, {}).get("is_third_party")
-    )
-    if third_party_ids:
-        docs = ", ".join(third_party_ids)
-        notices.append(
-            f"{docs} is third-party commentary, not an official regulator or standard-setter "
-            "source."
-        )
+    for doc_id in cited_doc_ids:
+        doc = meta.get(doc_id)
+        if not doc:
+            continue
 
-    dated_ids = sorted(
-        doc_id
-        for doc_id in cited_doc_ids
-        if meta.get(doc_id, {}).get("document_type") in _DATED_DOCUMENT_TYPES
-    )
-    if dated_ids:
-        docs = ", ".join(dated_ids)
-        notices.append(
-            f"{docs} is a Circular, an instrument type this corpus's newer SARB documents "
-            "(Directives, Guidance Notes) have since superseded as a category — a more recent "
-            "instrument may have updated this specific position. This corpus doesn't contain a "
-            "direct successor to confirm that."
-        )
+        if doc.get("is_third_party"):
+            notices.append(
+                SourceNotice(
+                    kind="third_party_source",
+                    text=(
+                        f"{doc_id} is third-party commentary, not an official regulator or "
+                        "standard-setter source."
+                    ),
+                    evidence=[],
+                )
+            )
+
+        if doc.get("publication_stage") not in (None, "final"):
+            notices.append(
+                SourceNotice(
+                    kind="non_final_source",
+                    text=f"{doc_id} is a {doc['publication_stage']} document, not a final "
+                    "published instrument.",
+                    evidence=[],
+                )
+            )
+
+        if doc.get("current_status") not in (None, "current"):
+            notices.append(_status_notice(doc_id, doc, meta))
 
     return notices
 

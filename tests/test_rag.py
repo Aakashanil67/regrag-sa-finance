@@ -214,13 +214,15 @@ def test_citing_a_third_party_document_produces_a_source_notice(monkeypatch):
     result = rag.answer_question("What impairment model does IFRS 9 use?")
 
     assert len(result.source_notices) == 1
-    assert "third-party commentary" in result.source_notices[0]
-    assert "mock_third_party_doc" in result.source_notices[0]
+    notice = result.source_notices[0]
+    assert notice.kind == "third_party_source"
+    assert "third-party commentary" in notice.text
+    assert "mock_third_party_doc" in notice.text
     # the notice is structured data, never folded into the graded answer text
     assert "third-party" not in result.answer
 
 
-def test_citing_a_circular_produces_a_superseded_instrument_notice(monkeypatch):
+def test_citing_a_withdrawn_circular_produces_a_notice_with_evidence(monkeypatch):
     monkeypatch.setattr(
         rag,
         "retrieve",
@@ -239,18 +241,23 @@ def test_citing_a_circular_produces_a_superseded_instrument_notice(monkeypatch):
     result = rag.answer_question("By what date were comments due?")
 
     assert len(result.source_notices) == 1
-    assert "Circular" in result.source_notices[0]
-    assert "sarb_circular_19_2004_capital_hybrid_instruments" in result.source_notices[0]
+    notice = result.source_notices[0]
+    assert notice.kind == "withdrawn_source"
+    assert "sarb_circular_19_2004_capital_hybrid_instruments" in notice.text
+    assert "withdrawn" in notice.text
+    assert notice.evidence == [rag.SourceReference("sarb_c1_2026_status_of_circulars", 1)]
 
 
 def test_citing_a_current_directive_produces_no_notices(monkeypatch):
     monkeypatch.setattr(
         rag,
         "retrieve",
-        lambda q, k=5, rerank=False: [_chunk(doc_id="sarb_d8_2023_threshold_amounts")],
+        lambda q, k=5, rerank=False: [_chunk(doc_id="sarb_d3_2023_accounting_provisions_ifrs9")],
     )
     monkeypatch.setattr(
-        rag, "complete", _fake_llm("Banks must comply. [sarb_d8_2023_threshold_amounts, p.1]")
+        rag,
+        "complete",
+        _fake_llm("Banks must comply. [sarb_d3_2023_accounting_provisions_ifrs9, p.1]"),
     )
 
     result = rag.answer_question("What must banks do?")

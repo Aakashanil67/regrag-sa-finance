@@ -108,3 +108,34 @@ def retrieve(
 
     candidates.sort(key=lambda c: c.score, reverse=True)
     return candidates[:k]
+
+
+def fetch_document_page(doc_id: str, page: int, collection=None) -> list[RetrievedChunk]:
+    """Exact, deterministic lookup of every chunk covering one page of one document — used to
+    attach status-evidence text (e.g. the page of a circular naming it withdrawn) to generation
+    context, independent of whatever the semantic top-k search would have surfaced for the
+    question actually asked. Chunks are sorted by page then chunk_id so multiple chunks covering
+    the same page return in a stable order rather than whatever order Chroma's `.get()` gives back.
+    """
+    if collection is None:
+        collection = get_collection()
+
+    results = collection.get(where={"doc_id": doc_id}, include=["documents", "metadatas"])
+
+    chunks = [
+        RetrievedChunk(
+            chunk_id=chunk_id,
+            doc_id=metadata["doc_id"],
+            text=document,
+            page_start=metadata["page_start"],
+            page_end=metadata["page_end"],
+            section=metadata["section"],
+            score=1.0,
+        )
+        for chunk_id, document, metadata in zip(
+            results["ids"], results["documents"], results["metadatas"], strict=True
+        )
+        if metadata["page_start"] <= page <= metadata["page_end"]
+    ]
+    chunks.sort(key=lambda c: (c.page_start, c.chunk_id))
+    return chunks

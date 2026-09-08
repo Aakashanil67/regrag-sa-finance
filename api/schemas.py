@@ -24,6 +24,17 @@ class RetrievedChunkOut(BaseModel):
     score: float
 
 
+class SourceReferenceOut(BaseModel):
+    doc_id: str
+    page: int
+
+
+class SourceNoticeOut(BaseModel):
+    kind: str
+    text: str
+    evidence: list[SourceReferenceOut] = []
+
+
 class AskResponse(BaseModel):
     answer: str
     citations: list[CitationOut]
@@ -33,7 +44,7 @@ class AskResponse(BaseModel):
     latency_ms: float
     cost_usd: float
     model: str
-    source_notices: list[str] = []
+    source_notices: list[SourceNoticeOut] = []
 
 
 class HealthResponse(BaseModel):

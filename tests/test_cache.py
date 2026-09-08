@@ -154,7 +154,7 @@ def test_cache_hit_still_carries_source_notices(tmp_path, monkeypatch):
     cached = cache.get_cached("What impairment model does IFRS 9 use?", k=5)
 
     assert len(cached.source_notices) == 1
-    assert "third-party commentary" in cached.source_notices[0]
+    assert "third-party commentary" in cached.source_notices[0].text
 
 
 def test_a_system_prompt_edit_invalidates_previously_cached_answers(tmp_path, monkeypatch):

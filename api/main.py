@@ -19,6 +19,8 @@ from api.schemas import (
     CitationOut,
     HealthResponse,
     RetrievedChunkOut,
+    SourceNoticeOut,
+    SourceReferenceOut,
     StatsResponse,
 )
 from src.obslog import stats_summary, timed_answer
@@ -78,5 +80,14 @@ def ask(request: Request, body: AskRequest) -> AskResponse | JSONResponse:
         latency_ms=timed.latency_ms,
         cost_usd=result.llm_response.cost_usd,
         model=result.llm_response.model,
-        source_notices=result.source_notices,
+        source_notices=[
+            SourceNoticeOut(
+                kind=notice.kind,
+                text=notice.text,
+                evidence=[
+                    SourceReferenceOut(doc_id=ref.doc_id, page=ref.page) for ref in notice.evidence
+                ],
+            )
+            for notice in result.source_notices
+        ],
     )
