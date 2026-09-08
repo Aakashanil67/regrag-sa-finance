@@ -14,12 +14,12 @@ import json
 import time
 
 from src.agent import answer_question as agent_answer
-from src.config import GOLDEN_PATH, REPORTS_DIR
+from src.config import GOLDEN_DEV_PATH, REPORTS_DIR
 from src.rag import answer_question as plain_answer
 
 
 def run() -> list[dict]:
-    golden = [json.loads(line) for line in GOLDEN_PATH.read_text(encoding="utf-8").splitlines()]
+    golden = [json.loads(line) for line in GOLDEN_DEV_PATH.read_text(encoding="utf-8").splitlines()]
     multi_doc = [item for item in golden if item["type"] == "multi-doc"]
 
     rows = []

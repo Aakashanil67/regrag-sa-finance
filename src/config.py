@@ -11,7 +11,11 @@ REPORTS_DIR = ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
 
 EVALS_DIR = ROOT / "evals"
-GOLDEN_PATH = EVALS_DIR / "golden.jsonl"
+GOLDEN_DEV_PATH = EVALS_DIR / "golden_dev.jsonl"
+GOLDEN_HOLDOUT_PATH = EVALS_DIR / "golden_holdout.jsonl"
+RETRIEVAL_DEV_PATH = EVALS_DIR / "retrieval_dev.json"
+RETRIEVAL_HOLDOUT_PATH = EVALS_DIR / "retrieval_holdout.json"
+EVAL_PROTOCOL_PATH = EVALS_DIR / "protocol.json"
 EVAL_HISTORY_CSV = REPORTS_DIR / "eval_history.csv"
 
 RANDOM_SEED = 42

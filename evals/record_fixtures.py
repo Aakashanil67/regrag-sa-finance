@@ -17,7 +17,7 @@ import json
 from ragas.metrics.collections import Faithfulness
 
 from evals._ragas_judge import build_judge
-from src.config import EVALS_DIR, GOLDEN_PATH
+from src.config import EVALS_DIR, GOLDEN_DEV_PATH
 from src.rag import answer_question
 
 FIXTURES_PATH = EVALS_DIR / "fixtures" / "ci_subset.json"
@@ -56,7 +56,7 @@ async def run() -> list[dict]:
     golden = {
         item["id"]: item
         for item in (
-            json.loads(line) for line in GOLDEN_PATH.read_text(encoding="utf-8").splitlines()
+            json.loads(line) for line in GOLDEN_DEV_PATH.read_text(encoding="utf-8").splitlines()
         )
     }
     items = [golden[item_id] for item_id in CI_SUBSET_IDS]

@@ -1,15 +1,17 @@
 # Retrieval benchmark
 
+**Split: dev.** Development-set numbers guide tuning; only a `holdout` run, executed once against a frozen pipeline, is release evidence.
+
 **Hit-rate@k**: fraction of questions where the source document/page appears anywhere in the top k retrieved chunks — what a user actually experiences, since the RAG layer only sees the top k.
 
 **MRR** (mean reciprocal rank): averages 1/rank of the first correct chunk across all 10 retrieved results — rewards ranking the right answer 1st over merely including it somewhere in the list.
 
 | metric | value |
 |---|---|
-| hit-rate@3 | 95% |
-| hit-rate@5 | 95% |
-| hit-rate@10 | 95% |
-| MRR | 0.808 |
+| hit-rate@3 | 90% |
+| hit-rate@5 | 90% |
+| hit-rate@10 | 90% |
+| MRR | 0.746 |
 
 ## Per-question results
 
@@ -17,7 +19,7 @@
 |---|---|---|---|
 | r01 | How many climate-related disclosure templates are attached to Guidance Note 3/2025 as Annexure 1? | sarb_g3_2025_climate_disclosures p.1 | 2 |
 | r02 | Which earlier directive does Directive D3/2023 on the regulatory treatment of accounting provisions replace? | sarb_d3_2023_accounting_provisions_ifrs9 p.1 | 1 |
-| r03 | On what date did the Basel Committee issue the revised standardised and internal ratings-based approaches for credit risk referenced in Directive D8/2023? | sarb_d8_2023_threshold_amounts p.1 | 1 |
+| r03 | On what date did the Basel Committee issue the revised standardised and internal ratings-based approaches for credit risk referenced in Directive D8/2023? | sarb_d8_2023_threshold_amounts p.1 | 2 |
 | r04 | What seven categories does the BCBS operational resilience paper organise its principles across, per Directive D10/2021? | sarb_d10_2021_operational_resilience p.1 | 1 |
 | r05 | By what date were comments due on the proposed amendments to hybrid debt instrument rules in Banks Act Circular 19/2004? | sarb_circular_19_2004_capital_hybrid_instruments p.1 | 1 |
 | r06 | When did the Basel Committee confirm it would publish the full text of Basel II, according to Circular 6/2004? | sarb_circular_6_2004_basel_ii_update p.1 | 1 |
@@ -34,4 +36,5 @@
 | r17 | What regulatory approach shift does the 2014 Retail Distribution Review propose, away from a purely rules-based compliance approach? | fsca_rdr_2014 p.3 | 1 |
 | r18 | What were the agenda topics of the 2011 FSB presentation on Treating Customers Fairly? | fsca_tcf_2011 p.1 | 2 |
 | r19 | What is the 'own credit' issue that IFRS 9 addresses? | ifrs9_project_summary_2014 p.1 | miss (not in top 10) |
-| r20 | How many classification categories does IFRS 9 have for financial assets, according to PwC's practical guide? | pwc_practical_guide_ifrs9 p.1 | 1 |
+| r20 | Under the 2021 issued IFRS 9 text, what three categories does an entity classify financial assets into? | ifrs9_issued_2021 p.18 | miss (not in top 10) |
+| r21 | According to Circular C1/2026, what happens to a Banks Act circular not confirmed as effective in that year's Circular 1? | sarb_c1_2026_status_of_circulars p.1 | 1 |

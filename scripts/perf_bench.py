@@ -10,7 +10,7 @@ measured against the system it's supposed to speed up is just a plausible-soundi
 
 import json
 
-from src.config import CACHE_DB_PATH, GOLDEN_PATH, REPORTS_DIR
+from src.config import CACHE_DB_PATH, GOLDEN_DEV_PATH, REPORTS_DIR
 from src.obslog import timed_answer
 
 N_QUESTIONS = 15
@@ -41,7 +41,7 @@ def _run_pass(questions: list[str]) -> dict:
 
 
 def run() -> dict:
-    golden = [json.loads(line) for line in GOLDEN_PATH.read_text(encoding="utf-8").splitlines()]
+    golden = [json.loads(line) for line in GOLDEN_DEV_PATH.read_text(encoding="utf-8").splitlines()]
     factual = [item for item in golden if item["type"] == "factual"][:N_QUESTIONS]
     questions = [item["question"] for item in factual]
 

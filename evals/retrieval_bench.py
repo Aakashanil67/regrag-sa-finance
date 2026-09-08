@@ -11,12 +11,13 @@ chunk's [page_start, page_end] span — matching the doc alone would call a hit 
 page 40 of a document when the question is about page 1.
 """
 
+import argparse
 import json
 
-from src.config import REPORTS_DIR
+from src.config import REPORTS_DIR, RETRIEVAL_DEV_PATH, RETRIEVAL_HOLDOUT_PATH
 from src.retrieve import RetrievedChunk, retrieve
 
-RETRIEVAL_SET_PATH = REPORTS_DIR.parent / "evals" / "retrieval_set.json"
+_SPLIT_PATHS = {"dev": RETRIEVAL_DEV_PATH, "holdout": RETRIEVAL_HOLDOUT_PATH}
 K_VALUES = (3, 5, 10)
 MAX_K = max(K_VALUES)
 
@@ -34,8 +35,8 @@ def _first_hit_rank(
     return None
 
 
-def run_benchmark() -> dict:
-    questions = json.loads(RETRIEVAL_SET_PATH.read_text(encoding="utf-8"))
+def run_benchmark(split: str = "dev") -> dict:
+    questions = json.loads(_SPLIT_PATHS[split].read_text(encoding="utf-8"))
 
     per_question = []
     for item in questions:
@@ -59,9 +60,12 @@ def run_benchmark() -> dict:
     return {"per_question": per_question, "hit_rates": hit_rates, "mrr": mrr}
 
 
-def write_report(results: dict) -> None:
+def write_report(results: dict, split: str = "dev") -> None:
     lines = [
         "# Retrieval benchmark",
+        "",
+        f"**Split: {split}.** Development-set numbers guide tuning; only a `holdout` run, executed "
+        "once against a frozen pipeline, is release evidence.",
         "",
         "**Hit-rate@k**: fraction of questions where the source document/page appears anywhere in "
         "the top k retrieved chunks — what a user actually experiences, since the RAG layer only "
@@ -91,9 +95,13 @@ def write_report(results: dict) -> None:
 
     (REPORTS_DIR / "retrieval_bench.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(
-        f"wrote reports/retrieval_bench.md — hit-rate@5={results['hit_rates'][5]:.0%}, MRR={results['mrr']:.3f}"
+        f"wrote reports/retrieval_bench.md (split={split}) — "
+        f"hit-rate@5={results['hit_rates'][5]:.0%}, MRR={results['mrr']:.3f}"
     )
 
 
 if __name__ == "__main__":
-    write_report(run_benchmark())
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--split", choices=["dev", "holdout"], default="dev")
+    args = parser.parse_args()
+    write_report(run_benchmark(split=args.split), split=args.split)

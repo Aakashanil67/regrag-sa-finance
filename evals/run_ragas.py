@@ -1,4 +1,4 @@
-"""RAGAS evaluation over the answerable items (factual + multi-doc) in evals/golden.jsonl.
+"""RAGAS evaluation over the answerable items (factual + multi-doc) in evals/golden_dev.jsonl.
 
 Runs the real RAG pipeline on each question — real retrieval, real Claude answer — then scores
 that output against the golden reference answer with four RAGAS metrics.
@@ -32,7 +32,7 @@ from datetime import UTC, datetime
 from ragas.metrics.collections import AnswerRelevancy, ContextPrecision, ContextRecall, Faithfulness
 
 from evals._ragas_judge import build_judge
-from src.config import EVAL_HISTORY_CSV, GOLDEN_PATH, REPORTS_DIR
+from src.config import EVAL_HISTORY_CSV, GOLDEN_DEV_PATH, REPORTS_DIR
 from src.rag import answer_question
 
 _SCORED_TYPES = {"factual", "multi-doc"}
@@ -75,7 +75,7 @@ async def _score_item(item: dict, metrics: dict) -> dict | None:
 
 
 async def run() -> dict:
-    golden = [json.loads(line) for line in GOLDEN_PATH.read_text(encoding="utf-8").splitlines()]
+    golden = [json.loads(line) for line in GOLDEN_DEV_PATH.read_text(encoding="utf-8").splitlines()]
     scored_items = [item for item in golden if item["type"] in _SCORED_TYPES]
 
     llm, embeddings = build_judge()
@@ -142,7 +142,7 @@ def _write_summary(result: dict) -> None:
         "# RAGAS evaluation summary",
         "",
         f"Scored {result['n_scored']}/{result['n_attempted']} answerable items from "
-        "`evals/golden.jsonl` (factual + multi-doc — unanswerable items are checked for refusal "
+        "`evals/golden_dev.jsonl` (factual + multi-doc — unanswerable items are checked for refusal "
         "separately, not scored on these metrics).",
         "",
     ]

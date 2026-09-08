@@ -107,9 +107,10 @@ def _bench(collection, retrieval_set: list[dict], rerank: bool) -> dict:
 
 
 def run() -> list[dict]:
-    retrieval_set = json.loads(
-        (config.EVALS_DIR / "retrieval_set.json").read_text(encoding="utf-8")
-    )
+    # development data only — a parameter sweep tunes toward whatever set it's run against, so it
+    # must never see the sealed holdout (see evals/protocol.json once evals/golden_holdout.jsonl
+    # and evals/retrieval_holdout.json exist)
+    retrieval_set = json.loads(config.RETRIEVAL_DEV_PATH.read_text(encoding="utf-8"))
 
     results = []
     for chunk_size in CHUNK_SIZES:
@@ -140,9 +141,12 @@ def _write_report(results: list[dict]) -> None:
     lines = [
         "# Improvement log: chunk size x reranking sweep",
         "",
+        "**Development-set results only** (`evals/retrieval_dev.json`) — this sweep exists to "
+        "choose parameters, so it must never touch the sealed holdout. Not release evidence.",
+        "",
         "Each row re-chunks and re-embeds the whole corpus at that chunk size into a throwaway "
-        "collection (never the production one), then runs the same 20-question retrieval "
-        "benchmark used in `reports/retrieval_bench.md`.",
+        "collection (never the production one), then runs the same retrieval benchmark used in "
+        "`reports/retrieval_bench.md`.",
         "",
         "| chunk size | rerank | chunks | hit-rate@3 | hit-rate@5 | hit-rate@10 | MRR |",
         "|---|---|---|---|---|---|---|",
