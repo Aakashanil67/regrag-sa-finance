@@ -1,11 +1,25 @@
-"""SQLite log of every query: question, retrieved chunk ids, answer, latency, tokens, cost.
+"""SQLite log of every query: metrics, refusal reason, retrieved chunk ids, latency, tokens, cost
+— and, only on explicit local opt-in, the question/answer text itself.
 
 This is the raw material api/main.py's /stats endpoint and app/ops.py's usage charts read from —
 one row per question, not aggregated, so both can compute whatever slice they need (latency
 percentiles, cost per day, refusal rate) without re-running the RAG pipeline.
+
+Privacy default: `LOG_RAW_CONTENT` (default false) gates whether `question`/`answer` are stored at
+all. Off by default because a compliance-research tool is exactly the kind of thing someone pastes
+a real account number or case detail into without thinking about it — the safe default is to keep
+metrics (which don't need the text) and drop the text, not to log everything and hope operators
+remember to scrub later. When a local user supplies `LOG_HASH_KEY`, `question_hmac` stores an
+HMAC-SHA256 of the normalised question instead of nothing — enough to notice "this exact question
+keeps recurring" without recovering what it said. Called pseudonymous, not anonymous, deliberately:
+an HMAC is reversible by anyone who also holds the key or can brute-force a small question space,
+which a plain hash would be trivially reversible to anyone, key or not.
 """
 
+import hashlib
+import hmac as hmac_module
 import json
+import os
 import sqlite3
 import time
 from contextlib import contextmanager
@@ -24,8 +38,10 @@ DB_PATH = ROOT / "regrag_log.sqlite3"
 _COLUMNS = [
     ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
     ("timestamp", "REAL NOT NULL"),
-    ("question", "TEXT NOT NULL"),
-    ("answer", "TEXT NOT NULL"),
+    ("question", "TEXT NULL"),
+    ("answer", "TEXT NULL"),
+    ("question_hmac", "TEXT NULL"),
+    ("content_logged", "INTEGER NOT NULL DEFAULT 0"),
     ("refused", "INTEGER NOT NULL"),
     ("flagged_injection", "INTEGER NOT NULL DEFAULT 0"),
     ("cache_hit", "INTEGER NOT NULL DEFAULT 0"),
@@ -45,7 +61,29 @@ _CREATE_TABLE = (
 )
 
 
+def _has_not_null_content_columns(conn: sqlite3.Connection) -> bool:
+    # PRAGMA table_info row shape: (cid, name, type, notnull, dflt_value, pk)
+    info = {row[1]: row[3] for row in conn.execute("PRAGMA table_info(queries)")}
+    return info.get("question") == 1 or info.get("answer") == 1
+
+
+def _migrate_to_nullable_content(conn: sqlite3.Connection) -> None:
+    """SQLite can't drop a NOT NULL constraint with ALTER TABLE — the only way to relax `question`/
+    `answer` to nullable is to rebuild the table under a new schema and copy the old rows across.
+    Existing content is preserved as-is; nulling it out is a separate, explicit scrub operation
+    (`scrub_content`), never an automatic side effect of this migration."""
+    old_columns = {row[1] for row in conn.execute("PRAGMA table_info(queries)")}
+    conn.execute("ALTER TABLE queries RENAME TO queries_v1")
+    conn.execute(_CREATE_TABLE)
+    common = [c for c, _ in _COLUMNS if c in old_columns]
+    cols_sql = ", ".join(common)
+    conn.execute(f"INSERT INTO queries ({cols_sql}) SELECT {cols_sql} FROM queries_v1")
+    conn.execute("DROP TABLE queries_v1")
+
+
 def _migrate(conn: sqlite3.Connection) -> None:
+    if _has_not_null_content_columns(conn):
+        _migrate_to_nullable_content(conn)
     existing = {row[1] for row in conn.execute("PRAGMA table_info(queries)")}
     for column, definition in _COLUMNS:
         if column not in existing:
@@ -64,6 +102,10 @@ def _connect():
         conn.close()
 
 
+def _normalize(question: str) -> str:
+    return " ".join(question.strip().lower().split())
+
+
 @dataclass
 class TimedRAGResult:
     """Wraps a RAGResult with the wall-clock time it took and whether it came from the response
@@ -79,16 +121,32 @@ def log_query(timed: TimedRAGResult) -> None:
     result = timed.result
     unverified = sum(1 for c in result.citations if not c.verified)
 
+    log_raw = os.environ.get("LOG_RAW_CONTENT", "false").strip().lower() == "true"
+    hash_key = os.environ.get("LOG_HASH_KEY") or None
+
+    question = result.question if log_raw else None
+    answer = result.answer if log_raw else None
+    question_hmac = (
+        hmac_module.new(
+            hash_key.encode("utf-8"), _normalize(result.question).encode("utf-8"), hashlib.sha256
+        ).hexdigest()
+        if hash_key
+        else None
+    )
+
     with _connect() as conn:
         conn.execute(
-            "INSERT INTO queries (timestamp, question, answer, refused, flagged_injection, "
-            "cache_hit, citation_count, unverified_citation_count, retrieved_chunk_ids, model, "
-            "input_tokens, output_tokens, cost_usd, latency_ms, refusal_reason) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO queries (timestamp, question, answer, question_hmac, content_logged, "
+            "refused, flagged_injection, cache_hit, citation_count, unverified_citation_count, "
+            "retrieved_chunk_ids, model, input_tokens, output_tokens, cost_usd, latency_ms, "
+            "refusal_reason) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 time.time(),
-                result.question,
-                result.answer,
+                question,
+                answer,
+                question_hmac,
+                int(log_raw),
                 int(result.refused),
                 int(result.flagged_injection),
                 int(timed.cache_hit),
@@ -103,6 +161,30 @@ def log_query(timed: TimedRAGResult) -> None:
                 result.refusal_reason.value if result.refusal_reason else None,
             ),
         )
+
+
+def purge_expired(retention_days: int | None = None, now: float | None = None) -> int:
+    """Deletes rows older than the retention window entirely — not a scrub, a real deletion,
+    matching LOG_RETENTION_DAYS's promise that data doesn't accumulate forever by default."""
+    if retention_days is None:
+        retention_days = int(os.environ.get("LOG_RETENTION_DAYS", "30"))
+    cutoff = (now if now is not None else time.time()) - retention_days * 86400
+    with _connect() as conn:
+        cursor = conn.execute("DELETE FROM queries WHERE timestamp < ?", (cutoff,))
+        return cursor.rowcount
+
+
+def scrub_content() -> int:
+    """Explicit, one-time removal of raw question/answer text from rows that logged it — for a
+    local user who ran with LOG_RAW_CONTENT=true and changed their mind. Nulls content only;
+    aggregate metrics (timings, refusal reason, citation counts) are untouched, since those were
+    never the privacy concern."""
+    with _connect() as conn:
+        cursor = conn.execute(
+            "UPDATE queries SET question = NULL, answer = NULL, content_logged = 0 "
+            "WHERE content_logged = 1"
+        )
+        return cursor.rowcount
 
 
 def timed_answer(question: str, k: int = 5) -> TimedRAGResult:
@@ -158,3 +240,35 @@ def stats_summary() -> dict:
         "total_cost_usd": row[2] or 0.0,
         "refusal_rate": (row[3] or 0) / n if n else 0.0,
     }
+
+
+def content_logging_enabled() -> bool:
+    return os.environ.get("LOG_RAW_CONTENT", "false").strip().lower() == "true"
+
+
+def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--scrub-content",
+        action="store_true",
+        help="null raw question/answer text from rows that logged it, keeping aggregate metrics",
+    )
+    parser.add_argument(
+        "--purge-expired",
+        action="store_true",
+        help="delete rows older than LOG_RETENTION_DAYS (default 30)",
+    )
+    args = parser.parse_args()
+
+    if args.scrub_content:
+        print(f"scrubbed raw content from {scrub_content()} row(s)")
+    elif args.purge_expired:
+        print(f"purged {purge_expired()} expired row(s)")
+    else:
+        print(stats_summary())
+
+
+if __name__ == "__main__":
+    main()

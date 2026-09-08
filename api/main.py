@@ -6,8 +6,10 @@ there's no code path that answers a question without also recording it, which is
 """
 
 import logging
+import os
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -23,7 +25,7 @@ from api.schemas import (
     SourceReferenceOut,
     StatsResponse,
 )
-from src.obslog import stats_summary, timed_answer
+from src.obslog import content_logging_enabled, stats_summary, timed_answer
 
 logger = logging.getLogger("regrag.api")
 
@@ -31,6 +33,22 @@ limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title="RegRAG API")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# No authentication anywhere in this stack — CORS is the only thing standing between this API and
+# any page in the user's browser that decides to call it. Defaults to the local chat origin only;
+# widen via CORS_ALLOWED_ORIGINS (comma-separated) for a different local setup, never for a
+# public deployment (see README's deployment-boundary section — this stack must stay loopback-only).
+_cors_origins = [
+    origin.strip()
+    for origin in os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:8501").split(",")
+    if origin.strip()
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_cors_origins,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/health", response_model=HealthResponse)
@@ -40,7 +58,7 @@ def health() -> HealthResponse:
 
 @app.get("/stats", response_model=StatsResponse)
 def stats() -> StatsResponse:
-    return StatsResponse(**stats_summary())
+    return StatsResponse(**stats_summary(), content_logging_enabled=content_logging_enabled())
 
 
 @app.post("/ask", response_model=AskResponse)

@@ -17,7 +17,7 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.config import REPORTS_DIR  # noqa: E402
-from src.obslog import recent_queries, stats_summary  # noqa: E402
+from src.obslog import content_logging_enabled, recent_queries, stats_summary  # noqa: E402
 
 st.set_page_config(page_title="RegRAG — Ops", page_icon="📊", layout="wide")
 st.title("RegRAG Ops Dashboard")
@@ -30,9 +30,11 @@ if eval_history_path.exists():
     st.line_chart(eval_df.set_index("timestamp")[metric_cols])
     st.dataframe(eval_df.tail(10), use_container_width=True)
 else:
-    st.info("No eval runs yet — run `python -m evals.run_ragas` to populate this chart.")
+    st.info("No eval runs yet — run `python -m evals.run_release --split dev --label ...`.")
 
 st.header("Usage")
+raw_logging_on = content_logging_enabled()
+st.caption(f"Raw content logging: {'**on**' if raw_logging_on else '**off**'} (`LOG_RAW_CONTENT`)")
 stats = stats_summary()
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Total queries", stats["total_queries"])
@@ -45,12 +47,13 @@ if queries:
     queries_df = pd.DataFrame(queries)
     queries_df["timestamp"] = pd.to_datetime(queries_df["timestamp"], unit="s")
     st.line_chart(queries_df.set_index("timestamp")[["latency_ms", "cost_usd"]])
-    st.dataframe(
-        queries_df[
-            ["timestamp", "question", "refused", "citation_count", "latency_ms", "cost_usd"]
-        ],
-        use_container_width=True,
-    )
+    if raw_logging_on:
+        columns = ["timestamp", "question", "refused", "citation_count", "latency_ms", "cost_usd"]
+    else:
+        # question text is null by default (see src/obslog.py) — showing the column would just be
+        # a column of blanks, which reads as a bug rather than a deliberate privacy default
+        columns = ["timestamp", "refused", "citation_count", "latency_ms", "cost_usd"]
+    st.dataframe(queries_df[columns], use_container_width=True)
 else:
     st.info("No queries logged yet — ask something in the chat UI first.")
 

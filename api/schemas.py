@@ -56,3 +56,4 @@ class StatsResponse(BaseModel):
     avg_latency_ms: float
     total_cost_usd: float
     refusal_rate: float
+    content_logging_enabled: bool

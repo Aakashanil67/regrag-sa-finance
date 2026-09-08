@@ -170,6 +170,107 @@ def test_log_query_records_null_refusal_reason_for_an_accepted_answer(tmp_path, 
     assert recent_queries(limit=1)[0]["refusal_reason"] is None
 
 
+def test_raw_content_is_not_stored_by_default(tmp_path, monkeypatch):
+    monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "test_log.sqlite3")
+    monkeypatch.delenv("LOG_RAW_CONTENT", raising=False)
+    monkeypatch.delenv("LOG_HASH_KEY", raising=False)
+
+    log_query(TimedRAGResult(result=_result(), latency_ms=100.0))
+
+    row = recent_queries(limit=1)[0]
+    assert row["question"] is None
+    assert row["answer"] is None
+    assert row["question_hmac"] is None
+    assert row["content_logged"] == 0
+    # metrics survive regardless of the privacy setting
+    assert row["citation_count"] == 1
+    assert row["refusal_reason"] is None
+
+
+def test_raw_content_is_stored_with_explicit_opt_in(tmp_path, monkeypatch):
+    monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "test_log.sqlite3")
+    monkeypatch.setenv("LOG_RAW_CONTENT", "true")
+    monkeypatch.delenv("LOG_HASH_KEY", raising=False)
+
+    log_query(TimedRAGResult(result=_result(), latency_ms=100.0))
+
+    row = recent_queries(limit=1)[0]
+    assert row["question"] == "What must banks do?"
+    assert row["answer"] == "Banks must comply. [sarb_d3_2023, p.3]"
+    assert row["content_logged"] == 1
+
+
+def test_question_hmac_is_null_without_a_hash_key(tmp_path, monkeypatch):
+    monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "test_log.sqlite3")
+    monkeypatch.delenv("LOG_RAW_CONTENT", raising=False)
+    monkeypatch.delenv("LOG_HASH_KEY", raising=False)
+
+    log_query(TimedRAGResult(result=_result(), latency_ms=100.0))
+
+    assert recent_queries(limit=1)[0]["question_hmac"] is None
+
+
+def test_question_hmac_differs_when_the_hash_key_changes(tmp_path, monkeypatch):
+    monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "test_log.sqlite3")
+    monkeypatch.delenv("LOG_RAW_CONTENT", raising=False)
+
+    monkeypatch.setenv("LOG_HASH_KEY", "key-one")
+    log_query(TimedRAGResult(result=_result(), latency_ms=100.0))
+    hmac_one = recent_queries(limit=1)[0]["question_hmac"]
+
+    monkeypatch.setenv("LOG_HASH_KEY", "key-two")
+    log_query(TimedRAGResult(result=_result(), latency_ms=100.0))
+    hmac_two = recent_queries(limit=1)[0]["question_hmac"]
+
+    assert hmac_one is not None
+    assert hmac_one != hmac_two
+
+
+def test_purge_expired_removes_only_rows_older_than_the_retention_window(tmp_path, monkeypatch):
+    monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "test_log.sqlite3")
+    now = 1_700_000_000.0
+    old_timestamp = now - 31 * 86400
+    recent_timestamp = now - 29 * 86400
+
+    with obslog._connect() as conn:
+        conn.execute(
+            "INSERT INTO queries (timestamp, question, answer, question_hmac, content_logged, "
+            "refused, citation_count, unverified_citation_count, retrieved_chunk_ids, model, "
+            "input_tokens, output_tokens, cost_usd, latency_ms) "
+            "VALUES (?, NULL, NULL, NULL, 0, 0, 0, 0, '[]', 'm', 0, 0, 0.0, 0.0)",
+            (old_timestamp,),
+        )
+        conn.execute(
+            "INSERT INTO queries (timestamp, question, answer, question_hmac, content_logged, "
+            "refused, citation_count, unverified_citation_count, retrieved_chunk_ids, model, "
+            "input_tokens, output_tokens, cost_usd, latency_ms) "
+            "VALUES (?, NULL, NULL, NULL, 0, 0, 0, 0, '[]', 'm', 0, 0, 0.0, 0.0)",
+            (recent_timestamp,),
+        )
+
+    removed = obslog.purge_expired(retention_days=30, now=now)
+
+    assert removed == 1
+    remaining = obslog.recent_queries(limit=10)
+    assert len(remaining) == 1
+    assert remaining[0]["timestamp"] == recent_timestamp
+
+
+def test_scrub_content_nulls_raw_fields_without_deleting_the_row(tmp_path, monkeypatch):
+    monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "test_log.sqlite3")
+    monkeypatch.setenv("LOG_RAW_CONTENT", "true")
+    log_query(TimedRAGResult(result=_result(), latency_ms=100.0))
+
+    scrubbed = obslog.scrub_content()
+
+    assert scrubbed == 1
+    row = recent_queries(limit=1)[0]
+    assert row["question"] is None
+    assert row["answer"] is None
+    assert row["content_logged"] == 0
+    assert row["citation_count"] == 1  # aggregate metadata survives the scrub
+
+
 def test_timed_answer_threads_k_into_the_cache_lookup(tmp_path, monkeypatch):
     monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "test_log.sqlite3")
     seen = {}

@@ -143,6 +143,7 @@ def test_stats_returns_summary(monkeypatch):
             "refusal_rate": 0.2,
         },
     )
+    monkeypatch.setattr(main, "content_logging_enabled", lambda: False)
 
     response = client.get("/stats")
 
@@ -152,4 +153,11 @@ def test_stats_returns_summary(monkeypatch):
         "avg_latency_ms": 200.0,
         "total_cost_usd": 0.01,
         "refusal_rate": 0.2,
+        "content_logging_enabled": False,
     }
+
+
+def test_cors_allows_only_the_configured_origins(monkeypatch):
+    response = client.get("/health", headers={"Origin": "http://localhost:8501"})
+
+    assert response.headers.get("access-control-allow-origin") == "http://localhost:8501"
