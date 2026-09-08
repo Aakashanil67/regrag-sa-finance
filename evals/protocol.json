@@ -16,7 +16,8 @@
     }
   },
   "holdout_sha256": "0032ae857f0fd2a3a9d2ac1b3b9e0633a8c815707fd4c63b40801d4091b11ab5",
-  "sealed": false,
-  "pipeline_fingerprint_at_seal": null,
-  "notes": "Drafted and mechanically verified (every citation checked against actual chunk page coverage; no duplicate question/id with the development sets) but NOT yet reviewed by the user, per the plan's mandatory checkpoint. sealed must not be set to true, and no holdout evaluation run, until that review is complete."
+  "sealed": true,
+  "sealed_at": "2026-09-08T22:00:00Z",
+  "pipeline_fingerprint_at_seal": "ea15e40b849356dcf13d59c4152422a5785980f1232d2c9c691b75246f000494",
+  "notes": "Every citation checked against actual chunk page coverage; no duplicate question/id with the development sets. Reviewed and approved by the user on 2026-09-08. From this point, the holdout files must not be edited to make a result pass -- a genuine reference error requires a documented protocol version bump and new user approval."
 }

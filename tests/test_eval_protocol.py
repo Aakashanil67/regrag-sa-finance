@@ -168,8 +168,11 @@ def test_protocol_hash_matches_the_canonical_holdout_bytes(protocol):
     assert protocol["holdout_sha256"] == hashlib.sha256(canonical).hexdigest()
 
 
-def test_protocol_is_not_sealed_until_the_user_has_reviewed_it(protocol):
-    # this is the mandatory human checkpoint the plan requires before any holdout evaluation run —
-    # flipping this to true is a deliberate, separate action, never a side effect of editing files
-    if not protocol["sealed"]:
+def test_sealing_the_protocol_records_the_pipeline_fingerprint(protocol):
+    # sealing is a deliberate, separate action, never a side effect of editing the holdout files —
+    # an unsealed protocol must carry no fingerprint, and a sealed one must carry a real one
+    if protocol["sealed"]:
+        assert protocol["pipeline_fingerprint_at_seal"]
+        assert len(protocol["pipeline_fingerprint_at_seal"]) == 64
+    else:
         assert protocol["pipeline_fingerprint_at_seal"] is None
