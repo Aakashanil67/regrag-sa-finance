@@ -115,8 +115,14 @@
   },
   {
     "id": "r20",
-    "question": "How many classification categories does IFRS 9 have for financial assets, according to PwC's practical guide?",
-    "doc_id": "pwc_practical_guide_ifrs9",
+    "question": "Under the 2021 issued IFRS 9 text, what three categories does an entity classify financial assets into?",
+    "doc_id": "ifrs9_issued_2021",
+    "page": 18
+  },
+  {
+    "id": "r21",
+    "question": "According to Circular C1/2026, what happens to a Banks Act circular not confirmed as effective in that year's Circular 1?",
+    "doc_id": "sarb_c1_2026_status_of_circulars",
     "page": 1
   }
 ]

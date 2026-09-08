@@ -131,10 +131,17 @@ def test_cache_hit_still_carries_source_notices(tmp_path, monkeypatch):
     # bug waiting to happen if it were ever stored as a stale snapshot instead of recomputed —
     # it's derived from citations_json, which the cache does store, so it must survive a hit
     monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
+    from src import rag as rag_module
+
+    monkeypatch.setattr(
+        rag_module,
+        "_doc_metadata",
+        lambda: {"mock_third_party_doc": {"is_third_party": True, "document_type": "Commentary"}},
+    )
     result = RAGResult(
         question="What impairment model does IFRS 9 use?",
-        answer="An expected-loss model. [pwc_practical_guide_ifrs9, p.1]",
-        citations=[Citation("pwc_practical_guide_ifrs9", 1, True)],
+        answer="An expected-loss model. [mock_third_party_doc, p.1]",
+        citations=[Citation("mock_third_party_doc", 1, True)],
         retrieved_chunks=[],
         refused=False,
         flagged_injection=False,

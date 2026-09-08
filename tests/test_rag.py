@@ -185,23 +185,37 @@ def test_format_context_omits_source_line_for_an_unknown_doc_id(monkeypatch):
     assert "Source type" not in context
 
 
-def test_citing_the_third_party_guide_produces_a_source_notice(monkeypatch):
+def test_citing_a_third_party_document_produces_a_source_notice(monkeypatch):
+    # a synthetic manifest entry, not a real corpus doc_id: the only third-party source the
+    # corpus used to carry (pwc_practical_guide_ifrs9) was removed as stale in Task 5, but the
+    # notice-generation logic keyed on is_third_party still needs its own coverage
     monkeypatch.setattr(
         rag,
-        "retrieve",
-        lambda q, k=5, rerank=False: [_chunk(doc_id="pwc_practical_guide_ifrs9")],
+        "_doc_metadata",
+        lambda: {
+            "mock_third_party_doc": {
+                "is_third_party": True,
+                "document_type": "Commentary",
+                "published_date": "2020-01-01",
+                "issuing_authority": "Some Publisher",
+                "title": "Mock Third-Party Commentary",
+            }
+        },
+    )
+    monkeypatch.setattr(
+        rag, "retrieve", lambda q, k=5, rerank=False: [_chunk(doc_id="mock_third_party_doc")]
     )
     monkeypatch.setattr(
         rag,
         "complete",
-        _fake_llm("IFRS 9 uses an expected-loss model. [pwc_practical_guide_ifrs9, p.1]"),
+        _fake_llm("IFRS 9 uses an expected-loss model. [mock_third_party_doc, p.1]"),
     )
 
     result = rag.answer_question("What impairment model does IFRS 9 use?")
 
     assert len(result.source_notices) == 1
     assert "third-party commentary" in result.source_notices[0]
-    assert "pwc_practical_guide_ifrs9" in result.source_notices[0]
+    assert "mock_third_party_doc" in result.source_notices[0]
     # the notice is structured data, never folded into the graded answer text
     assert "third-party" not in result.answer
 
@@ -247,8 +261,19 @@ def test_citing_a_current_directive_produces_no_notices(monkeypatch):
 def test_a_refusal_produces_no_source_notices_even_for_a_flagged_document_type(monkeypatch):
     monkeypatch.setattr(
         rag,
-        "retrieve",
-        lambda q, k=5, rerank=False: [_chunk(doc_id="pwc_practical_guide_ifrs9")],
+        "_doc_metadata",
+        lambda: {
+            "mock_third_party_doc": {
+                "is_third_party": True,
+                "document_type": "Commentary",
+                "published_date": "2020-01-01",
+                "issuing_authority": "Some Publisher",
+                "title": "Mock Third-Party Commentary",
+            }
+        },
+    )
+    monkeypatch.setattr(
+        rag, "retrieve", lambda q, k=5, rerank=False: [_chunk(doc_id="mock_third_party_doc")]
     )
     monkeypatch.setattr(rag, "complete", _fake_llm(rag.INSUFFICIENT_CONTEXT_PHRASE))
 

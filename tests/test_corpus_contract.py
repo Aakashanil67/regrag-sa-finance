@@ -157,11 +157,45 @@ def test_the_conduct_standard_press_release_is_not_labelled_as_the_standard_itse
     assert entry["authority_level"] != "binding_regulatory_instrument"
 
 
-def test_the_pwc_guide_is_flagged_third_party_with_the_status_it_actually_has(manifest):
-    entry = manifest["pwc_practical_guide_ifrs9"]
+def test_the_outdated_pwc_guide_is_not_active(manifest):
+    # the manifest claimed 2017; the PDF's own creation-date metadata says 2011-01-06, and its
+    # text describes the pre-2014 two-category IFRS 9 model — replaced by the official 2021 text
+    assert "pwc_practical_guide_ifrs9" not in manifest
 
-    assert entry["is_third_party"] is True
-    assert entry["authority_level"] == "third_party_commentary"
+
+def test_the_2004_circulars_are_withdrawn_per_c1_2026(manifest):
+    # C1/2026 deems every previously issued circular withdrawn/terminated/replaced unless
+    # confirmed in that year's circular (para 1.1); neither 2004 circular appears in its list
+    for doc_id in (
+        "sarb_circular_19_2004_capital_hybrid_instruments",
+        "sarb_circular_6_2004_basel_ii_update",
+    ):
+        entry = manifest[doc_id]
+        assert entry["current_status"] == "withdrawn"
+        assert entry["status_source_id"] == "sarb_c1_2026_status_of_circulars"
+
+
+def test_stale_directives_superseded_per_c1_2026_are_flagged(manifest):
+    # C1/2026's own effective-directives list confirms D3/2023 but omits D8/2023 and D10/2021,
+    # while listing their same-subject successors (D8/2025, D4/2023) as effective
+    assert manifest["sarb_d3_2023_accounting_provisions_ifrs9"]["current_status"] == "current"
+    assert manifest["sarb_d8_2023_threshold_amounts"]["current_status"] == "superseded"
+    assert manifest["sarb_d10_2021_operational_resilience"]["current_status"] == "superseded"
+    assert manifest["sarb_d8_2025_threshold_amounts"]["current_status"] == "current"
+    assert manifest["sarb_d4_2023_operational_resilience"]["current_status"] == "current"
+
+
+def test_the_2021_ifrs9_issued_text_is_active(manifest):
+    entry = manifest["ifrs9_issued_2021"]
+
+    assert entry["authority_level"] == "binding_regulatory_instrument"
+    assert (
+        entry["current_status"] == "historical_snapshot"
+    )  # dated snapshot; IFRS.org tracks later amendments
+
+
+def test_c1_2026_status_source_is_itself_an_active_manifest_entry(manifest):
+    assert "sarb_c1_2026_status_of_circulars" in manifest
 
 
 def test_every_status_that_is_not_current_or_unknown_names_evidence(manifest):
