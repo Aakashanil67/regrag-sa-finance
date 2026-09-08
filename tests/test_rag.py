@@ -36,15 +36,67 @@ def test_citation_matching_a_retrieved_page_is_verified(monkeypatch):
     assert result.refused is False
 
 
-def test_citation_to_a_page_never_retrieved_is_flagged_unverified(monkeypatch):
+def test_unverified_page_citation_is_replaced_by_a_refusal(monkeypatch):
     monkeypatch.setattr(
-        rag, "retrieve", lambda q, k=5, rerank=False: [_chunk(page_start=3, page_end=3)]
+        rag, "retrieve", lambda q, k=5, rerank=True: [_chunk(page_start=3, page_end=3)]
     )
     monkeypatch.setattr(rag, "complete", _fake_llm("Banks must comply. [sarb_d3_2023, p.99]"))
 
     result = rag.answer_question("What must banks do?")
 
-    assert result.citations == [rag.Citation(doc_id="sarb_d3_2023", page=99, verified=False)]
+    assert result.refused is True
+    assert result.answer == rag.INSUFFICIENT_CONTEXT_PHRASE
+    assert result.citations == []
+    assert result.refusal_reason == rag.RefusalReason.UNVERIFIED_CITATION
+
+
+def test_uncited_model_answer_is_replaced_by_a_refusal(monkeypatch):
+    monkeypatch.setattr(rag, "retrieve", lambda q, k=5, rerank=True: [_chunk()])
+    monkeypatch.setattr(rag, "complete", _fake_llm("The Act requires disclosure."))
+
+    result = rag.answer_question("What does the Act require?")
+
+    assert result.refused is True
+    assert result.answer == rag.INSUFFICIENT_CONTEXT_PHRASE
+    assert result.citations == []
+    assert result.refusal_reason == rag.RefusalReason.MISSING_CITATION
+
+
+def test_every_non_empty_answer_line_must_end_in_a_citation(monkeypatch):
+    text = "First supported claim. [sarb_d3_2023, p.1]\nSecond unsupported claim."
+    monkeypatch.setattr(rag, "retrieve", lambda q, k=5, rerank=True: [_chunk()])
+    monkeypatch.setattr(rag, "complete", _fake_llm(text))
+
+    result = rag.answer_question("Summarise the requirements.")
+
+    assert result.refused is True
+    assert result.refusal_reason == rag.RefusalReason.UNCITED_LINE
+
+
+def test_refusal_phrase_with_extra_text_is_normalised_and_rejected(monkeypatch):
+    text = f"{rag.INSUFFICIENT_CONTEXT_PHRASE} But outside knowledge says otherwise."
+    monkeypatch.setattr(rag, "retrieve", lambda q, k=5, rerank=True: [_chunk()])
+    monkeypatch.setattr(rag, "complete", _fake_llm(text))
+
+    result = rag.answer_question("An unsupported question")
+
+    assert result.answer == rag.INSUFFICIENT_CONTEXT_PHRASE
+    assert result.refusal_reason == rag.RefusalReason.MALFORMED_REFUSAL
+
+
+def test_multiple_verified_citations_at_line_end_are_accepted(monkeypatch):
+    text = "Both instruments address credit risk. [sarb_d3_2023, p.1] [sarb_d8_2023, p.2]"
+    chunks = [
+        _chunk(doc_id="sarb_d3_2023"),
+        _chunk(doc_id="sarb_d8_2023", page_start=2, page_end=2),
+    ]
+    monkeypatch.setattr(rag, "retrieve", lambda q, k=5, rerank=True: chunks)
+    monkeypatch.setattr(rag, "complete", _fake_llm(text))
+
+    result = rag.answer_question("Compare them.")
+
+    assert result.refused is False
+    assert all(c.verified for c in result.citations)
 
 
 def test_refusal_phrase_produces_no_citations_even_if_present_in_text(monkeypatch):

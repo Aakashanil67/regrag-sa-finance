@@ -19,7 +19,14 @@ convention alongside rag.py's plain completions.
 from dataclasses import dataclass, field
 
 from src.llm import LLMResponse, complete
-from src.rag import _SYSTEM_PROMPT, Citation, _extract_citations, _format_context, _source_notices
+from src.rag import (
+    _SYSTEM_PROMPT,
+    Citation,
+    RefusalReason,
+    _format_context,
+    _source_notices,
+    validate_generated_answer,
+)
 from src.rag import INSUFFICIENT_CONTEXT_PHRASE as REFUSAL_PHRASE
 from src.retrieve import RetrievedChunk, retrieve
 
@@ -61,6 +68,7 @@ class AgentResult:
     decision_calls: list[LLMResponse]
     llm_response: LLMResponse  # the final answer-generating call, same shape as RAGResult's
     source_notices: list[str] = field(default_factory=list)
+    refusal_reason: RefusalReason | None = None
 
     @property
     def total_cost_usd(self) -> float:
@@ -113,24 +121,25 @@ def answer_question(question: str, k: int = 5) -> AgentResult:
             llm_response=LLMResponse(
                 text="", model="none", input_tokens=0, output_tokens=0, cost_usd=0.0
             ),
+            refusal_reason=RefusalReason.NO_CONTEXT,
         )
 
     steps.append(AgentStep(action="answer", query=question))
     user_message = f"{_format_context(chunks)}\n\nQuestion: {question}"
     llm_response = complete(system=_SYSTEM_PROMPT, user=user_message)
 
-    refused = REFUSAL_PHRASE.lower() in llm_response.text.lower()
-    citations = [] if refused else _extract_citations(llm_response.text, chunks)
-    notices = [] if refused else _source_notices(citations)
+    validated = validate_generated_answer(llm_response.text, chunks)
+    notices = [] if validated.refused else _source_notices(validated.citations)
 
     return AgentResult(
         question=question,
-        answer=llm_response.text,
-        citations=citations,
+        answer=validated.answer,
+        citations=validated.citations,
         retrieved_chunks=chunks,
-        refused=refused,
+        refused=validated.refused,
         steps=steps,
         decision_calls=decision_calls,
         llm_response=llm_response,
         source_notices=notices,
+        refusal_reason=validated.refusal_reason,
     )

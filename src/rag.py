@@ -40,6 +40,7 @@ exactly what the model generated; api/main.py and app/chat.py render `source_not
 import json
 import re
 from dataclasses import dataclass, field
+from enum import StrEnum
 from functools import lru_cache
 
 from src.config import MANIFEST_PATH
@@ -48,6 +49,16 @@ from src.llm import LLMResponse, complete
 from src.retrieve import RetrievedChunk, retrieve
 
 INSUFFICIENT_CONTEXT_PHRASE = "I don't have a source for that."
+
+
+class RefusalReason(StrEnum):
+    NO_CONTEXT = "no_context"
+    MODEL_REFUSAL = "model_refusal"
+    MALFORMED_REFUSAL = "malformed_refusal"
+    MISSING_CITATION = "missing_citation"
+    UNCITED_LINE = "uncited_line"
+    UNVERIFIED_CITATION = "unverified_citation"
+
 
 # SARB circulars predate the Directive (binding, s6(6)) / Guidance Note (non-binding, s6(5)) split
 # introduced later under the Banks Act framework — both circulars in this corpus are from 2004,
@@ -61,8 +72,10 @@ African financial regulation (SARB, IFRS 9, the National Credit Act, FSCA) from 
 context blocks below. Follow these rules exactly:
 
 1. Answer ONLY using information present in the context blocks. Never use outside knowledge.
-2. Every factual claim must end with an inline citation in the exact form [doc_id, p.X], where \
-doc_id and X are copied from the context block's own (doc_id, p.X) header — never invent one.
+2. Write one factual sentence per non-empty line. End every non-empty line with one or more inline \
+citations in the exact form [doc_id, p.X], where doc_id and X are copied from the context block's \
+own (doc_id, p.X) header — never invent one. Do not write uncited headings, introductions, or \
+closing sentences.
 3. If the context does not contain enough information to answer the question, respond with \
 exactly this sentence and nothing else: "{INSUFFICIENT_CONTEXT_PHRASE}"
 4. This is not legal advice — do not phrase answers as legal conclusions or recommendations; \
@@ -77,7 +90,9 @@ compare types across documents, answer from this line — it is as much a citabl
 text below it.
 """
 
+_CITATION_TOKEN = r"\[[\w\-\.]+,\s*p\.\d+(?:-\d+)?\]"
 _CITATION_PATTERN = re.compile(r"\[([\w\-\.]+),\s*p\.(\d+)(?:-(\d+))?\]")
+_LINE_ENDS_IN_CITATION_PATTERN = re.compile(rf"(?:{_CITATION_TOKEN}\s*)+$")
 
 
 @dataclass
@@ -97,6 +112,15 @@ class RAGResult:
     flagged_injection: bool
     llm_response: LLMResponse
     source_notices: list[str] = field(default_factory=list)
+    refusal_reason: RefusalReason | None = None
+
+
+@dataclass(frozen=True)
+class AnswerValidation:
+    answer: str
+    citations: list[Citation]
+    refused: bool
+    refusal_reason: RefusalReason | None
 
 
 @lru_cache(maxsize=1)
@@ -205,6 +229,43 @@ def _extract_citations(answer: str, chunks: list[RetrievedChunk]) -> list[Citati
     return citations
 
 
+def _refuse(reason: RefusalReason) -> AnswerValidation:
+    return AnswerValidation(
+        answer=INSUFFICIENT_CONTEXT_PHRASE, citations=[], refused=True, refusal_reason=reason
+    )
+
+
+def validate_generated_answer(answer: str, chunks: list[RetrievedChunk]) -> AnswerValidation:
+    """The single fail-closed gate both src.rag and src.agent generate their final answer through.
+
+    Structural verification only: it proves the model's citation points at a (doc_id, page) it was
+    actually shown, not that the cited page supports the claim being made. That second question —
+    semantic entailment — is what offline RAGAS faithfulness scoring and the manual holdout audit
+    exist for; this function can't and doesn't answer it. See the module docstring.
+    """
+    stripped = answer.strip()
+
+    if stripped == INSUFFICIENT_CONTEXT_PHRASE:
+        return _refuse(RefusalReason.MODEL_REFUSAL)
+    if INSUFFICIENT_CONTEXT_PHRASE.lower() in stripped.lower():
+        return _refuse(RefusalReason.MALFORMED_REFUSAL)
+
+    citations = _extract_citations(stripped, chunks)
+    if not citations:
+        return _refuse(RefusalReason.MISSING_CITATION)
+
+    for line in stripped.splitlines():
+        if line.strip() and not _LINE_ENDS_IN_CITATION_PATTERN.search(line.rstrip()):
+            return _refuse(RefusalReason.UNCITED_LINE)
+
+    if any(not c.verified for c in citations):
+        return _refuse(RefusalReason.UNVERIFIED_CITATION)
+
+    return AnswerValidation(
+        answer=stripped, citations=citations, refused=False, refusal_reason=None
+    )
+
+
 def answer_question(question: str, k: int = 5) -> RAGResult:
     flagged = contains_injection_attempt(question)
     # rerank=True: reports/improvement_log.md measured this against the retrieval benchmark
@@ -222,22 +283,23 @@ def answer_question(question: str, k: int = 5) -> RAGResult:
             llm_response=LLMResponse(
                 text="", model="none", input_tokens=0, output_tokens=0, cost_usd=0.0
             ),
+            refusal_reason=RefusalReason.NO_CONTEXT,
         )
 
     user_message = f"{_format_context(chunks)}\n\nQuestion: {question}"
     llm_response = complete(system=_SYSTEM_PROMPT, user=user_message)
 
-    refused = INSUFFICIENT_CONTEXT_PHRASE.lower() in llm_response.text.lower()
-    citations = [] if refused else _extract_citations(llm_response.text, chunks)
-    notices = [] if refused else _source_notices(citations)
+    validated = validate_generated_answer(llm_response.text, chunks)
+    notices = [] if validated.refused else _source_notices(validated.citations)
 
     return RAGResult(
         question=question,
-        answer=llm_response.text,
-        citations=citations,
+        answer=validated.answer,
+        citations=validated.citations,
         retrieved_chunks=chunks,
-        refused=refused,
+        refused=validated.refused,
         flagged_injection=flagged,
         llm_response=llm_response,
         source_notices=notices,
+        refusal_reason=validated.refusal_reason,
     )
