@@ -5,13 +5,13 @@ from fastapi.testclient import TestClient
 import api.main as main
 from src.llm import LLMResponse
 from src.obslog import TimedRAGResult
-from src.rag import Citation, RAGResult
+from src.rag import Citation, RAGResult, RefusalReason
 from src.retrieve import RetrievedChunk
 
 client = TestClient(main.app)
 
 
-def _timed_result(refused=False, source_notices=None):
+def _timed_result(refused=False, source_notices=None, refusal_reason=None):
     return TimedRAGResult(
         result=RAGResult(
             question="What must banks do?",
@@ -38,6 +38,7 @@ def _timed_result(refused=False, source_notices=None):
                 output_tokens=20,
                 cost_usd=0.0005,
             ),
+            refusal_reason=refusal_reason,
         ),
         latency_ms=150.0,
     )
@@ -62,6 +63,19 @@ def test_ask_returns_answer_with_citations(monkeypatch):
     assert body["retrieved_chunks"][0]["doc_id"] == "sarb_d3_2023"
     assert body["refused"] is False
     assert body["model"] == "claude-haiku-4-5"
+    assert body["refusal_reason"] is None
+
+
+def test_ask_response_carries_the_refusal_reason(monkeypatch):
+    monkeypatch.setattr(
+        main,
+        "timed_answer",
+        lambda q: _timed_result(refused=True, refusal_reason=RefusalReason.UNVERIFIED_CITATION),
+    )
+
+    response = client.post("/ask", json={"question": "What must banks do?"})
+
+    assert response.json()["refusal_reason"] == "unverified_citation"
 
 
 def test_ask_response_carries_source_notices(monkeypatch):

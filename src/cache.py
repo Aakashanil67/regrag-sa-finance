@@ -38,33 +38,38 @@ import json
 import sqlite3
 from contextlib import contextmanager
 
-from src.config import (
-    CACHE_DB_PATH,
-    CHUNK_TARGET_TOKENS,
-    COLLECTION_NAME,
-    CROSS_ENCODER_MODEL_NAME,
-    DEFAULT_ANTHROPIC_MODEL,
-    EMBEDDING_MODEL_NAME,
-)
+from src.config import CACHE_DB_PATH
 from src.llm import LLMResponse
-from src.rag import _SYSTEM_PROMPT, Citation, RAGResult, _source_notices
+from src.provenance import pipeline_fingerprint
+from src.rag import Citation, RAGResult, RefusalReason, _source_notices
 
-_SCHEMA = """
-CREATE TABLE IF NOT EXISTS response_cache (
-    question_hash TEXT PRIMARY KEY,
-    question TEXT NOT NULL,
-    answer TEXT NOT NULL,
-    citations_json TEXT NOT NULL,
-    refused INTEGER NOT NULL,
-    model TEXT NOT NULL
-);
-"""
+_COLUMNS = [
+    ("question_hash", "TEXT PRIMARY KEY"),
+    ("question", "TEXT NOT NULL"),
+    ("answer", "TEXT NOT NULL"),
+    ("citations_json", "TEXT NOT NULL"),
+    ("refused", "INTEGER NOT NULL"),
+    ("model", "TEXT NOT NULL"),
+    ("refusal_reason", "TEXT NULL"),
+]
+
+_CREATE_TABLE = (
+    f"CREATE TABLE IF NOT EXISTS response_cache ({', '.join(f'{c} {d}' for c, d in _COLUMNS)});"
+)
+
+
+def _migrate(conn: sqlite3.Connection) -> None:
+    existing = {row[1] for row in conn.execute("PRAGMA table_info(response_cache)")}
+    for column, definition in _COLUMNS:
+        if column not in existing:
+            conn.execute(f"ALTER TABLE response_cache ADD COLUMN {column} {definition}")
 
 
 @contextmanager
 def _connect():
     conn = sqlite3.connect(CACHE_DB_PATH)
-    conn.execute(_SCHEMA)
+    conn.execute(_CREATE_TABLE)
+    _migrate(conn)
     try:
         yield conn
         conn.commit()
@@ -76,37 +81,27 @@ def _normalize(question: str) -> str:
     return " ".join(question.strip().lower().split())
 
 
-def _config_fingerprint() -> str:
-    """Everything that changes what an answer would be, collapsed to one short hash. The system
-    prompt is included by content rather than by version number so an edit to a citation or
-    refusal rule invalidates the cache on its own, without anyone remembering to bump a counter."""
-    parts = [
-        EMBEDDING_MODEL_NAME,
-        CROSS_ENCODER_MODEL_NAME,
-        COLLECTION_NAME,
-        str(CHUNK_TARGET_TOKENS),
-        DEFAULT_ANTHROPIC_MODEL,
-        hashlib.sha256(_SYSTEM_PROMPT.encode()).hexdigest()[:16],
-    ]
-    return hashlib.sha256("|".join(parts).encode()).hexdigest()[:16]
+def _question_hash(question: str, *, k: int) -> str:
+    # provenance.pipeline_fingerprint is the single source of truth for "everything that changes
+    # what an answer would be" — cache.py used to keep its own smaller, drifting copy of that list
+    # (see the module docstring for the incident that caused), which is why this calls it rather
+    # than assembling config fields locally.
+    fingerprint = pipeline_fingerprint(k=k)
+    return hashlib.sha256(f"{fingerprint}:{_normalize(question)}".encode()).hexdigest()
 
 
-def _question_hash(question: str) -> str:
-    return hashlib.sha256(f"{_config_fingerprint()}:{_normalize(question)}".encode()).hexdigest()
-
-
-def get_cached(question: str) -> RAGResult | None:
+def get_cached(question: str, *, k: int) -> RAGResult | None:
     with _connect() as conn:
         row = conn.execute(
-            "SELECT question, answer, citations_json, refused, model FROM response_cache "
-            "WHERE question_hash = ?",
-            (_question_hash(question),),
+            "SELECT question, answer, citations_json, refused, model, refusal_reason "
+            "FROM response_cache WHERE question_hash = ?",
+            (_question_hash(question, k=k),),
         ).fetchone()
 
     if row is None:
         return None
 
-    _, answer, citations_json, refused, model = row
+    _, answer, citations_json, refused, model, refusal_reason = row
     citations = [Citation(**c) for c in json.loads(citations_json)]
     return RAGResult(
         question=question,
@@ -119,24 +114,26 @@ def get_cached(question: str) -> RAGResult | None:
         llm_response=LLMResponse(
             text=answer, model=model, input_tokens=0, output_tokens=0, cost_usd=0.0
         ),
+        refusal_reason=RefusalReason(refusal_reason) if refusal_reason else None,
     )
 
 
-def set_cached(question: str, result: RAGResult) -> None:
+def set_cached(question: str, result: RAGResult, *, k: int) -> None:
     citations_json = json.dumps(
         [{"doc_id": c.doc_id, "page": c.page, "verified": c.verified} for c in result.citations]
     )
     with _connect() as conn:
         conn.execute(
             "INSERT OR REPLACE INTO response_cache "
-            "(question_hash, question, answer, citations_json, refused, model) "
-            "VALUES (?, ?, ?, ?, ?, ?)",
+            "(question_hash, question, answer, citations_json, refused, model, refusal_reason) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
             (
-                _question_hash(question),
+                _question_hash(question, k=k),
                 question,
                 result.answer,
                 citations_json,
                 int(result.refused),
                 result.llm_response.model,
+                result.refusal_reason.value if result.refusal_reason else None,
             ),
         )

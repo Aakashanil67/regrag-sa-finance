@@ -29,6 +29,7 @@ class AskResponse(BaseModel):
     citations: list[CitationOut]
     retrieved_chunks: list[RetrievedChunkOut]
     refused: bool
+    refusal_reason: str | None = None
     latency_ms: float
     cost_usd: float
     model: str

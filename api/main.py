@@ -74,6 +74,7 @@ def ask(request: Request, body: AskRequest) -> AskResponse | JSONResponse:
             for chunk in result.retrieved_chunks
         ],
         refused=result.refused,
+        refusal_reason=result.refusal_reason.value if result.refusal_reason else None,
         latency_ms=timed.latency_ms,
         cost_usd=result.llm_response.cost_usd,
         model=result.llm_response.model,

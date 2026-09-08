@@ -1,11 +1,14 @@
-"""cache.py against a throwaway SQLite file — exact-match on normalised question text."""
+"""cache.py against a throwaway SQLite file — exact-match on normalised question text, keyed by a
+provenance fingerprint that must change whenever the effective pipeline changes (src/provenance.py
+owns that computation; cache.py must not keep a second, drifting copy of it — see src/cache.py's
+own docstring for the incident that made this the rule)."""
 
 from src import cache
 from src.llm import LLMResponse
-from src.rag import Citation, RAGResult
+from src.rag import Citation, RAGResult, RefusalReason
 
 
-def _result(question="What must banks do?") -> RAGResult:
+def _result(question="What must banks do?", refusal_reason=None) -> RAGResult:
     return RAGResult(
         question=question,
         answer="Banks must comply. [sarb_d3_2023, p.3]",
@@ -16,20 +19,21 @@ def _result(question="What must banks do?") -> RAGResult:
         llm_response=LLMResponse(
             text="...", model="claude-haiku-4-5", input_tokens=50, output_tokens=20, cost_usd=0.0005
         ),
+        refusal_reason=refusal_reason,
     )
 
 
 def test_miss_on_an_unseen_question(tmp_path, monkeypatch):
     monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
 
-    assert cache.get_cached("A question never asked before") is None
+    assert cache.get_cached("A question never asked before", k=5) is None
 
 
 def test_set_then_get_returns_the_cached_answer(tmp_path, monkeypatch):
     monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
 
-    cache.set_cached("What must banks do?", _result())
-    cached = cache.get_cached("What must banks do?")
+    cache.set_cached("What must banks do?", _result(), k=5)
+    cached = cache.get_cached("What must banks do?", k=5)
 
     assert cached is not None
     assert cached.answer == "Banks must comply. [sarb_d3_2023, p.3]"
@@ -40,8 +44,8 @@ def test_set_then_get_returns_the_cached_answer(tmp_path, monkeypatch):
 def test_lookup_is_case_and_whitespace_insensitive(tmp_path, monkeypatch):
     monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
 
-    cache.set_cached("What must banks do?", _result())
-    cached = cache.get_cached("  WHAT MUST banks DO?  ")
+    cache.set_cached("What must banks do?", _result(), k=5)
+    cached = cache.get_cached("  WHAT MUST banks DO?  ", k=5)
 
     assert cached is not None
     assert cached.answer == "Banks must comply. [sarb_d3_2023, p.3]"
@@ -50,9 +54,36 @@ def test_lookup_is_case_and_whitespace_insensitive(tmp_path, monkeypatch):
 def test_different_question_is_a_miss(tmp_path, monkeypatch):
     monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
 
-    cache.set_cached("What must banks do?", _result())
+    cache.set_cached("What must banks do?", _result(), k=5)
 
-    assert cache.get_cached("What must banks do about hybrid capital instruments?") is None
+    assert cache.get_cached("What must banks do about hybrid capital instruments?", k=5) is None
+
+
+def test_a_different_k_is_a_miss(tmp_path, monkeypatch):
+    # k changes what retrieval returns, so it must change what a cached answer means, exactly like
+    # a chunk-size or reranker change does — this was previously not part of the key at all
+    monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
+    cache.set_cached("What must banks do?", _result(), k=5)
+
+    assert cache.get_cached("What must banks do?", k=10) is None
+
+
+def test_a_provider_model_switch_invalidates_previously_cached_answers(tmp_path, monkeypatch):
+    # the exact audited sequence that previously produced one shared fingerprint across all three
+    monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
+    monkeypatch.setenv("LLM_PROVIDER", "openai")
+    monkeypatch.setenv("OPENAI_MODEL", "gpt-4o")
+    cache.set_cached("What must banks do?", _result(), k=5)
+    assert cache.get_cached("What must banks do?", k=5) is not None
+
+    monkeypatch.setenv("LLM_PROVIDER", "ollama")
+    monkeypatch.setenv("OLLAMA_MODEL", "llama3.2")
+    assert cache.get_cached("What must banks do?", k=5) is None
+    cache.set_cached("What must banks do?", _result(), k=5)
+
+    monkeypatch.setenv("LLM_PROVIDER", "anthropic")
+    monkeypatch.setenv("ANTHROPIC_MODEL", "claude-opus-5")
+    assert cache.get_cached("What must banks do?", k=5) is None
 
 
 def test_a_retrieval_config_change_invalidates_previously_cached_answers(tmp_path, monkeypatch):
@@ -61,12 +92,38 @@ def test_a_retrieval_config_change_invalidates_previously_cached_answers(tmp_pat
     # old config. Every cached answer stayed "valid" forever while the eval reports described
     # different behaviour — invisible unless you diff a live answer against a fresh one.
     monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
-    cache.set_cached("What must banks do?", _result())
-    assert cache.get_cached("What must banks do?") is not None
+    cache.set_cached("What must banks do?", _result(), k=5)
+    assert cache.get_cached("What must banks do?", k=5) is not None
 
-    monkeypatch.setattr(cache, "CHUNK_TARGET_TOKENS", 500)
+    from src import provenance
 
-    assert cache.get_cached("What must banks do?") is None
+    monkeypatch.setattr(provenance, "CHUNK_TARGET_TOKENS", 500)
+
+    assert cache.get_cached("What must banks do?", k=5) is None
+
+
+def test_a_temperature_change_invalidates_previously_cached_answers(tmp_path, monkeypatch):
+    monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
+    cache.set_cached("What must banks do?", _result(), k=5)
+    assert cache.get_cached("What must banks do?", k=5) is not None
+
+    monkeypatch.setenv("LLM_TEMPERATURE", "0.5")
+
+    assert cache.get_cached("What must banks do?", k=5) is None
+
+
+def test_a_citation_contract_version_bump_invalidates_previously_cached_answers(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
+    cache.set_cached("What must banks do?", _result(), k=5)
+    assert cache.get_cached("What must banks do?", k=5) is not None
+
+    from src import rag
+
+    monkeypatch.setattr(rag, "CITATION_CONTRACT_VERSION", rag.CITATION_CONTRACT_VERSION + 1)
+
+    assert cache.get_cached("What must banks do?", k=5) is None
 
 
 def test_cache_hit_still_carries_source_notices(tmp_path, monkeypatch):
@@ -85,9 +142,9 @@ def test_cache_hit_still_carries_source_notices(tmp_path, monkeypatch):
             text="...", model="claude-haiku-4-5", input_tokens=50, output_tokens=20, cost_usd=0.0005
         ),
     )
-    cache.set_cached("What impairment model does IFRS 9 use?", result)
+    cache.set_cached("What impairment model does IFRS 9 use?", result, k=5)
 
-    cached = cache.get_cached("What impairment model does IFRS 9 use?")
+    cached = cache.get_cached("What impairment model does IFRS 9 use?", k=5)
 
     assert len(cached.source_notices) == 1
     assert "third-party commentary" in cached.source_notices[0]
@@ -97,8 +154,29 @@ def test_a_system_prompt_edit_invalidates_previously_cached_answers(tmp_path, mo
     # same failure mode via the other input: the prompt carries the citation and refusal rules, so
     # editing it changes what an answer looks like just as surely as re-chunking does
     monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
-    cache.set_cached("What must banks do?", _result())
+    cache.set_cached("What must banks do?", _result(), k=5)
 
-    monkeypatch.setattr(cache, "_SYSTEM_PROMPT", "A materially different system prompt.")
+    from src import rag
 
-    assert cache.get_cached("What must banks do?") is None
+    monkeypatch.setattr(rag, "_SYSTEM_PROMPT", "A materially different system prompt.")
+
+    assert cache.get_cached("What must banks do?", k=5) is None
+
+
+def test_refusal_reason_round_trips_through_the_cache(tmp_path, monkeypatch):
+    monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
+    result = _result(refusal_reason=RefusalReason.UNVERIFIED_CITATION)
+    cache.set_cached("What must banks do?", result, k=5)
+
+    cached = cache.get_cached("What must banks do?", k=5)
+
+    assert cached.refusal_reason == RefusalReason.UNVERIFIED_CITATION
+
+
+def test_an_accepted_answer_has_no_refusal_reason_in_the_cache(tmp_path, monkeypatch):
+    monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
+    cache.set_cached("What must banks do?", _result(), k=5)
+
+    cached = cache.get_cached("What must banks do?", k=5)
+
+    assert cached.refusal_reason is None

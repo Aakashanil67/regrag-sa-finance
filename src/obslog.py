@@ -37,6 +37,7 @@ _COLUMNS = [
     ("output_tokens", "INTEGER NOT NULL"),
     ("cost_usd", "REAL NOT NULL"),
     ("latency_ms", "REAL NOT NULL"),
+    ("refusal_reason", "TEXT NULL"),
 ]
 
 _CREATE_TABLE = (
@@ -82,8 +83,8 @@ def log_query(timed: TimedRAGResult) -> None:
         conn.execute(
             "INSERT INTO queries (timestamp, question, answer, refused, flagged_injection, "
             "cache_hit, citation_count, unverified_citation_count, retrieved_chunk_ids, model, "
-            "input_tokens, output_tokens, cost_usd, latency_ms) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "input_tokens, output_tokens, cost_usd, latency_ms, refusal_reason) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 time.time(),
                 result.question,
@@ -99,6 +100,7 @@ def log_query(timed: TimedRAGResult) -> None:
                 result.llm_response.output_tokens,
                 result.llm_response.cost_usd,
                 timed.latency_ms,
+                result.refusal_reason.value if result.refusal_reason else None,
             ),
         )
 
@@ -110,7 +112,7 @@ def timed_answer(question: str, k: int = 5) -> TimedRAGResult:
 
     start = time.perf_counter()
 
-    cached = get_cached(question)
+    cached = get_cached(question, k=k)
     if cached is not None:
         # recomputed here, not read back from the cache: injection detection is a property of the
         # question text, and rag.answer_question (where it normally runs) is skipped entirely on a
@@ -127,7 +129,7 @@ def timed_answer(question: str, k: int = 5) -> TimedRAGResult:
         timed = TimedRAGResult(
             result=result, latency_ms=(time.perf_counter() - start) * 1000, cache_hit=False
         )
-        set_cached(question, result)
+        set_cached(question, result, k=k)
 
     log_query(timed)
     return timed

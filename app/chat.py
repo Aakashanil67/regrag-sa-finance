@@ -12,6 +12,17 @@ import streamlit as st
 
 API_URL = os.environ.get("API_URL", "http://localhost:8000")
 
+# Plain-language versions of src.rag.RefusalReason — never the raw model text, which the API
+# already discards before this UI ever sees it.
+_REFUSAL_REASON_LABELS = {
+    "no_context": "Refused because nothing relevant was retrieved from the corpus.",
+    "model_refusal": "The model reported it has no source for this question.",
+    "malformed_refusal": "Refused because the model's response didn't match the expected refusal format.",
+    "missing_citation": "Refused because the generated answer had no citation.",
+    "uncited_line": "Refused because part of the generated answer had no citation.",
+    "unverified_citation": "Refused because the generated citation did not match a retrieved page.",
+}
+
 st.set_page_config(page_title="RegRAG — SA Financial Regulation Assistant", page_icon="⚖️")
 st.title("RegRAG")
 st.caption(
@@ -74,6 +85,10 @@ if question:
             st.error(f"Couldn't reach the API at {API_URL}: {exc}")
         else:
             st.write(data["answer"])
+            if data["refused"] and data.get("refusal_reason"):
+                st.caption(
+                    _REFUSAL_REASON_LABELS.get(data["refusal_reason"], data["refusal_reason"])
+                )
             render_source_notices(data.get("source_notices", []))
             render_sources(data["citations"], data["retrieved_chunks"])
             st.caption(f"{data['latency_ms']:.0f} ms · ${data['cost_usd']:.4f} · {data['model']}")
