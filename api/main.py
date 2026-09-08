@@ -1,10 +1,11 @@
-"""FastAPI backend: POST /ask, GET /health, GET /stats.
+"""FastAPI backend: POST /ask, GET /health/live, GET /health/ready, GET /stats.
 
 Every /ask call goes through obslog.timed_answer(), so it's logged to SQLite by construction —
 there's no code path that answers a question without also recording it, which is what lets
 /stats and the ops dashboard trust the log as a complete picture of usage rather than a sample.
 """
 
+import json
 import logging
 import os
 
@@ -20,12 +21,14 @@ from api.schemas import (
     AskResponse,
     CitationOut,
     HealthResponse,
+    ReadinessResponse,
+    RecentQueryOut,
     RetrievedChunkOut,
     SourceNoticeOut,
     SourceReferenceOut,
     StatsResponse,
 )
-from src.obslog import content_logging_enabled, stats_summary, timed_answer
+from src.obslog import content_logging_enabled, recent_queries, stats_summary, timed_answer
 
 logger = logging.getLogger("regrag.api")
 
@@ -51,14 +54,79 @@ app.add_middleware(
 )
 
 
-@app.get("/health", response_model=HealthResponse)
-def health() -> HealthResponse:
+@app.get("/health/live", response_model=HealthResponse)
+def health_live() -> HealthResponse:
+    """Proves the process is running and can serve a response — nothing more. No file I/O, no
+    Chroma, no model. A readiness failure must never make this fail too, or an orchestrator that
+    only checks liveness would restart a container that's merely waiting on the vector store."""
     return HealthResponse(status="ok")
+
+
+@app.get("/health/ready", response_model=None)
+def health_ready() -> ReadinessResponse | JSONResponse:
+    """Checks manifest validity, Chroma availability, a non-empty collection, and that the active
+    pipeline's provenance matches what the store was built from — deliberately never a paid LLM
+    call, since readiness is meant to be cheap and pollable, not something that racks up API cost
+    every time an orchestrator checks it."""
+    from scripts.validate_manifest import ManifestValidationError, validate_manifest
+    from src.config import MANIFEST_PATH
+    from src.provenance import assert_store_compatible
+    from src.store import get_collection
+
+    manifest_status = "ok"
+    try:
+        validate_manifest(json.loads(MANIFEST_PATH.read_text(encoding="utf-8")))
+    except (ManifestValidationError, OSError, ValueError):
+        manifest_status = "error"
+
+    collection_status = "error"
+    chunk_count = 0
+    try:
+        chunk_count = get_collection().count()
+        collection_status = "ok" if chunk_count > 0 else "empty"
+    except Exception:
+        collection_status = "error"
+
+    provenance_status = "ok"
+    try:
+        assert_store_compatible()
+    except Exception:  # StoreProvenanceError, or the collection check above already failing
+        provenance_status = "error"
+
+    ready = manifest_status == "ok" and collection_status == "ok" and provenance_status == "ok"
+    body = ReadinessResponse(
+        ready=ready,
+        manifest=manifest_status,
+        collection=collection_status,
+        chunk_count=chunk_count,
+        provenance=provenance_status,
+    )
+    return body if ready else JSONResponse(status_code=503, content=body.model_dump())
 
 
 @app.get("/stats", response_model=StatsResponse)
 def stats() -> StatsResponse:
     return StatsResponse(**stats_summary(), content_logging_enabled=content_logging_enabled())
+
+
+@app.get("/recent-queries", response_model=list[RecentQueryOut])
+def recent_queries_endpoint(limit: int = 100) -> list[RecentQueryOut]:
+    """The ops dashboard's only path to the query log — it must never import src.obslog or open
+    the SQLite file directly, so the API stays the one place that decides what's safe to surface
+    (this is already respected upstream: `question` is null here whenever LOG_RAW_CONTENT is off,
+    since that's what's actually stored)."""
+    return [
+        RecentQueryOut(
+            timestamp=row["timestamp"],
+            question=row["question"],
+            refused=bool(row["refused"]),
+            citation_count=row["citation_count"],
+            latency_ms=row["latency_ms"],
+            cost_usd=row["cost_usd"],
+            refusal_reason=row["refusal_reason"],
+        )
+        for row in recent_queries(limit=limit)
+    ]
 
 
 @app.post("/ask", response_model=AskResponse)

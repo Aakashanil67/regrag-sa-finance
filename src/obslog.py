@@ -221,7 +221,11 @@ def recent_queries(limit: int = 50) -> list[dict]:
     with _connect() as conn:
         conn.row_factory = sqlite3.Row
         rows = conn.execute(
-            "SELECT * FROM queries ORDER BY timestamp DESC LIMIT ?", (limit,)
+            # id, not timestamp: two inserts landing in the same time.time() tick (a real
+            # occurrence on a fast filesystem/clock) make timestamp DESC an unstable order —
+            # id is monotonically increasing and always reflects actual insert order
+            "SELECT * FROM queries ORDER BY id DESC LIMIT ?",
+            (limit,),
         ).fetchall()
         return [dict(row) for row in rows]
 

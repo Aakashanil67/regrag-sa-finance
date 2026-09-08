@@ -1,0 +1,36 @@
+# Local development and evaluation tooling — everything requirements-api.txt and
+# requirements-ui.txt need, plus the packages only test/eval scripts import. Never installed in
+# either Docker image; see Dockerfile.api / Dockerfile.ui, which install their own split files
+# directly.
+-r requirements-api.txt
+-r requirements-ui.txt
+
+# --- evaluation harness ---
+# ragas 0.2.15's own ragas.llms.base unconditionally imports langchain_community.chat_models.
+# vertexai.ChatVertexAI, a module langchain_community's 0.4.x line removed — ragas 0.4.3 (current)
+# has the identical unbounded-dependency problem and hits the identical import error, so the ragas
+# version wasn't the variable that mattered. Pinning langchain-community to the last release before
+# the module moved is the actual fix; ragas itself is on latest to get its current, documented
+# ragas.metrics.collections API rather than fight a years-stale one. See DECISIONS.md.
+langchain-community==0.3.31
+ragas==0.4.3
+# ragas pulls langchain_openai unconditionally (its default LLM/embeddings wrapper), which floors
+# openai>=1.0.0 but resolves well past the 1.58.1 this project pinned before ragas entered the
+# picture. Verified the openai client's public surface this project's own llm.py uses (OpenAI(),
+# chat.completions.create(), response.usage.{prompt,completion}_tokens) is unchanged before
+# accepting the bump; untested live, since only the Anthropic path has a real smoke test.
+#
+# deepeval floors posthog>=7.0.0, but chromadb 0.5.23's telemetry code calls posthog's old
+# 3-argument capture(distinct_id, event, props) signature, broken by posthog>=4's single-argument
+# rewrite — the two can't both be satisfied by one posthog version. deepeval's assertions are the
+# thing this project's CI gate actually depends on; chromadb's telemetry crash is caught
+# internally and only ever produces stderr noise, so posthog>=7 wins and the noise is accepted.
+posthog==7.44.0
+deepeval==4.1.10
+matplotlib==3.9.3
+
+# --- dev / test / lint ---
+pytest==8.3.4
+pytest-asyncio==0.24.0
+ruff==0.8.4
+pre-commit==4.6.1

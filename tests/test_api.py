@@ -44,11 +44,81 @@ def _timed_result(refused=False, source_notices=None, refusal_reason=None):
     )
 
 
-def test_health_returns_ok():
-    response = client.get("/health")
+def test_health_live_returns_ok():
+    response = client.get("/health/live")
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
+
+
+def test_health_ready_returns_503_when_manifest_is_invalid(monkeypatch):
+    import scripts.validate_manifest as validate_manifest_module
+
+    def broken_validate(entries):
+        raise validate_manifest_module.ManifestValidationError("bad manifest")
+
+    monkeypatch.setattr(validate_manifest_module, "validate_manifest", broken_validate)
+
+    response = client.get("/health/ready")
+
+    assert response.status_code == 503
+    assert response.json()["manifest"] == "error"
+
+
+def test_health_ready_returns_503_when_the_collection_is_empty(monkeypatch):
+    class _EmptyCollection:
+        def count(self):
+            return 0
+
+    import src.store as store_module
+
+    monkeypatch.setattr(store_module, "get_collection", lambda: _EmptyCollection())
+
+    response = client.get("/health/ready")
+
+    assert response.status_code == 503
+    assert response.json()["collection"] == "empty"
+    assert response.json()["chunk_count"] == 0
+
+
+def test_health_ready_returns_503_when_the_collection_raises(monkeypatch):
+    import src.store as store_module
+
+    def boom():
+        raise RuntimeError("chroma unavailable")
+
+    monkeypatch.setattr(store_module, "get_collection", boom)
+
+    response = client.get("/health/ready")
+
+    assert response.status_code == 503
+    assert response.json()["collection"] == "error"
+
+
+def test_health_ready_returns_503_on_a_provenance_mismatch(monkeypatch):
+    import src.provenance as provenance_module
+
+    def boom():
+        raise provenance_module.StoreProvenanceError("stale build")
+
+    monkeypatch.setattr(provenance_module, "assert_store_compatible", boom)
+
+    response = client.get("/health/ready")
+
+    assert response.status_code == 503
+    assert response.json()["provenance"] == "error"
+
+
+def test_health_ready_never_calls_the_llm(monkeypatch):
+    def fail_if_called(*args, **kwargs):
+        raise AssertionError("readiness must never call the LLM")
+
+    monkeypatch.setattr("src.llm.complete", fail_if_called)
+
+    response = client.get("/health/ready")
+
+    # whatever the real store's status is locally, the call must not have touched the LLM
+    assert response.status_code in (200, 503)
 
 
 def test_ask_returns_answer_with_citations(monkeypatch):
@@ -158,6 +228,40 @@ def test_stats_returns_summary(monkeypatch):
 
 
 def test_cors_allows_only_the_configured_origins(monkeypatch):
-    response = client.get("/health", headers={"Origin": "http://localhost:8501"})
+    response = client.get("/health/live", headers={"Origin": "http://localhost:8501"})
 
     assert response.headers.get("access-control-allow-origin") == "http://localhost:8501"
+
+
+def test_recent_queries_returns_logged_rows(monkeypatch):
+    monkeypatch.setattr(
+        main,
+        "recent_queries",
+        lambda limit=100: [
+            {
+                "timestamp": 1_700_000_000.0,
+                "question": None,
+                "refused": 0,
+                "citation_count": 2,
+                "latency_ms": 123.4,
+                "cost_usd": 0.001,
+                "refusal_reason": None,
+            }
+        ],
+    )
+
+    response = client.get("/recent-queries")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body == [
+        {
+            "timestamp": 1_700_000_000.0,
+            "question": None,
+            "refused": False,
+            "citation_count": 2,
+            "latency_ms": 123.4,
+            "cost_usd": 0.001,
+            "refusal_reason": None,
+        }
+    ]

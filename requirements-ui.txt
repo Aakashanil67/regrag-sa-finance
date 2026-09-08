@@ -1,0 +1,7 @@
+# Streamlit UI runtime (app/chat.py, app/ops.py) — HTTP client + dashboard only. No Chroma, no
+# Torch, no sentence-transformers, no Anthropic SDK: both UIs talk to the API over HTTP, never
+# import src.rag/src.store directly. See DECISIONS.md for the split rationale.
+streamlit==1.62.0
+protobuf==7.36.0
+httpx==0.27.2
+pandas==2.2.3

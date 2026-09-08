@@ -51,9 +51,27 @@ class HealthResponse(BaseModel):
     status: str
 
 
+class ReadinessResponse(BaseModel):
+    ready: bool
+    manifest: str  # "ok" | "error"
+    collection: str  # "ok" | "empty" | "error"
+    chunk_count: int
+    provenance: str  # "ok" | "error"
+
+
 class StatsResponse(BaseModel):
     total_queries: int
     avg_latency_ms: float
     total_cost_usd: float
     refusal_rate: float
     content_logging_enabled: bool
+
+
+class RecentQueryOut(BaseModel):
+    timestamp: float
+    question: str | None
+    refused: bool
+    citation_count: int
+    latency_ms: float
+    cost_usd: float
+    refusal_reason: str | None

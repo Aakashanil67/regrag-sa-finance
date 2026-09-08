@@ -36,6 +36,8 @@ services:
     command: ["streamlit", "run", "app/ops.py", "--server.address=0.0.0.0", "--server.port=8502"]
     ports:
       - "127.0.0.1:8502:8502"
+    environment:
+      - API_URL=http://api:8000
     volumes:
       - .:/app
     working_dir: /app

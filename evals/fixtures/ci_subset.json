@@ -16,7 +16,7 @@
     "temperature": 0.0,
     "golden_subset_sha256": "a951c325df789d55669859776e93bbbb914f18e058b5edc2379295eabeb4420f",
     "requirements_sha256": {
-      "requirements.txt": "b39a034757b16bc1a1ee33f9ef5ec092518b9427c5bddf1a36db6df9c60ed27e"
+      "requirements.txt": "052245d4659799f03b703d8074ff984fa53f1cd6721cde291fec77332533c614"
     }
   },
   "records": [
@@ -176,7 +176,7 @@
           "verified": true
         }
       ],
-      "faithfulness": 0.7647058823529411
+      "faithfulness": 0.8823529411764706
     },
     {
       "id": "g46",
