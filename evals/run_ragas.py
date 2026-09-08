@@ -5,7 +5,7 @@ that output against the golden reference answer with four RAGAS metrics.
 
 Unanswerable items are excluded on purpose: all four metrics assume the system tried to answer
 from context, which doesn't apply to a correct refusal. Refusal correctness (and citation
-presence) is checked by evals/test_regression.py instead, not by these metrics.
+presence) is checked by evals/test_snapshot_integrity.py instead, not by these metrics.
 
 What each metric actually measures, briefly:
 - Faithfulness: of the individual claims in the answer, what fraction are actually supported by
@@ -25,14 +25,12 @@ What each metric actually measures, briefly:
 """
 
 import asyncio
-import csv
 import json
-from datetime import UTC, datetime
 
 from ragas.metrics.collections import AnswerRelevancy, ContextPrecision, ContextRecall, Faithfulness
 
 from evals._ragas_judge import build_judge
-from src.config import EVAL_HISTORY_CSV, GOLDEN_DEV_PATH, REPORTS_DIR
+from src.config import GOLDEN_DEV_PATH
 from src.rag import answer_question
 
 _SCORED_TYPES = {"factual", "multi-doc"}
@@ -121,96 +119,26 @@ async def run() -> dict:
     }
 
 
-def _append_history(means: dict, n_scored: int) -> None:
-    is_new = not EVAL_HISTORY_CSV.exists()
-    with open(EVAL_HISTORY_CSV, "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        if is_new:
-            writer.writerow(["timestamp", "n_scored", *_METRIC_NAMES])
-        writer.writerow(
-            [
-                datetime.now(UTC).isoformat(),
-                n_scored,
-                *(f"{means[name]:.4f}" for name in _METRIC_NAMES),
-            ]
-        )
-
-
-def _write_summary(result: dict) -> None:
-    means = result["means"]
-    lines = [
-        "# RAGAS evaluation summary",
-        "",
-        f"Scored {result['n_scored']}/{result['n_attempted']} answerable items from "
-        "`evals/golden_dev.jsonl` (factual + multi-doc — unanswerable items are checked for refusal "
-        "separately, not scored on these metrics).",
-        "",
-    ]
-    if result["refusals"]:
-        lines += [
-            f"**{len(result['refusals'])} answerable item(s) triggered rag.py's own refusal "
-            "rule** (retrieval didn't surface enough to answer) and are excluded from the means "
-            "below — scoring a refusal against metrics built for a substantive answer produces "
-            "noise, not signal. Listed here rather than silently dropped; see "
-            "`reports/failure_analysis.md` for why each one failed to retrieve:",
-            "",
-        ]
-        for r in result["refusals"]:
-            lines.append(f"- `{r['id']}`: {r['question']}")
-        lines.append("")
-    if result["failures"]:
-        lines += [
-            f"**{len(result['failures'])} item(s) failed to score and are excluded from the "
-            "means below** — not silently dropped, listed here:",
-            "",
-        ]
-        for f in result["failures"]:
-            lines.append(f"- `{f['id']}` ({f['question']}): {f['error']}")
-        lines.append("")
-    lines += [
-        "| metric | mean | what it measures |",
-        "|---|---|---|",
-        f"| Faithfulness | {means['faithfulness']:.3f} | Fraction of the answer's claims actually "
-        "supported by retrieved context — catches hallucination, not wrongness. |",
-        f"| Answer relevancy | {means['answer_relevancy']:.3f} | Does the answer address the "
-        "question asked, independent of whether it's grounded. |",
-        f"| Context precision | {means['context_precision']:.3f} | Of the retrieved chunks, how "
-        "many were actually relevant. |",
-        f"| Context recall | {means['context_recall']:.3f} | Of what the reference answer needed, "
-        "how much retrieval actually surfaced. |",
-        "",
-        "## Per-item scores",
-        "",
-        "| id | question | faithfulness | relevancy | precision | recall |",
-        "|---|---|---|---|---|---|",
-    ]
-    for row in result["per_item"]:
-        lines.append(
-            f"| {row['id']} | {row['question']} | {row['faithfulness']:.2f} | "
-            f"{row['answer_relevancy']:.2f} | {row['context_precision']:.2f} | "
-            f"{row['context_recall']:.2f} |"
-        )
-
-    (REPORTS_DIR / "eval_summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-
-
 def main() -> None:
+    """Ad-hoc, uncommitted RAGAS scoring for local iteration — prints means and per-item scores to
+    the terminal only. Does not touch reports/eval_summary.md or reports/eval_history.csv: those
+    canonical files are owned exclusively by `python -m evals.run_release`, which computes the
+    same RAGAS metrics denominator-aware alongside the citation-contract structural metrics and
+    only promotes them on a complete run. Use this module directly only to sanity-check a change
+    quickly; use run_release for anything that should be recorded.
+    """
     result = asyncio.run(run())
-    _append_history(result["means"], result["n_scored"])
-    _write_summary(result)
     means = result["means"]
     print(
         f"\nfaithfulness={means['faithfulness']:.3f} answer_relevancy={means['answer_relevancy']:.3f} "
         f"context_precision={means['context_precision']:.3f} context_recall={means['context_recall']:.3f}"
     )
     if result["refusals"]:
-        print(
-            f"{len(result['refusals'])} item(s) refused — excluded from means, see reports/eval_summary.md"
-        )
+        print(f"{len(result['refusals'])} item(s) refused — excluded from means")
     if result["failures"]:
-        print(f"{len(result['failures'])} item(s) failed to score — see reports/eval_summary.md")
+        print(f"{len(result['failures'])} item(s) failed to score")
     print(
-        f"scored {result['n_scored']}/{result['n_attempted']} — wrote reports/eval_summary.md and appended to reports/eval_history.csv"
+        f"scored {result['n_scored']}/{result['n_attempted']} (not recorded — see module docstring)"
     )
 
 
