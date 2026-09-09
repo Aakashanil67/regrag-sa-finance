@@ -2,25 +2,34 @@
 chromadb collection or embedding model needed to test the reordering behaviour itself."""
 
 from src import retrieve as retrieve_module
-from src.retrieve import RetrievedChunk, fetch_document_page, retrieve
+from src.retrieve import RetrievedChunk, _fetch_candidates, fetch_document_page, retrieve
 
 
 class _FakeCollection:
     """Minimal stand-in for chromadb's collection.get(), keyed on the where clause's doc_id."""
 
-    def __init__(self, ids, documents, metadatas):
+    def __init__(self, ids, documents, metadatas, embeddings=None):
         self._ids = ids
         self._documents = documents
         self._metadatas = metadatas
+        self._embeddings = embeddings
 
     def get(self, where=None, include=None):
-        doc_id = where["doc_id"]
-        keep = [i for i, m in enumerate(self._metadatas) if m["doc_id"] == doc_id]
-        return {
+        if where and "doc_id" in where and isinstance(where["doc_id"], str):
+            keep = [i for i, m in enumerate(self._metadatas) if m["doc_id"] == where["doc_id"]]
+        elif where and "doc_id" in where:
+            wanted = set(where["doc_id"]["$in"])
+            keep = [i for i, m in enumerate(self._metadatas) if m["doc_id"] in wanted]
+        else:
+            keep = list(range(len(self._ids)))
+        result = {
             "ids": [self._ids[i] for i in keep],
             "documents": [self._documents[i] for i in keep],
             "metadatas": [self._metadatas[i] for i in keep],
         }
+        if self._embeddings is not None:
+            result["embeddings"] = [self._embeddings[i] for i in keep]
+        return result
 
 
 def _chunk(chunk_id, text, score=0.5):
@@ -100,6 +109,60 @@ def test_rerank_true_on_empty_candidates_returns_empty(monkeypatch):
     monkeypatch.setattr(retrieve_module, "_get_cross_encoder", fail_if_called)
 
     assert retrieve("a query", k=5, rerank=True) == []
+
+
+def test_fetch_candidates_ranks_by_exact_cosine_similarity(monkeypatch):
+    # "b" points the same direction as the query; "a" is orthogonal; "c" points opposite —
+    # cosine similarity must rank b > a > c regardless of each vector's raw magnitude.
+    collection = _FakeCollection(
+        ids=["a", "b", "c"],
+        documents=["orthogonal", "aligned", "opposite"],
+        metadatas=[
+            {"doc_id": "doc1", "page_start": 1, "page_end": 1, "section": ""},
+            {"doc_id": "doc1", "page_start": 1, "page_end": 1, "section": ""},
+            {"doc_id": "doc1", "page_start": 1, "page_end": 1, "section": ""},
+        ],
+        embeddings=[[0.0, 5.0], [3.0, 0.0], [-1.0, 0.0]],
+    )
+    monkeypatch.setattr(retrieve_module, "embed_texts", lambda texts: [[1.0, 0.0]])
+
+    results = _fetch_candidates("query", n=3, doc_ids=None, collection=collection)
+
+    assert [c.chunk_id for c in results] == ["b", "a", "c"]
+
+
+def test_fetch_candidates_is_exact_not_approximate(monkeypatch):
+    # a larger candidate set than any plausible approximate search width — exact search must
+    # still find the single best match, unlike an ANN index tuned for a smaller corpus
+    embeddings = [[0.0, 1.0]] * 50 + [[1.0, 0.0]]
+    collection = _FakeCollection(
+        ids=[f"filler{i}" for i in range(50)] + ["best"],
+        documents=["filler"] * 50 + ["best match"],
+        metadatas=[{"doc_id": "doc1", "page_start": 1, "page_end": 1, "section": ""}] * 51,
+        embeddings=embeddings,
+    )
+    monkeypatch.setattr(retrieve_module, "embed_texts", lambda texts: [[1.0, 0.0]])
+
+    results = _fetch_candidates("query", n=1, doc_ids=None, collection=collection)
+
+    assert [c.chunk_id for c in results] == ["best"]
+
+
+def test_fetch_candidates_filters_by_doc_ids(monkeypatch):
+    collection = _FakeCollection(
+        ids=["a", "b"],
+        documents=["in scope", "out of scope"],
+        metadatas=[
+            {"doc_id": "doc1", "page_start": 1, "page_end": 1, "section": ""},
+            {"doc_id": "doc2", "page_start": 1, "page_end": 1, "section": ""},
+        ],
+        embeddings=[[1.0, 0.0], [1.0, 0.0]],
+    )
+    monkeypatch.setattr(retrieve_module, "embed_texts", lambda texts: [[1.0, 0.0]])
+
+    results = _fetch_candidates("query", n=5, doc_ids=["doc1"], collection=collection)
+
+    assert [c.chunk_id for c in results] == ["a"]
 
 
 def test_fetch_document_page_returns_only_chunks_covering_that_page():

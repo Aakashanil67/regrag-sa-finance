@@ -51,14 +51,6 @@ def test_rerank_candidate_pool_changes_pipeline_fingerprint(monkeypatch):
     assert provenance.pipeline_fingerprint(k=5) != base_fp
 
 
-def test_hnsw_search_ef_changes_pipeline_fingerprint(monkeypatch):
-    base_fp = provenance.pipeline_fingerprint(k=5)
-
-    monkeypatch.setattr(provenance, "HNSW_SEARCH_EF", 10)
-
-    assert provenance.pipeline_fingerprint(k=5) != base_fp
-
-
 def test_manifest_bytes_change_pipeline_fingerprint(monkeypatch, tmp_path):
     original = provenance.MANIFEST_PATH.read_bytes()
     fake_manifest = tmp_path / "manifest.json"

@@ -1,15 +1,22 @@
 """Top-k semantic retrieval over the chunk store, with optional metadata filters and an optional
 cross-encoder reranking pass.
 
-ChromaDB returns cosine distance (0 = identical direction, 2 = opposite); `RetrievedChunk.score`
-is `1 - distance` instead, so "higher is more relevant" holds everywhere downstream (the eval
-harness, the sources panel, the retrieval benchmark) without every caller re-deriving the sign —
-except when reranking is on, where `score` is the cross-encoder's own relevance score instead
-(unbounded, not a 0-1 distance-derived value); "higher is more relevant" still holds either way,
-which is the property callers actually depend on.
+Candidate search is exact cosine similarity computed in-process, not ChromaDB's approximate HNSW
+`.query()`. ChromaDB's local HNSW segment rebuilds its graph by re-inserting every embedding on
+each fresh process (no persisted index file), using a thread pool sized to the machine's CPU count
+by default — parallel insertion order isn't fixed, so the same on-disk data produced a
+structurally different graph, and therefore different top-k results, across separate process
+launches of this same, unchanged pipeline. That's incompatible with a sealed, run-once release
+protocol, which requires identical input to produce identical output. At this corpus's size
+(low thousands of chunks), brute-force cosine similarity over every chunk costs low milliseconds —
+cheap enough that the "approximate" in approximate nearest neighbour buys nothing here and only
+costs reproducibility. `RetrievedChunk.score` is that cosine similarity (-1 to 1, higher is more
+relevant) except when reranking is on, where `score` is the cross-encoder's own relevance score
+instead (unbounded); "higher is more relevant" still holds either way, which is the property
+callers actually depend on.
 
 Reranking works in two stages because the two models are good at different things: the bi-encoder
-(sentence-transformers, used for the initial Chroma search) embeds the query and every chunk
+(sentence-transformers, used for the initial candidate search) embeds the query and every chunk
 independently, which is fast enough to search the whole collection but can't compare them
 directly against each other. The cross-encoder reads the query and one candidate chunk together
 in a single forward pass, which is far more accurate but too slow to run against the whole
@@ -18,6 +25,8 @@ everything.
 """
 
 from dataclasses import dataclass
+
+import numpy as np
 
 from src.config import CROSS_ENCODER_MODEL_NAME, RERANK_CANDIDATE_POOL_SIZE
 from src.store import embed_texts, get_collection
@@ -54,36 +63,34 @@ def _fetch_candidates(
     # the experiment silently testing different code than what actually ships.
     if collection is None:
         collection = get_collection()
-    query_embedding = embed_texts([query])[0]
+    query_embedding = np.asarray(embed_texts([query])[0], dtype=np.float64)
 
     where = {"doc_id": {"$in": doc_ids}} if doc_ids else None
-    results = collection.query(
-        query_embeddings=[query_embedding],
-        n_results=n,
-        where=where,
-        include=["documents", "metadatas", "distances"],
-    )
+    results = collection.get(where=where, include=["documents", "metadatas", "embeddings"])
 
-    if not results["ids"][0]:
+    if not results["ids"]:
         return []
+
+    embeddings = np.asarray(results["embeddings"], dtype=np.float64)
+    query_unit = query_embedding / np.linalg.norm(query_embedding)
+    doc_units = embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
+    similarities = doc_units @ query_unit
+
+    # stable sort: ties keep collection order rather than whatever order argpartition happens to
+    # produce, so results are reproducible even when two chunks are exactly equidistant
+    order = np.argsort(-similarities, kind="stable")[:n]
 
     return [
         RetrievedChunk(
-            chunk_id=chunk_id,
-            doc_id=metadata["doc_id"],
-            text=document,
-            page_start=metadata["page_start"],
-            page_end=metadata["page_end"],
-            section=metadata["section"],
-            score=1.0 - distance,
+            chunk_id=results["ids"][i],
+            doc_id=results["metadatas"][i]["doc_id"],
+            text=results["documents"][i],
+            page_start=results["metadatas"][i]["page_start"],
+            page_end=results["metadatas"][i]["page_end"],
+            section=results["metadatas"][i]["section"],
+            score=float(similarities[i]),
         )
-        for chunk_id, document, metadata, distance in zip(
-            results["ids"][0],
-            results["documents"][0],
-            results["metadatas"][0],
-            results["distances"][0],
-            strict=True,
-        )
+        for i in order
     ]
 
 
