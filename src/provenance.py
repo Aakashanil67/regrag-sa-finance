@@ -26,6 +26,7 @@ from src.config import (
     COLLECTION_NAME,
     CROSS_ENCODER_MODEL_NAME,
     EMBEDDING_MODEL_NAME,
+    HNSW_SEARCH_EF,
     MANIFEST_PATH,
     RERANK_CANDIDATE_POOL_SIZE,
 )
@@ -49,6 +50,7 @@ def _retrieval_config() -> dict[str, object]:
         "chunk_target": CHUNK_TARGET_TOKENS,
         "chunk_overlap": CHUNK_OVERLAP_TOKENS,
         "candidate_pool": RERANK_CANDIDATE_POOL_SIZE,
+        "hnsw_search_ef": HNSW_SEARCH_EF,
     }
 
 

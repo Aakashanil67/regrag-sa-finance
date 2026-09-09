@@ -47,6 +47,14 @@ TOC_DOT_LEADER_FRACTION = 0.3
 CHROMA_DIR = ROOT / "chroma"
 COLLECTION_NAME = "regrag_chunks"
 EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+# Chroma's default hnsw:search_ef (10) explores far fewer candidates than this corpus's ~800
+# chunks, making the "approximate" in approximate nearest neighbour visible: identical queries
+# against an identical on-disk index returned different candidate sets across separate process
+# launches, because a shallow beam search resolves near-ties differently depending on incidental
+# traversal order. A corpus this small doesn't need approximation — a search width comfortably
+# above the total chunk count makes the search exhaustive in practice, which is what a sealed,
+# run-once holdout protocol requires: identical input must give identical output.
+HNSW_SEARCH_EF = 2000
 
 # --- retrieval / reranking ---
 CROSS_ENCODER_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"

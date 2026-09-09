@@ -13,6 +13,7 @@ page 40 of a document when the question is about page 1.
 
 import argparse
 import json
+import math
 
 from src.config import REPORTS_DIR, RETRIEVAL_DEV_PATH, RETRIEVAL_HOLDOUT_PATH
 from src.retrieve import RetrievedChunk, retrieve
@@ -20,6 +21,17 @@ from src.retrieve import RetrievedChunk, retrieve
 _SPLIT_PATHS = {"dev": RETRIEVAL_DEV_PATH, "holdout": RETRIEVAL_HOLDOUT_PATH}
 K_VALUES = (3, 5, 10)
 MAX_K = max(K_VALUES)
+
+
+def _wilson_interval(successes: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    """95%-by-default Wilson score interval for a binomial proportion — the small-n-appropriate
+    alternative to a normal-approximation interval, which can extend past 0 or 1 exactly where a
+    30-item holdout needs it most."""
+    p_hat = successes / n
+    denom = 1 + z**2 / n
+    center = (p_hat + z**2 / (2 * n)) / denom
+    margin = z * math.sqrt(p_hat * (1 - p_hat) / n + z**2 / (4 * n**2)) / denom
+    return max(0.0, center - margin), min(1.0, center + margin)
 
 
 def _is_hit(chunk: RetrievedChunk, expected_doc_id: str, expected_page: int) -> bool:
@@ -75,12 +87,16 @@ def write_report(results: dict, split: str = "dev") -> None:
         f"{MAX_K} retrieved results — rewards ranking the right answer 1st over merely including "
         "it somewhere in the list.",
         "",
-        "| metric | value |",
-        "|---|---|",
+        "| metric | value | 95% CI |",
+        "|---|---|---|",
     ]
+    n = len(results["per_question"])
     for k in K_VALUES:
-        lines.append(f"| hit-rate@{k} | {results['hit_rates'][k]:.0%} |")
-    lines.append(f"| MRR | {results['mrr']:.3f} |")
+        rate = results["hit_rates"][k]
+        hits = round(rate * n)
+        lo, hi = _wilson_interval(hits, n)
+        lines.append(f"| hit-rate@{k} | {hits}/{n} ({rate:.0%}) | {lo:.0%}–{hi:.0%} |")
+    lines.append(f"| MRR | {results['mrr']:.3f} | — |")
 
     lines += [
         "",

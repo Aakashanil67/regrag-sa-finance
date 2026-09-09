@@ -26,7 +26,7 @@ import tempfile
 import time
 
 from src.chunking import Chunk, chunk_corpus
-from src.config import CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL_NAME
+from src.config import CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL_NAME, HNSW_SEARCH_EF
 
 _model = None
 
@@ -53,7 +53,15 @@ def get_collection():
     client = chromadb.PersistentClient(
         path=str(CHROMA_DIR), settings=Settings(anonymized_telemetry=False)
     )
-    return client.get_or_create_collection(COLLECTION_NAME)
+    # metadata= on get_or_create_collection only applies when the collection doesn't exist yet, so
+    # an already-created on-disk collection (every environment but a brand-new one) needs the
+    # explicit modify() below to actually pick up HNSW_SEARCH_EF.
+    collection = client.get_or_create_collection(
+        COLLECTION_NAME, metadata={"hnsw:search_ef": HNSW_SEARCH_EF}
+    )
+    if (collection.metadata or {}).get("hnsw:search_ef") != HNSW_SEARCH_EF:
+        collection.modify(metadata={"hnsw:search_ef": HNSW_SEARCH_EF})
+    return collection
 
 
 def embed_texts(texts: list[str]) -> list[list[float]]:
