@@ -2,7 +2,7 @@
   "metadata": {
     "schema": 1,
     "file_sha256": {
-      "src/rag.py": "69154d525c11e6bc501ce4c0482536bfa506789996e003fe0862455864b14e1c",
+      "src/rag.py": "83c6ad50c4f1e0bcd04a2cddf77f0e738e6c4fdfd48697cba81afc4ba29c2fbc",
       "src/retrieve.py": "5370ebc569ac0a0251dc18cbca5a5db4197ed4720afd77b3faee642038716a70",
       "src/chunking.py": "a6e7c7c003f6df0ebdba5d016a75e7ba407a32864cd51df70cb67f3b3d30275c",
       "src/ingest.py": "8168a95a22f1c68d6de2ae98e4275cc1643056678fa43c4089a3904ac7817d37",
@@ -10,7 +10,7 @@
     },
     "manifest_sha256": "89a1c45e3b0a4606f03a89cd1d4fcfb079b5b09f44c66d4c1f512e514a857bbd",
     "prompt_sha256": "379fcbc86a919d07bcf00517ef36512e94bb78b4143a6059831789ef56e16741",
-    "citation_contract_version": 1,
+    "citation_contract_version": 2,
     "provider": "anthropic",
     "model": "claude-haiku-4-5",
     "temperature": 0.0,

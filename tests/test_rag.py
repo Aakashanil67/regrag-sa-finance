@@ -136,6 +136,25 @@ def test_page_range_citation_expands_to_every_covered_page(monkeypatch):
     assert all(c.verified for c in result.citations)
 
 
+def test_citation_with_a_trailing_section_reference_is_still_extracted(monkeypatch):
+    # a real holdout run had the model write [doc_id, p.11-12, 1.4.1] — a well-sourced, correct
+    # citation with a bonus section number the prompt's exact-form rule doesn't ask for. The old
+    # regex required the bracket to close right after the page, so this whole line silently
+    # extracted zero citations and the answer wrongly refused as MISSING_CITATION.
+    monkeypatch.setattr(
+        rag, "retrieve", lambda q, k=5, rerank=True: [_chunk(page_start=11, page_end=12)]
+    )
+    monkeypatch.setattr(
+        rag, "complete", _fake_llm("Banks must comply. [sarb_d3_2023, p.11-12, 1.4.1]")
+    )
+
+    result = rag.answer_question("What must banks do?")
+
+    assert result.refused is False
+    assert sorted(c.page for c in result.citations) == [11, 12]
+    assert all(c.verified for c in result.citations)
+
+
 def test_citation_verified_against_any_of_several_chunks_from_the_same_document(monkeypatch):
     # a dict comprehension keyed on doc_id previously kept only the *last* chunk's page range for
     # a document, so a citation to an earlier chunk's page was wrongly flagged unverified whenever

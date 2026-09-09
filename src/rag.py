@@ -52,7 +52,7 @@ INSUFFICIENT_CONTEXT_PHRASE = "I don't have a source for that."
 
 # Bump when validate_generated_answer's rules change in a way that would make an old cached or
 # recorded answer's pass/fail outcome no longer reproducible under the current contract.
-CITATION_CONTRACT_VERSION = 1
+CITATION_CONTRACT_VERSION = 2
 
 
 class RefusalReason(StrEnum):
@@ -87,8 +87,11 @@ may use it to describe a document's type or compare types across documents, but 
 the (doc_id, p.X) body text below it, never the metadata line itself, as your source for a claim.
 """
 
-_CITATION_TOKEN = r"\[[\w\-\.]+,\s*p\.\d+(?:-\d+)?\]"
-_CITATION_PATTERN = re.compile(r"\[([\w\-\.]+),\s*p\.(\d+)(?:-(\d+))?\]")
+# the trailing (?:,[^\]]*)? tolerates a section reference the model sometimes appends after the
+# page (e.g. "[doc_id, p.11-12, 1.4.1]") — real holdout output the prompt's exact-form rule doesn't
+# ask for, but that doesn't make the citation any less real or verifiable
+_CITATION_TOKEN = r"\[[\w\-\.]+,\s*p\.\d+(?:-\d+)?(?:,[^\]]*)?\]"
+_CITATION_PATTERN = re.compile(r"\[([\w\-\.]+),\s*p\.(\d+)(?:-(\d+))?(?:,[^\]]*)?\]")
 _LINE_ENDS_IN_CITATION_PATTERN = re.compile(rf"(?:{_CITATION_TOKEN}\s*)+$")
 
 
