@@ -1,2 +1,4 @@
 timestamp,run_id,split,label,answerable_answer_rate,unanswerable_refusal_recall,citation_contract_pass_rate,verified_citation_rate
 2026-09-08T22:07:05.487622+00:00,dev-a51410250c96,dev,corrected-corpus-baseline,0.723404255319149,1.0,0.7719298245614035,1.0
+2026-09-09T12:45:38.909959+00:00,holdout-8873b6b6d93b,holdout,v1.1.0-rc1,0.6666666666666666,1.0,0.7333333333333333,1.0
+2026-09-10T17:50:09.727970+00:00,holdout-0cf5e0821ec7,holdout,v1.1.0-rc2,0.7083333333333334,1.0,0.7666666666666667,1.0

@@ -324,7 +324,7 @@ def validate_generated_answer(answer: str, chunks: list[RetrievedChunk]) -> Answ
 
 def answer_question(question: str, k: int = 5) -> RAGResult:
     flagged = contains_injection_attempt(question)
-    # rerank=True: reports/improvement_log.md measured this against the retrieval benchmark
+    # rerank=True: reports/archive/v1.0-audit/improvement_log.md measured this against the retrieval benchmark
     # (hit-rate@5 85% -> 95%, MRR 0.654 -> 0.808 at this chunk size) before it became the default.
     chunks = retrieve(question, k=k, rerank=True)
 

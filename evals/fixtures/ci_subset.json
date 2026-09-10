@@ -2,11 +2,11 @@
   "metadata": {
     "schema": 1,
     "file_sha256": {
-      "src/rag.py": "83c6ad50c4f1e0bcd04a2cddf77f0e738e6c4fdfd48697cba81afc4ba29c2fbc",
+      "src/rag.py": "f130040a198275d5a0d8b586fcbf70d247402d337f82de765298bef04273229d",
       "src/retrieve.py": "5370ebc569ac0a0251dc18cbca5a5db4197ed4720afd77b3faee642038716a70",
-      "src/chunking.py": "a6e7c7c003f6df0ebdba5d016a75e7ba407a32864cd51df70cb67f3b3d30275c",
-      "src/ingest.py": "8168a95a22f1c68d6de2ae98e4275cc1643056678fa43c4089a3904ac7817d37",
-      "src/config.py": "8aaebdf1a5cba0846c81ee1f512cb434a89db46824fb8ea8f26c3a6e499de2b7"
+      "src/chunking.py": "b1cf8aaecfbd5619baeec8762e85f87cdfbf7f0b62d55e7dbdf72816de1d9a72",
+      "src/ingest.py": "b4f048dea571f4ee2ef833db0b7d78f2f645571a9c566f14d3b3672daa17c447",
+      "src/config.py": "33d8a4e2cf515fb49a69dcbe5c37c21e2d32732e95972ff8448d33a092f3883d"
     },
     "manifest_sha256": "89a1c45e3b0a4606f03a89cd1d4fcfb079b5b09f44c66d4c1f512e514a857bbd",
     "prompt_sha256": "379fcbc86a919d07bcf00517ef36512e94bb78b4143a6059831789ef56e16741",
@@ -52,7 +52,7 @@
       "id": "g12",
       "type": "factual",
       "question": "On what date did the National Credit Act come into commencement?",
-      "answer": "The National Credit Act came into commencement on 1 June, 2006, unless otherwise indicated for specific sections. [nca_act_34_2005, p.1]",
+      "answer": "The National Credit Act came into commencement on 1 June, 2006. [nca_act_34_2005, p.1]",
       "refused": false,
       "citations": [
         {
@@ -61,7 +61,7 @@
           "verified": true
         }
       ],
-      "faithfulness": 0.6666666666666666
+      "faithfulness": 1.0
     },
     {
       "id": "g18",
@@ -127,7 +127,7 @@
       "id": "g40",
       "type": "multi-doc",
       "question": "How did the FSCA's 2019 intermediary activity segmentation update build on the 2014 Retail Distribution Review?",
-      "answer": "The 2014 Retail Distribution Review proposed regulatory reforms to address risks in the distribution landscape, including intermediary remuneration models that contributed to poor customer outcomes. [fsca_rdr_2014, p.3]\n\nThe FSB then initiated an activity segmentation project to move from broad \"intermediary\" categories into more granular levels to ensure that conduct standards and remuneration interventions were appropriate to the types of activities performed. [fsca_rdr_intermediary_segmentation_2019, p.2-3]\n\nThe 2019 update presented a draft intermediary activity segmentation framework that demarcates between advice, other services to the customer, services that intermediate between customer and insurer, services to the insurer (split between binder services and other outsourced services), and other services to the insurer not explicitly provided for in the current regulatory framework. [fsca_rdr_intermediary_segmentation_2019, p.2-3]\n\nThe 2019 regulatory developments included capping maximum binder fees for non-mandated intermediaries authorized to render advice, and introducing an insurer notification process to the FSCA for arrangements involving remuneration for functions other than intermediary or binder services. [fsca_rdr_intermediary_segmentation_2019, p.2-3]\n\nThe FSCA indicated that further regulatory proposals and interventions under consideration include amendments to existing laws, guidance notices, replacing outsourcing notification processes with approval processes, and potentially developing additional conduct standards and remuneration requirements to mitigate conflicts of interest and enhance customer outcomes. [fsca_rdr_intermediary_segmentation_2019, p.8-9]",
+      "answer": "The 2014 Retail Distribution Review proposed regulatory reforms to address risks in the distribution landscape, including intermediary remuneration models that contributed to poor customer outcomes. [fsca_rdr_2014, p.3]\n\nThe FSB then initiated an activity segmentation project to move from broad \"intermediary\" categories into more granular levels to ensure that conduct standards and remuneration interventions were appropriate to the types of activities performed. [fsca_rdr_intermediary_segmentation_2019, p.2-3]\n\nThe 2019 update presented a draft intermediary activity segmentation framework that demarcates between advice, other services to the customer, services that intermediate between customer and insurer, services to the insurer (split between binder services and other outsourced services), and other services to the insurer not explicitly provided for in the current regulatory framework. [fsca_rdr_intermediary_segmentation_2019, p.2-3]\n\nThe 2019 update outlined specific regulatory developments that took effect, including capping maximum binder fees for non-mandated intermediaries authorized to render advice at a maximum per function performed, with a total that cannot exceed 9% of applicable premiums if all binder functions are performed. [fsca_rdr_intermediary_segmentation_2019, p.2-3]\n\nThe 2019 update also introduced an insurer notification process to the FSCA for arrangements where an insurer intends to pay remuneration to an independent intermediary or representative for functions other than services as intermediary or binder functions, including other outsourcing arrangements. [fsca_rdr_intermediary_segmentation_2019, p.2-3]",
       "refused": false,
       "citations": [
         {
@@ -167,12 +167,12 @@
         },
         {
           "doc_id": "fsca_rdr_intermediary_segmentation_2019",
-          "page": 8,
+          "page": 2,
           "verified": true
         },
         {
           "doc_id": "fsca_rdr_intermediary_segmentation_2019",
-          "page": 9,
+          "page": 3,
           "verified": true
         }
       ],

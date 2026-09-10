@@ -18,7 +18,6 @@ RETRIEVAL_HOLDOUT_PATH = EVALS_DIR / "retrieval_holdout.json"
 EVAL_PROTOCOL_PATH = EVALS_DIR / "protocol.json"
 EVAL_HISTORY_CSV = REPORTS_DIR / "eval_history.csv"
 
-RANDOM_SEED = 42
 CACHE_DB_PATH = ROOT / "regrag_cache.sqlite3"
 
 # --- ingestion / chunking ---
@@ -26,7 +25,7 @@ CACHE_DB_PATH = ROOT / "regrag_cache.sqlite3"
 # there's no free, dependency-light tokenizer for either — but it's a stable, fast proxy for
 # "roughly how big is this chunk", which is all the chunk-size budget needs.
 TOKENIZER_ENCODING = "cl100k_base"
-# 800, not the originally-planned 500: reports/improvement_log.md swept 300/500/800 tokens x
+# 800, not the originally-planned 500: reports/archive/v1.0-audit/improvement_log.md swept 300/500/800 tokens x
 # reranking on/off against the retrieval benchmark. 800+rerank won on every measure (hit-rate@5
 # 95% vs 500's 85%, MRR 0.808 vs 0.654) and reranking improved every chunk size it was paired
 # with — larger chunks give the cross-encoder more context to judge relevance against, at the

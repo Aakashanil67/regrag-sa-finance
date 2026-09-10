@@ -1,6 +1,6 @@
 """Elements -> retrieval chunks.
 
-Packs headings and paragraphs into ~500-token chunks (`CHUNK_TARGET_TOKENS`), preferring to break
+Packs headings and paragraphs into ~800-token chunks (`CHUNK_TARGET_TOKENS`), preferring to break
 at a section heading once a chunk already holds a reasonable amount of content, rather than
 force-splitting on every heading — a document with fifty short numbered clauses would otherwise
 produce fifty near-empty chunks. Consecutive chunks share a token-level overlap

@@ -1,94 +1,51 @@
 # regrag-sa-finance
 
 A retrieval-augmented assistant that answers questions about South African financial regulation
-(SARB prudential directives, the National Credit Act, FSCA conduct standards, IFRS 9) from a fixed
-local corpus of 19 PDFs. Every factual claim in an answer carries an inline `[doc_id, p.X]`
-citation checked against the pages the system actually retrieved, and the system refuses rather
-than answers when the retrieved context cannot support a response. The eval harness is the point
-of the project rather than a checkbox after the fact: chunking and retrieval decisions were made
-by sweeping alternatives against a retrieval benchmark and a RAGAS-judged golden set, so the
-numbers below are what that sweep produced, not what was assumed going in.
+(SARB prudential directives, the National Credit Act, FSCA conduct standards, IFRS 9) for someone
+who needs a fast, citation-checked pointer into a fixed local corpus — not a substitute for reading
+the source or for legal advice.
 
-## Eval results
+Regulatory text carries different weight depending on who issued it and whether it's still in
+force: a binding SARB directive, a non-binding guidance note, and a withdrawn circular can describe
+the same subject in similar language, and citing them interchangeably would misrepresent what the
+law actually requires. This system tracks `authority_level`, `publication_stage` and
+`current_status` per source, attaches a fixed disclosure whenever an answer cites a withdrawn
+circular or third-party commentary, and refuses outright — rather than guessing — when the
+retrieved context can't support an answer. A wrong refusal costs a user a follow-up question. A
+wrong answer, stated as if it were current law, costs more than that.
 
-The change under test is `chunk_size=800` with cross-encoder reranking, replacing 500-token chunks
-with no reranking. Both configurations were measured on the same 20-question retrieval benchmark
-and the same golden set.
+## Sealed holdout results
 
-| | chunk size | rerank | hit-rate@5 | MRR |
-|---|---|---|---|---|
-| before | 500 | off | 85% (17/20) | 0.654 |
-| **after** | **800** | **on** | **95% (19/20)** | **0.808** |
+30 questions, held out and cryptographically sealed (`evals/protocol.json`) before any tuning
+against them, run exactly once (`python -m evals.run_release --split holdout --label v1.1.0-rc2`)
+against the final, frozen pipeline:
 
-The hit-rate line is two questions on a 20-question benchmark, and the Wilson intervals (64 to 95
-per cent, 76 to 99 per cent) overlap too heavily for that difference to count as established. MRR
-is the better-powered signal in the same data, since it moves on where the right chunk ranks
-rather than only on whether it cleared a cutoff.
+| metric | value |
+|---|---|
+| Retrieval hit-rate@5 | 28/30 (93%), Wilson 95% CI 79–98% |
+| Answerable answer rate | 17/24 (71%) |
+| Unanswerable refusal recall | 6/6 (100%) |
+| Citation-contract pass rate | 23/30 (77%) |
+| Verified-citation rate | 30/30 (100%) |
+| RAGAS (17 answered items) | faithfulness 0.866, answer relevancy 0.681, context precision 0.894, context recall 1.000 |
 
-RAGAS was run on the golden set's answerable items with `claude-haiku-4-5` as both generator and
-judge. The two runs scored different item sets, since reranking pulled six previously refused
-questions into real answers and pushed one the other way, so the raw means below are not directly
-comparable on their own. The paired comparison on the 33 items common to both runs sits alongside
-them for that reason.
+**Every citation that reached the user was verified against a page the system actually
+retrieved — no fabricated reference slipped through.** That's the release gate this system exists
+to hold, and the holdout confirms it holds.
 
-| metric | before (all, n=34) | after (all, n=39) | paired Δ (n=33) | improved / regressed | sign test |
-|---|---|---|---|---|---|
-| faithfulness | 0.791 | 0.829 | +0.023 | 9 / 9 | p = 1.00 |
-| answer relevancy | 0.851 | 0.810 | −0.041 | 10 / 11 | p = 1.00 |
-| context precision | 0.673 | 0.790 | **+0.109** | **14 / 5** | p = 0.06 |
-| context recall | 0.912 | 0.968 | +0.030 | 1 / 0 | p = 1.00 |
+**The honest limitation:** two of the six multi-document holdout questions (comparisons like
+"which subject do Directive 8/2023 and Directive 8/2025 both address") failed because top-k
+semantic search over the whole corpus doesn't reliably surface both named documents at once when
+they're close siblings on the same subject — one crowds the other out of the top 5. That's the
+majority of this holdout's answerable-rate shortfall; see `reports/failure_analysis.md` for the
+full per-item breakdown, including which refusals were retrieval gaps versus the model correctly
+declining to guess.
 
-Only context precision holds up under that pairing, and even it falls short of conventional
-significance. The faithfulness and recall gains in the raw means are mostly composition effects.
-Once the item set is held fixed, faithfulness splits 9 to 9 across items, and recall was already
-at 0.939 with 32 of 33 items unchanged, so there was little room left to move. What reranking
-demonstrably bought was coverage: five net refusals became answered questions, a count of
-behaviour changing rather than an estimated mean, so it needs no significance test to stand. The
-precision gain earns more trust than its p-value alone would suggest, because it has a mechanism
-behind it. Dropping loosely similar chunks is exactly and only what a cross-encoder does, so a
-precision-shaped result is the prediction here, not a number that happened to move.
-
-I kept the new configuration on that basis. The full working is in
-[`reports/paired_comparison.md`](reports/paired_comparison.md), the sweep across 300, 500 and 800
-tokens with reranking on and off is in [`reports/improvement_log.md`](reports/improvement_log.md),
-and the run itself is in [`reports/eval_summary.md`](reports/eval_summary.md). The ten
-worst-scoring golden items are diagnosed individually in
-[`reports/failure_analysis.md`](reports/failure_analysis.md); three of them turned out to be RAGAS
-judge artifacts rather than real defects, which I confirmed by dumping the retrieved chunk text
-against the model's quoted claims rather than trusting the score.
-
-A response cache, exact-match on normalised question text so a rephrased question is still a live
-call, cuts median latency from 4489ms and $0.00365 per query to 1ms and $0. Measured in
-[`reports/perf.md`](reports/perf.md).
-
-## Architecture
-
-```mermaid
-flowchart LR
-    subgraph offline["offline, one-time"]
-        PDF[19 corpus PDFs] --> Extract["PyMuPDF extraction<br/>+ heading detection"]
-        Extract --> Chunk["heading-aware chunking<br/>800 tok, 75 overlap"]
-        Chunk --> Embed["MiniLM embeddings"]
-        Embed --> DB[(ChromaDB<br/>635 chunks)]
-    end
-
-    subgraph online["per question"]
-        Q[question] --> C{cache hit?}
-        C -->|yes| Cached[cached answer]
-        C -->|no| Bi["bi-encoder search<br/>top 20"]
-        DB --> Bi
-        Bi --> Rerank["cross-encoder rerank<br/>top 5"]
-        Rerank --> LLM["Claude Haiku<br/>cited answer or refusal"]
-        LLM --> Verify["citation verification<br/>against retrieved pages"]
-        Verify --> Log[(SQLite: query log<br/>+ response cache)]
-        Verify --> Answer[answer + citations]
-    end
-```
-
-`api/main.py` is a FastAPI service (`/ask`, `/health`, `/stats`, rate-limited) sitting in front of
-this pipeline. `app/chat.py` and `app/ops.py` are the Streamlit chat UI and observability
-dashboard, each a separate deployable process that talks to the API over HTTP rather than
-importing the RAG code directly.
+This is the second candidate. The first (`v1.1.0-rc1`) completed but diagnosing its failures found
+a real citation-parsing defect, which by this project's own release rule means that holdout run was
+opened and its numbers are not usable as evidence — only `rc2`'s are. Full story, including a
+second defect found and fixed in retrieval itself before either run, in `reports/failure_analysis.md`
+and `DECISIONS.md`.
 
 ## Run locally
 
@@ -100,11 +57,14 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-`chroma-hnswlib` compiles a C extension on install. On Windows this needs the Microsoft C++ Build
+`requirements.txt` is a compatibility shim (`-r requirements-dev.txt`) for this one-environment
+local setup. `requirements-api.txt` and `requirements-ui.txt` are the actual, narrower dependency
+sets each Docker image installs — see the Docker section below for why the split exists.
+`chroma-hnswlib` compiles a C extension on install; on Windows this needs the Microsoft C++ Build
 Tools (Visual Studio Installer, "Desktop development with C++" workload). Linux and macOS wheels
-are usually prebuilt, so this step is a Windows-only cost.
+are usually prebuilt.
 
-Copy `.env.example` to `.env`. There are three provider options, picked by `LLM_PROVIDER`.
+Copy `.env.example` to `.env`. Three provider options, picked by `LLM_PROVIDER`.
 
 - `anthropic` (default): set `ANTHROPIC_API_KEY`. This is what generated every number above.
 - `openai`: set `OPENAI_API_KEY`. Not benchmarked here, since the eval harness assumes Claude as
@@ -113,19 +73,21 @@ Copy `.env.example` to `.env`. There are three provider options, picked by `LLM_
   will differ from the benchmarked configuration, but it runs the pipeline at zero API cost.
 
 ```bash
-python -m scripts.fetch_corpus       # downloads the 19 PDFs, verifies against pinned SHA-256
-python -m src.chunking               # chunks, embeds into a fresh reports/chunk_quality.md
-python -m src.store --rebuild        # builds the ChromaDB collection
-python -m evals.retrieval_bench      # reports/retrieval_bench.md
-python -m evals.run_ragas            # reports/eval_summary.md + reports/eval_history.csv
+python -m scripts.fetch_corpus       # downloads the 22 corpus PDFs, verifies pinned SHA-256
+python -m scripts.validate_manifest  # enforces the authority/stage/status schema contract
+python -m src.chunking               # chunks the corpus, writes reports/chunk_quality.md
+python -m src.store --rebuild        # embeds and builds the ChromaDB collection
+python -m evals.retrieval_bench --split dev   # reports/retrieval_bench.md
+python -m evals.run_release --split dev --label local-check  # reports/eval_summary.md + eval_history.csv
 
 uvicorn api.main:app --reload
 streamlit run app/chat.py
 streamlit run app/ops.py
 ```
 
-`ruff check .`, `ruff format --check .` and `pytest -q` should all pass clean. There are 79 tests,
-all run against a mocked LLM, so none of them need an API key.
+`ruff check .`, `ruff format --check .` and `pytest -q` should all pass clean. There are 201
+tests, all run against a mocked LLM and a temporary vector store, so none of them need an API key
+or the real corpus.
 
 ### Docker
 
@@ -133,89 +95,185 @@ all run against a mocked LLM, so none of them need an API key.
 docker compose up --build
 ```
 
-This brings up the API on port 8000, the chat UI on 8501, and the ops dashboard on 8502 as three
-containers. The compose file bind-mounts the repo over each image's `/app`, so `corpus/`,
-`chroma/`, and the SQLite log and cache files, all gitignored and built locally by the commands
-above, are visible to the containers without being baked into the image. Both Dockerfiles install
-CPU-only torch ahead of `requirements.txt`, since sentence-transformers' default resolution pulls
-the CUDA build on Linux. That inflated the first version of these images to 9.73GB for two MiniLM
-models that only ever run on CPU here. The API image now measures 3.55GB and the UI images 3.2GB
-each.
+Brings up the API on `127.0.0.1:8000`, the chat UI on `127.0.0.1:8501`, and the ops dashboard on
+`127.0.0.1:8502` — loopback-only by default, not reachable from another machine without
+deliberately rebinding the port mapping. The compose file bind-mounts the repo over each image's
+`/app`, so `corpus/`, `chroma/`, and the SQLite log/cache files (all gitignored, built locally by
+the commands above) are visible without a rebuild. `Dockerfile.api` installs CPU-only torch ahead
+of `requirements-api.txt` — sentence-transformers' default resolution otherwise pulls the CUDA
+build on Linux, which inflated the first version of this image to 9.73GB for two MiniLM models
+that only ever run on CPU here. The API image now measures 2.73GB; the chat and ops images, which
+install `requirements-ui.txt` and never import torch, ChromaDB, sentence-transformers, or the
+Anthropic SDK at all, measure 803MB each.
 
-## What is not built
+## Architecture
 
-The API and both Streamlit apps run locally and in Docker, and there is no hosted URL. Render or
-Streamlit Cloud deployment was scoped out of this project on purpose, not forgotten.
+```mermaid
+flowchart LR
+    subgraph offline["offline, one-time"]
+        PDF[22 corpus PDFs] --> Extract["PyMuPDF extraction<br/>+ heading detection"]
+        Extract --> Chunk["heading-aware chunking<br/>800 tok, 75 overlap"]
+        Chunk --> Embed["MiniLM embeddings"]
+        Embed --> DB[(ChromaDB<br/>795 chunks)]
+    end
 
-Two multi-document comparison questions in the golden set still fail. A query like "what body do
-directive X and directive Y both cite" embeds as one vector, and the document with fewer chunks
-loses to whichever document's vocabulary the embedding happens to resemble more closely.
-`src/agent.py` adds a bounded retrieve-decide-requery loop meant to fix exactly this. Tested
-against the ten multi-document golden items, it fixed zero of the two target cases while tripling
-cost and adding real latency, recorded in
-[`reports/agent_eval.md`](reports/agent_eval.md). A same-question rerun afterward flipped one
-target case from refusal to a correct answer with identical code, which points to run-to-run LLM
-non-determinism rather than a fixable bug. The full result is in the Agent extension section of
-[`DECISIONS.md`](DECISIONS.md). Query decomposition, a separate retrieval call per named document,
-looks like the more promising fix, and it is not built.
+    subgraph online["per question"]
+        Q[question] --> C{cache hit?}
+        C -->|yes| Cached[cached answer]
+        C -->|no| Bi["bi-encoder search<br/>exact cosine, top 20"]
+        DB --> Bi
+        Bi --> Rerank["cross-encoder rerank<br/>top 5"]
+        Rerank --> LLM["Claude Haiku<br/>cited answer or refusal"]
+        LLM --> Verify["fail-closed citation<br/>+ source-notice check"]
+        Verify --> Log[(SQLite: query log<br/>+ response cache)]
+        Verify --> Answer[answer + citations + notices]
+    end
+```
 
-The API has no authentication, and its rate limiting is per-process and held in memory, so a
-distributed client or a shared NAT defeats it easily. Neither gap is assumed away silently: both
-are written up in [`reports/security_notes.md`](reports/security_notes.md).
+`api/main.py` is a FastAPI service (`/ask`, `/health/live`, `/health/ready`, `/stats`,
+`/recent-queries`, rate-limited, CORS-restricted to the chat UI's own origin) sitting in front of
+this pipeline. `app/chat.py` and `app/ops.py` are the Streamlit chat UI and observability
+dashboard, each a separate deployable process talking to the API over HTTP rather than importing
+the RAG code directly.
 
-## Limitations
+## Design decisions and their trade-offs
 
-The golden set has not been reviewed by a human. I drafted the 55 items and their reference
-answers myself, and Claude both answers and judges them, which is a closed loop and the weakest
-foundation under every number on this page. A reference answer that is subtly wrong produces a
-confidently wrong score, and nothing in the harness would catch it. The retrieval set is in better
-shape, since its page labels were audited against the source PDFs after the first benchmark run
-scored only 55 per cent, which is how eleven mislabelled `golden.jsonl` page references were found
-and fixed. But that audit checked where the answer lives, not whether the reference answer is
-correct in the first place. Independent review is the highest-value thing this project is still
-missing.
+**Chunk size 800 with cross-encoder reranking, not 500 with none.** A sweep across 300/500/800
+tokens × rerank on/off found 800+rerank winning on every measure (hit-rate@5 95% vs 500's 85%,
+MRR 0.808 vs 0.654), but when I re-checked the headline RAGAS comparison for paired significance,
+only context precision survived holding the item set fixed (+0.109, p=0.06 — short of conventional
+significance on 33 items). I kept the config anyway on a narrower basis: reranking demonstrably
+bought coverage, five net refusals became answered questions, and that needs no significance test
+to stand. Full working in `DECISIONS.md`'s Eval-driven improvement section.
 
-The corpus mixes levels of legal authority, and until recently the system treated all of them as
-equal. It contains primary legislation in the National Credit Act, subordinate instruments issued
-under it in the SARB directives under section 6(6) of the Banks Act, explicitly non-binding
-guidance in Guidance Note 3/2025 under section 6(5), and third-party commentary in PwC's IFRS 9
-practical guide. `corpus/manifest.json` recorded issuer, title, year and category for every
-document from the start, but none of it reached retrieval, the prompt, or the citation. Every
-context block now carries its document's real type, year, issuer and title, extracted from each
-PDF's own cover page rather than paraphrased. The first version of this fix used paraphrased
-titles, and a live test against golden item `g24` caught the gap, since the paraphrase had dropped
-the document's own reference number. Citing third-party commentary or a superseded instrument type
-now also attaches a fixed, code-generated disclosure. This was measured the same paired way as the
-chunk-size change, in
-[`reports/paired_comparison_metadata.md`](reports/paired_comparison_metadata.md): no RAGAS metric
-moves outside noise, because it is a disclosure fix rather than a retrieval or generation-quality
-one, and `g24` flips from refusal to a correct answer for exactly the diagnosed reason. The full
-story is in the Source authority and currency metadata section of
-[`DECISIONS.md`](DECISIONS.md). What this does not do is rank authority. A directive is not marked
-more binding than a guidance note anywhere the code enforces it, only named as one or the other.
+**Exact cosine similarity for candidate search, not ChromaDB's approximate HNSW index.** Chroma's
+local HNSW segment rebuilds its graph by re-inserting every embedding on each fresh process, using
+a thread pool sized to CPU count — parallel insertion order isn't fixed, so identical queries
+against an identical on-disk index returned different top-k results across separate process
+launches — I caught this because two back-to-back holdout retrieval runs scored 93% and 90% with
+zero code changed between them, which shouldn't be possible on a frozen pipeline. At this corpus's
+scale (795 chunks), brute-force cosine similarity costs low milliseconds, so the "approximate" in
+approximate nearest neighbour bought nothing here and cost reproducibility — a sealed, run-once
+release protocol needs identical input to give identical output.
 
-Supersession is still not modelled, beyond flagging Circulars as a document type that this
-corpus's newer instruments have superseded as a category. The corpus spans 2004 to 2026, and
-Directive D3/2023 states in its own text that it replaces Directive 5/2017, a specific successor
-claim this system does not verify or surface. That is deliberate: the corpus does not contain
-Directive 5/2017, so confirming or naming that relationship is not something the retrieved text
-can actually support.
+**Structural citation verification, not trusted model output, and explicitly not semantic
+entailment.** Every citation is checked against the (doc_id, page) pairs the retrieved chunks
+actually cover — an LLM citing a page it wasn't shown is a hallucination even if the surrounding
+prose is accurate. The enforceable guarantee is exactly this: every non-empty answer line must end
+in a citation to a retrieved page, or the response fails closed. Whether the cited page actually
+*supports* the claim being made is a separate question this runtime check cannot and does not
+answer — that's measured offline by RAGAS faithfulness scoring and the manual holdout audit, not
+guaranteed on every live request.
 
-Retrieval is measured on a small and unbalanced corpus. There are 635 chunks in total, and 333 of
-them, 52 per cent, come from the National Credit Act alone. Benchmark figures from a corpus this
-size and this skewed should not be read as predicting behaviour at a realistic scale.
+**Exact-match response cache, not semantic.** A semantic cache (embed the query, serve on
+similarity) would catch more repeat traffic, but risks serving a cached answer to a question
+that's subtly different from the one actually asked — wrong for a tool whose whole premise is
+citation accuracy. The cache key folds in provider, model, temperature, k, corpus fingerprint,
+chunking/reranking config, and the citation-contract version, so a pipeline change invalidates old
+entries instead of silently serving stale answers under a matching key — a real incident during
+this hardening pass (see `DECISIONS.md`).
 
-Every RAGAS score reported here comes from Claude-haiku-4-5 judging Claude-haiku-4-5's own output.
-[`reports/failure_analysis.md`](reports/failure_analysis.md) confronts that same-family judge bias
-directly: three of the ten worst-scoring golden items turned out to be judge artifacts rather than
-real defects, which I only found by checking them by hand rather than trusting the score.
+**Split API/UI dependencies, not one requirements file baked into every image.** Neither Streamlit
+process touches the vector store or an LLM SDK directly; both call the API over HTTP. Splitting
+`requirements-api.txt` from `requirements-ui.txt` (with `requirements-dev.txt` layering the
+eval/test tooling on top for local all-in-one work) took the chat and ops Docker images from
+sharing the API's full stack down to 803MB each, with no torch, ChromaDB, sentence-transformers,
+or Anthropic SDK inside.
 
-This tool reports what a document says. It does not give legal advice, it does not tell you
-whether a document is still in force, and the system prompt says so on every response.
+**Privacy-by-default query logging.** `LOG_RAW_CONTENT` defaults to false — question and answer
+text are not stored unless a local user opts in explicitly. A compliance-research tool is exactly
+the kind of thing someone pastes a real account number or case detail into without thinking about
+it; the safer default is dropping the text and keeping only metrics (timings, cost, refusal
+reason, citation counts), not logging everything and hoping an operator remembers to scrub later.
+
+## Corpus authority and currency
+
+22 documents, tracked per-entry in `corpus/manifest.json` against a schema
+(`corpus/manifest.schema.json`) that requires an `authority_level`, `publication_stage`, and
+`current_status` for every source, with `status_source_url`/`status_source_id` evidence wherever
+status isn't simply "current":
+
+| authority level | current | withdrawn / superseded | historical snapshot / unknown |
+|---|---|---|---|
+| Primary legislation (1) | National Credit Act | — | — |
+| Binding regulatory instrument (6) | 3 directives | 2 directives (superseded per Circular C1/2026) | IFRS 9 issued text, 2021 edition |
+| Official non-binding guidance (8) | 6 (SARB Guidance Note, 4 NCR guidelines, Circular C1/2026 itself) | 2 (both 2004 circulars, withdrawn per C1/2026) | — |
+| Official explanatory material (5) | FSCA press release | — | NCA notebook brochure (unknown), 2019 RDR update (unknown), TCF 2011 (historical), IFRS 9 project summary 2014 (historical) |
+| Consultation / discussion draft (2) | — | — | OTC derivatives conduct standard (unknown — still an unresolved draft), 2014 RDR (historical) |
+
+Full per-document table, source URLs, and the specific 2026 corrections (a consultation draft that
+had been read as final, a withdrawn-circular status model, two superseded SARB directives, a
+mis-dated third-party IFRS 9 guide replaced with the official 2021 text) are in
+`corpus/README.md`.
+
+## Evaluation protocol
+
+Three tiers, deliberately kept apart:
+
+- **`evals/golden_dev.jsonl`** (57 items) and **`evals/retrieval_dev.json`** — the development
+  set, freely re-run and inspected while tuning. Numbers from this set guide decisions; they are
+  never release evidence on their own.
+- **`evals/fixtures/ci_subset.json`** (10 items, `python -m evals.record_fixtures`) — a frozen
+  snapshot of real model output, re-recorded only when tracked inputs change. CI
+  (`evals/test_snapshot_integrity.py`) checks that the fixture still matches current code, and
+  flags every tracked input the fixture is stale against — it proves reproducibility against a
+  past recording, not that a hosted model behaves identically today.
+- **`evals/golden_holdout.jsonl`** (30 items) — sealed via `evals/protocol.json`
+  (SHA-256 over the file, a pipeline fingerprint recorded at seal time, and an explicit "do not
+  edit to make a result pass" clause) before any tuning touched it. `python -m evals.run_release
+  --split holdout` is meant to run exactly once per release candidate; a partial run (a generation
+  or judge failure) blocks promotion outright rather than producing a partial number.
+
+## Security, privacy, and deployment boundary
+
+- **No authentication** on the API — out of scope for a research/demo assistant, not silently
+  assumed away.
+- **Loopback-only by default**; `docker-compose.yml` publishes every service on `127.0.0.1` only.
+- **CORS is an allowlist, not a substitute for auth** — stops an arbitrary web page from calling
+  the API from a visitor's browser, does nothing against a direct request from anyone who can
+  already reach the loopback address.
+- **Prompt injection**: the system prompt itself (rule 5) is the actual defense — content after
+  `Question:` is data, never instructions. `src/guardrails.py` is a pattern-based detector that
+  flags, not blocks, on the reasoning that refusing a legitimate question over a false positive is
+  worse for this domain than letting a flagged-but-harmless one through to the real defense.
+- **Query logging is off by default** (`LOG_RAW_CONTENT=false`); see Design decisions, above.
+  `LOG_RETENTION_DAYS` (default 30) bounds how long any row survives; `python -m src.obslog
+  --purge-expired` / `--scrub-content` are explicit, user-triggered operations, not automatic.
+- **Rate limiting** is per-process, in-memory, keyed on remote address — real protection against
+  casual abuse, trivially defeated by a distributed client or a shared NAT. Fine for a portfolio
+  demo, not a production deployment.
+
+Full reasoning in `reports/security_notes.md`.
+
+## What remains broken
+
+- **Multi-document comparison questions naming two similar sibling sources** (see Sealed holdout
+  results, above) fail more often than single-document questions. `src/agent.py`'s
+  retrieve-decide-requery loop was built and measured against this exact failure class: it fixed
+  zero of its two target cases while tripling cost, and a same-question rerun afterward flipped
+  one case from refusal to correct with identical code — pointing at LLM non-determinism moving the
+  failure point rather than a clean fix. Query decomposition (a separate retrieval call per named
+  document) is the more promising untried fix.
+- **The final FMA Conduct Standard 2 of 2018 and FSCA Conduct Standard 3 of 2020 (Banks)** are not
+  in the corpus. The only obtainable copy of the latter is a scanned image PDF with zero
+  extractable text; ingesting it would have silently produced zero retrievable chunks, so it was
+  rejected rather than added.
+- **Claude isn't called at temperature 0 in the sense of guaranteeing bit-identical output** —
+  even with `LLM_TEMPERATURE=0`, one holdout item's pass/fail outcome was confirmed, by direct
+  reproduction, to depend on sampling variance rather than a code defect. Retrieval is now fully
+  deterministic after this hardening pass; answer generation is not, and the 71% answerable rate
+  should be read as a point estimate with that caveat, not an exactly reproducible count.
+- **RAGAS scores Claude's output using Claude as judge.** Same-family judge bias is a known,
+  unresolved limitation; `reports/failure_analysis.md` documents specific cases where the judge
+  and a manual read disagreed.
+- **The golden and holdout sets were authored by one person (me) and are not independently
+  reviewed.** A subtly wrong reference answer produces a confidently wrong score, and nothing in
+  the harness would catch it on its own — independent review is the highest-value thing I know
+  this project is still missing.
 
 ## Further reading
 
 [`DECISIONS.md`](DECISIONS.md) is a running log of what actually happened while building this: the
-real bugs, the numbers that did not move the way I expected, the dependency conflicts and how they
-were actually resolved. I have kept it as it was written at the time rather than cleaning it up
-into a tidier retrospective.
+real bugs, the numbers that did not move the way expected, the dependency conflicts and how they
+were actually resolved. Kept as written at the time rather than cleaned up into a tidier
+retrospective.

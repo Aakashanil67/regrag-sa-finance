@@ -7,7 +7,7 @@ alone is reliable (numbered list items aren't headings; some documents use one f
 throughout), so `_is_heading` requires the numbering pattern OR a font size comfortably above the
 document's own body-text size, never guesses from formatting alone, and accepts that a handful of
 either false positive or false negative headings per document is the cost of not building a real
-layout model for 19 PDFs.
+layout model for 22 PDFs.
 
 Three cleanup passes run before chunking ever sees the text, because feeding chunking.py raw
 PyMuPDF output would silently poison retrieval:

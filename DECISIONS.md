@@ -7,19 +7,22 @@ the time rather than a tidy reconstruction.
 
 | Module | Responsibility |
 |---|---|
-| `scripts/fetch_corpus.py` | Checksummed download of the 19 corpus PDFs, WAF-aware headers. |
+| `scripts/fetch_corpus.py` | Checksummed download of the 22 corpus PDFs, WAF-aware headers. |
+| `scripts/validate_manifest.py` | Enforces `corpus/manifest.schema.json`'s authority/stage/status contract. |
 | `src/ingest.py` | PyMuPDF extraction, boilerplate stripping, ToC detection, heading detection, de-hyphenation. |
-| `src/chunking.py` | Heading-aware ~500-token chunks with overlap, oversized-paragraph splitting. |
+| `src/chunking.py` | Heading-aware ~800-token chunks with overlap, oversized-paragraph splitting. |
 | `src/report_chunks.py` | `reports/chunk_quality.md` and the size histogram. |
 | `src/store.py` | sentence-transformers embeddings into a persistent ChromaDB collection, hash-based idempotent rebuild. |
-| `src/retrieve.py` | Top-k semantic retrieval with metadata filters. |
+| `src/retrieve.py` | Top-k retrieval by exact cosine similarity, optional cross-encoder reranking. |
+| `src/provenance.py` | Pipeline/store fingerprints tying a cached, logged, or reported result to the exact config that produced it. |
 | `src/llm.py` | Provider-agnostic chat completion (anthropic / openai / ollama). |
-| `src/rag.py` | Retrieve → cited-answer prompt → citation validation → refusal detection. |
+| `src/rag.py` | Retrieve → cited-answer prompt → fail-closed citation validation → refusal detection → source notices. |
 | `src/guardrails.py` | Pattern-based prompt-injection flagging (observability, not a gate). |
-| `src/cache.py` | Exact-match, question-hash response cache. |
-| `src/obslog.py` | SQLite query log; wires the cache and latency timing around `rag.answer_question`. |
-| `api/main.py` | FastAPI `/ask`, `/health`, `/stats`. |
-| `app/chat.py` / `app/ops.py` | Streamlit chat UI and observability dashboard, both calling the API over HTTP. |
+| `src/cache.py` | Exact-match, fingerprint-keyed response cache. |
+| `src/obslog.py` | SQLite query log (privacy-by-default: metrics only unless `LOG_RAW_CONTENT=true`); wires the cache and latency timing around `rag.answer_question`. |
+| `evals/run_release.py` | The release evaluation harness: structural citation-contract metrics + RAGAS, denominator-aware, blocks promotion on any partial run. |
+| `api/main.py` | FastAPI `/ask`, `/health/live`, `/health/ready`, `/stats`, `/recent-queries`, CORS-restricted, rate-limited. |
+| `app/chat.py` / `app/ops.py` | Streamlit chat UI and observability dashboard, both calling the API over HTTP, no direct import of `src.rag`/`src.store`. |
 
 ## Corpus
 
@@ -547,3 +550,112 @@ argument. Setting `anonymized_telemetry=False` in `store.py` didn't fix it — c
 crash (caught internally, harmless) happened either way. Pinning `posthog==3.7.0` in
 requirements.txt is the actual fix; `anonymized_telemetry=False` stayed in `store.py` anyway,
 since a local research tool has no reason to phone home even with a compatible posthog version.
+
+## Release hardening pass (v1.1.0)
+
+The tagged v1.0.0 audit above found real defects but the release rules it operated under were
+still loose: no dev/holdout separation, an evaluation harness that could publish a partial run as
+if complete, and citation validation split across `rag.py` and `agent.py` in slightly different
+ways. This section covers what changed to close those gaps, ending in a sealed holdout run.
+
+**Citation validation became one fail-closed gate, not two similar ones.** `agent.py` had its own
+copy of the refusal/citation logic, drifted slightly from `rag.py`'s — a second place a fix could
+be applied to one path and not the other without anyone noticing. `validate_generated_answer` in
+`rag.py` is now the single gate both call, returning a structured `RefusalReason` (`no_context`,
+`model_refusal`, `malformed_refusal`, `missing_citation`, `uncited_line`, `unverified_citation`)
+instead of a bare refused/not-refused boolean — the eval harness and the ops dashboard can now
+name *which* rule fired, not just that one did.
+
+**The structural citation check is explicitly not semantic entailment, and the docs now say so
+in one sentence instead of overclaiming.** The old README line — "every factual claim is citation
+checked" — was true of the mechanism (every citation is checked against a retrieved page) but
+implied something the mechanism doesn't do (checking that the page actually supports the claim).
+The enforceable statement is narrower and now stated as such: every non-empty answer line must end
+in a citation to a retrieved page, or the response fails closed. Semantic support is a separate
+question, answered offline by RAGAS faithfulness scoring and the manual holdout audit, never
+guaranteed on a live request. `CITATION_CONTRACT_VERSION` exists specifically so a change to what
+counts as a valid citation invalidates old cached/logged results instead of silently reinterpreting
+them under the old rules.
+
+**A live-source audit found the corpus had drifted from its stated authority in five separate
+ways**, none caught by the existing manifest schema because the schema recorded a category but
+nothing checked the category was still true: the OTC-derivatives conduct standard is still an
+April 2018 consultation draft, not the final standard its metadata implied; the PwC IFRS 9 guide's
+claimed 2017 date didn't match its own PDF metadata (2011-01-06) or its pre-2014 two-category
+IFRS 9 content, so it was removed and replaced with the IFRS Foundation's official 2021 issued
+text, dated as a historical snapshot; 2004-era issuers were attributed to "SARB Prudential
+Authority," an entity that didn't exist until 2018; and — found only while re-verifying the other
+corrections, not the thing being looked for — SARB Circular C1/2026 ("Status of previously issued
+circulars") deems every earlier Banks Act circular withdrawn, terminated or replaced unless that
+year's Circular 1 confirms it, and neither 2004 circular in this corpus is on C1/2026's confirmed
+list. Both are now marked `withdrawn`, with C1/2026 recorded as the evidence
+(`status_source_id`/`status_source_page`), and any answer citing one now carries a
+`withdrawn_source` notice generated by code, not left to the model to remember. Checking C1/2026's
+own effective-directives list also surfaced two more stale entries beyond the original audit scope:
+Directive 8/2023 (threshold amounts) and Directive 10/2021 (operational resilience) are both
+superseded by later, same-subject directives (8/2025 and 4/2023) that *are* confirmed current — all
+four are now in the corpus with corrected status, added with the user's explicit sign-off since
+this was found outside the audit's original checklist.
+
+**The development golden set became development-only, not because its numbers were wrong, but
+because reusing it as release evidence would make every future number partly a measurement of
+which questions had already been tuned against.** `evals/golden.jsonl` and `retrieval_set.json`
+split into `_dev` (kept, freely re-run) and `_holdout` (30 items each, never touched during
+tuning) files, sealed by `evals/protocol.json` — a SHA-256 of the holdout files plus the pipeline
+fingerprint at seal time, with an explicit clause that a genuine reference error found later
+requires a documented protocol version bump and new user sign-off, not a quiet edit. CI's own
+snapshot fixture (`evals/fixtures/ci_subset.json`) is a third, distinct tier: a frozen recording of
+real model output, re-recorded only when `evals/test_snapshot_integrity.py`'s own stale-input check
+says a tracked file changed — it exists to catch code regressions against a fixed point, not to
+measure current quality, and conflating it with either dev or holdout numbers would misrepresent
+both.
+
+**The sealed holdout surfaced two real pipeline defects before it produced usable evidence, one
+in retrieval and one in citation parsing — both fixed on development data, both disclosed here
+rather than quietly folded into a clean-looking final number.** Two back-to-back runs of
+`evals.retrieval_bench --split holdout` against the identical frozen pipeline scored 93% and 90%
+hit-rate@5 with zero code changes between them; traced to ChromaDB's local HNSW segment rebuilding
+its graph by re-inserting every embedding on each fresh process using a CPU-count-sized thread
+pool, so parallel insertion order (and therefore which approximate candidates a query finds) wasn't
+fixed run to run. Raising `hnsw:search_ef` was tried first and silently didn't work —
+`collection.modify()` updates the collection's own metadata row, not the running HNSW segment's —
+so the actual fix replaces Chroma's `.query()` with exact cosine similarity computed in-process;
+verified bit-identical results across 6 separate process launches, and cheap at this corpus's
+scale (795 chunks, low milliseconds per query). Separately, the first complete holdout run
+(`v1.1.0-rc1`) wrongly refused a correct, well-cited answer because the model wrote
+`[doc_id, p.11-12, 1.4.1]` — a section number after the page — and the citation regex required the
+bracket to close immediately after the page digits. Both citation regexes now tolerate an optional
+trailing field; `CITATION_CONTRACT_VERSION` bumped to 2. Per this project's own release rule
+(*"if the run reveals a product defect, fix it, disclose that the original holdout was opened, and
+run a new candidate — do not pretend the second run is untouched"*), `rc1` is voided and only
+`rc2`'s numbers are release evidence: retrieval hit-rate@5 28/30 (93%, Wilson 79–98%), answerable
+answer rate 17/24 (71%), unanswerable refusal recall 6/6 (100%), verified-citation rate 30/30
+(100%). Full per-item breakdown, including which of the 7 wrongly-refused answerable items were
+genuine retrieval misses versus the model correctly declining under the fail-closed contract versus
+measured sampling variance (one item's outcome was confirmed, by direct reproduction, to flip
+between refusal and a correct answer on identical input — `LLM_TEMPERATURE=0` bounds sampling, it
+doesn't eliminate it), is in `reports/failure_analysis.md`.
+
+**Query and answer text are not logged by default.** `LOG_RAW_CONTENT` defaults to false;
+`src/obslog.py` stores only metrics (timings, cost, refusal reason, citation counts, model,
+injection flag, cache hit) unless a local user opts in explicitly. A compliance-research tool over
+regulatory questions is exactly the kind of thing someone pastes a real account number or case
+detail into without thinking about it — the safer default is dropping the text, not logging
+everything and hoping an operator remembers to scrub it later. A local user who sets
+`LOG_HASH_KEY` gets an HMAC-SHA256 fingerprint of the normalised question instead of nothing —
+enough to notice a recurring question without recovering what it said, called pseudonymous rather
+than anonymous because the fingerprint is reversible by anyone holding the key. `LOG_RETENTION_DAYS`
+(default 30) bounds how long any row survives regardless of the content setting.
+
+**Splitting API and UI dependencies took the two Streamlit images from sharing the API's full
+9.73GB-era stack down to 803MB each.** Neither `app/chat.py` nor `app/ops.py` imports `src.rag` or
+`src.store` — both talk to the API over HTTP — so neither needs torch, ChromaDB,
+sentence-transformers, or the Anthropic SDK at all. `requirements-api.txt` and
+`requirements-ui.txt` are now genuinely disjoint dependency sets;
+`requirements-dev.txt` layers the eval/test tooling on top of both for local all-in-one work, and
+`requirements.txt` is a one-line compatibility shim (`-r requirements-dev.txt`) so the documented
+single-environment local setup still works unchanged. Confirmed by inspection inside the built
+images (`importlib.util.find_spec` returning `None` for all four excluded packages in the UI
+image), not assumed from the requirements file split alone. The API image itself dropped to
+2.73GB after the same CPU-only-torch fix the v1.0 audit applied, re-verified on this split's
+rebuild rather than assumed still true.
