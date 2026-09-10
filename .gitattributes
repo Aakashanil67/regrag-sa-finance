@@ -1,0 +1,7 @@
+# Force LF everywhere in the repo, regardless of a clone's core.autocrlf setting. Without this,
+# a fresh clone on a machine with autocrlf=true (a common Windows git default) checks eval/jsonl
+# files out with CRLF even though the stored blob is LF, silently changing their bytes — and this
+# project hashes some of those exact bytes (evals/protocol.json's holdout_sha256) as a release
+# integrity check. A hash computed against LF bytes can never match a CRLF checkout, which is
+# precisely the "clean-clone reproducibility" failure this file exists to prevent.
+* text=auto eol=lf
