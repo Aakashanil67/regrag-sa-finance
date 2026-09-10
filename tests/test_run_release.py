@@ -10,11 +10,13 @@ import pytest
 
 from evals import run_release
 from src.llm import LLMResponse
-from src.rag import Citation, RAGResult, RefusalReason
+from src.rag import Citation, RAGResult, RefusalReason, SourceNotice, SourceReference
 from src.retrieve import RetrievedChunk
 
 
-def _result(question, refused=False, citations=None, refusal_reason=None) -> RAGResult:
+def _result(
+    question, refused=False, citations=None, refusal_reason=None, source_notices=None
+) -> RAGResult:
     citations = citations if citations is not None else [Citation("doc_a", 1, True)]
     return RAGResult(
         question=question,
@@ -26,6 +28,7 @@ def _result(question, refused=False, citations=None, refusal_reason=None) -> RAG
         llm_response=LLMResponse(
             text="...", model="fake", input_tokens=1, output_tokens=1, cost_usd=0.0
         ),
+        source_notices=source_notices or [],
         refusal_reason=refusal_reason,
     )
 
@@ -150,6 +153,37 @@ def test_run_item_marks_a_refusal_on_an_answerable_item_as_failing_the_contract(
     )
 
     assert row["citation_contract_pass"] is False
+
+
+def test_run_item_captures_source_notices_for_manual_audit():
+    # the release protocol's manual audit checks "required source notice is present and
+    # evidenced" per item — that's only auditable from the run artifact if the artifact actually
+    # records the notice, which run_item previously dropped entirely
+    notice = SourceNotice(
+        kind="withdrawn_source",
+        text="doc_a is treated as withdrawn.",
+        evidence=[SourceReference(doc_id="doc_b", page=1)],
+    )
+    row = run_release.run_item(
+        {"id": "f1", "type": "factual", "question": "q"},
+        lambda q: _result(q, source_notices=[notice]),
+    )
+
+    assert row["source_notices"] == [
+        {
+            "kind": "withdrawn_source",
+            "text": "doc_a is treated as withdrawn.",
+            "evidence": [{"doc_id": "doc_b", "page": 1}],
+        }
+    ]
+
+
+def test_run_item_records_an_empty_list_when_no_source_notice_applies():
+    row = run_release.run_item(
+        {"id": "f1", "type": "factual", "question": "q"}, lambda q: _result(q)
+    )
+
+    assert row["source_notices"] == []
 
 
 @pytest.mark.asyncio

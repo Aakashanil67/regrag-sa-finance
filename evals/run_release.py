@@ -74,6 +74,14 @@ def run_item(item: dict, answer_fn) -> dict:
     # an unanswerable item passes the citation contract by refusing; an answerable item passes by
     # answering with a citation contract validate_generated_answer already enforced upstream
     citation_contract_pass = item["type"] == "unanswerable" if result.refused else True
+    source_notices = [
+        {
+            "kind": n.kind,
+            "text": n.text,
+            "evidence": [{"doc_id": e.doc_id, "page": e.page} for e in n.evidence],
+        }
+        for n in result.source_notices
+    ]
     return {
         "id": item["id"],
         "type": item["type"],
@@ -85,6 +93,7 @@ def run_item(item: dict, answer_fn) -> dict:
         "retrieved_chunk_ids": [c.chunk_id for c in result.retrieved_chunks],
         "citation_contract_pass": citation_contract_pass,
         "all_citations_verified": all(c["verified"] for c in citations) if citations else True,
+        "source_notices": source_notices,
     }
 
 
