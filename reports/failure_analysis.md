@@ -23,7 +23,7 @@ every embedding on each fresh process, using a thread pool sized to CPU count by
 insertion order isn't fixed, so the graph (and therefore which candidates an approximate search
 finds) varied run to run. Fixed by replacing Chroma's approximate `.query()` with exact cosine
 similarity computed in-process (`src/retrieve.py`); verified bit-identical output across 6 separate
-process launches. See commits `9ab5745` and `56e0b80` (the first attempt, raising
+process launches. See commits `71cb200` and `a7643e4` (the first attempt, raising
 `hnsw:search_ef`, didn't actually take effect — `collection.modify()` updates the collection's own
 metadata row, not the segment's).
 
@@ -32,7 +32,7 @@ and cited real, retrieved pages, but wrote `[fsca_rdr_2014, p.11-12, 1.4.1]` —
 appended after the page. The citation regex required the bracket to close immediately after the
 page number, so the line matched zero citations and the whole answer was wrongly refused as
 `MISSING_CITATION`. Fixed by loosening both citation regexes to tolerate an optional trailing
-field (commit `906b5ea`); `CITATION_CONTRACT_VERSION` bumped to 2. rc2's `gh17` now answers and
+field (commit `1480602`); `CITATION_CONTRACT_VERSION` bumped to 2. rc2's `gh17` now answers and
 passes.
 
 ## Method
@@ -87,7 +87,7 @@ variance, not an exact reproducible count the way the retrieval benchmark's numb
 The two answered items that cited a document Circular C1/2026 lists as withdrawn — `gh05`
 (Circular 19/2004) and `gh06` (Circular 6/2004) — were checked live against `answer_question`
 directly, since the run artifact did not originally capture `source_notices` at all (fixed in
-commit `7f2b932`, too late to have run inside rc2 without spending another live-API pass). Both
+commit `45a1aad`, too late to have run inside rc2 without spending another live-API pass). Both
 produced the expected `withdrawn_source` notice citing Circular C1/2026 as evidence. `gh07` also
 cites `sarb_c1_2026_status_of_circulars`, but that document's own status is `current`, so no
 notice is expected there and none was triggered. No answered item in this holdout cited a
