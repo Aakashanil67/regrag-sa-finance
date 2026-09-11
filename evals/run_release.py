@@ -25,6 +25,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
+from evals.stats import wilson_interval
 from src.config import (
     EVAL_HISTORY_CSV,
     EVAL_PROTOCOL_PATH,
@@ -282,25 +283,31 @@ def _write_summary_report(run: ReleaseRun, path) -> None:
         f"**Status:** {run.status}",
         "",
         "Fractions shown as `n/d` alongside the percentage — a rate with a small or partial "
-        "denominator is not the same claim as one over the full set.",
+        "denominator is not the same claim as one over the full set. The 95% CI is a Wilson "
+        "interval on the observed rate, not a claim that the true rate equals the point estimate — "
+        "a 30-item holdout leaves real uncertainty even at 100%.",
         "",
-        "| metric | value |",
-        "|---|---|",
+        "| metric | value | 95% CI |",
+        "|---|---|---|",
         f"| Answerable answer rate | {m['answerable_answered_count']}/{m['answerable_count']}"
-        f" ({_pct(m['answerable_answer_rate'])}) |",
+        f" ({_pct(m['answerable_answer_rate'])}) |"
+        f" {_ci(m['answerable_answered_count'], m['answerable_count'])} |",
         f"| Unanswerable refusal recall | {m['unanswerable_refused_count']}/{m['unanswerable_count']}"
-        f" ({_pct(m['unanswerable_refusal_recall'])}) |",
+        f" ({_pct(m['unanswerable_refusal_recall'])}) |"
+        f" {_ci(m['unanswerable_refused_count'], m['unanswerable_count'])} |",
         f"| Citation-contract pass rate | {m['citation_contract_pass_count']}/{len(run.items)}"
-        f" ({_pct(m['citation_contract_pass_rate'])}) |",
+        f" ({_pct(m['citation_contract_pass_rate'])}) |"
+        f" {_ci(m['citation_contract_pass_count'], len(run.items))} |",
         f"| Verified-citation rate | {m['verified_citation_count']}/{len(run.items)}"
-        f" ({_pct(m['verified_citation_rate'])}) |",
+        f" ({_pct(m['verified_citation_rate'])}) |"
+        f" {_ci(m['verified_citation_count'], len(run.items))} |",
     ]
     if run.ragas_means:
         lines.append(
             f"| RAGAS (over {run.ragas_scored_count} answered answerable items, "
             f"{len(run.ragas_excluded_refusals)} refusal(s) excluded) | "
             + ", ".join(f"{k}={v:.3f}" for k, v in run.ragas_means.items())
-            + " |"
+            + " | — |"
         )
     lines.append("")
     (path).write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -308,6 +315,13 @@ def _write_summary_report(run: ReleaseRun, path) -> None:
 
 def _pct(value: float | None) -> str:
     return f"{value:.0%}" if value is not None else "n/a"
+
+
+def _ci(successes: int, denominator: int) -> str:
+    if not denominator:
+        return "—"
+    lo, hi = wilson_interval(successes, denominator)
+    return f"{lo:.0%}–{hi:.0%}"
 
 
 def promote_to_canonical(run: ReleaseRun) -> None:

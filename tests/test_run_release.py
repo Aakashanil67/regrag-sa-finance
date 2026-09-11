@@ -305,6 +305,88 @@ def test_promote_to_canonical_writes_summary_and_appends_history(tmp_path, monke
     assert "dev-abc123" in history
 
 
+def _minimal_run(**overrides) -> run_release.ReleaseRun:
+    items = overrides.pop(
+        "items",
+        [
+            {
+                "type": "factual",
+                "refused": False,
+                "citation_contract_pass": True,
+                "all_citations_verified": True,
+            }
+        ],
+    )
+    defaults = dict(
+        run_id="holdout-abc123",
+        split="holdout",
+        label="l",
+        started_at="t0",
+        finished_at="t1",
+        status="complete",
+        holdout_sha256="h",
+        pipeline_fingerprint="fp",
+        manifest_sha256="mf",
+        structural_metrics=run_release.compute_structural_metrics(items),
+        ragas_means=None,
+        ragas_scored_count=0,
+        ragas_excluded_refusals=[],
+        ragas_failures=[],
+        items=items,
+    )
+    defaults.update(overrides)
+    return run_release.ReleaseRun(**defaults)
+
+
+def test_summary_report_renders_a_confidence_interval_beside_every_rate(tmp_path):
+    # one unanswerable item alongside the answerable one gives every metric a nonzero
+    # denominator, so all four rows get a real Wilson range rather than the empty-denominator dash
+    run = _minimal_run(
+        items=[
+            {
+                "type": "factual",
+                "refused": False,
+                "citation_contract_pass": True,
+                "all_citations_verified": True,
+            },
+            {
+                "type": "unanswerable",
+                "refused": True,
+                "citation_contract_pass": True,
+                "all_citations_verified": True,
+            },
+        ]
+    )
+    path = tmp_path / "eval_summary.md"
+
+    run_release._write_summary_report(run, path)
+
+    text = path.read_text(encoding="utf-8")
+    assert "95% CI" in text
+    # every rate here is 1/1 or 2/2 (100%) — Wilson still shows a real range, not (100%, 100%)
+    assert text.count("–") == 4
+
+
+def test_summary_report_shows_a_dash_not_a_crash_for_an_empty_denominator(tmp_path):
+    # no unanswerable items in this run at all — unanswerable_refusal_recall's denominator is 0
+    run = _minimal_run(
+        items=[
+            {
+                "type": "factual",
+                "refused": False,
+                "citation_contract_pass": True,
+                "all_citations_verified": True,
+            }
+        ]
+    )
+    path = tmp_path / "eval_summary.md"
+
+    run_release._write_summary_report(run, path)
+
+    text = path.read_text(encoding="utf-8")
+    assert "Unanswerable refusal recall | 0/0 (n/a) | — |" in text
+
+
 def test_holdout_run_is_refused_when_the_protocol_is_not_sealed(tmp_path, monkeypatch):
     protocol_path = tmp_path / "protocol.json"
     protocol_path.write_text(json.dumps({"sealed": False}), encoding="utf-8")

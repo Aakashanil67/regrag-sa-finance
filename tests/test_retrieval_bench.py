@@ -1,19 +1,9 @@
 """Release evidence must report hit-rate as a fraction with a confidence interval, not just a bare
 percentage — a bare 93% looks identical whether it came from 28/30 or 2790/3000, and the plan's
-release gate depends on readers being able to tell those apart."""
+release gate depends on readers being able to tell those apart. The Wilson interval math itself
+lives in evals/stats.py and is tested there; this file only covers write_report's formatting."""
 
-from evals.retrieval_bench import _wilson_interval, write_report
-
-
-def test_wilson_interval_is_narrower_with_more_trials():
-    small_lo, small_hi = _wilson_interval(9, 10)
-    large_lo, large_hi = _wilson_interval(90, 100)
-    assert (large_hi - large_lo) < (small_hi - small_lo)
-
-
-def test_wilson_interval_bounds_are_within_zero_and_one():
-    lo, hi = _wilson_interval(3, 30)
-    assert 0.0 <= lo <= hi <= 1.0
+from evals.retrieval_bench import write_report
 
 
 def test_report_includes_fractions_and_wilson_interval(tmp_path, monkeypatch):
@@ -32,3 +22,16 @@ def test_report_includes_fractions_and_wilson_interval(tmp_path, monkeypatch):
     text = (tmp_path / "retrieval_bench.md").read_text(encoding="utf-8")
     assert "1/2" in text
     assert "95% CI" in text
+
+
+def test_report_shows_a_dash_not_a_crash_for_an_empty_question_set(tmp_path, monkeypatch):
+    import evals.retrieval_bench as bench
+
+    monkeypatch.setattr(bench, "REPORTS_DIR", tmp_path)
+    results = {"per_question": [], "hit_rates": {3: 0.0, 5: 0.0, 10: 0.0}, "mrr": 0.0}
+
+    write_report(results, split="dev")
+
+    text = (tmp_path / "retrieval_bench.md").read_text(encoding="utf-8")
+    assert "0/0" in text
+    assert "—" in text
