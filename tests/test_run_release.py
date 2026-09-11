@@ -387,6 +387,30 @@ def test_summary_report_shows_a_dash_not_a_crash_for_an_empty_denominator(tmp_pa
     assert "Unanswerable refusal recall | 0/0 (n/a) | — |" in text
 
 
+def test_summary_report_orders_ragas_metrics_consistently_regardless_of_dict_order(tmp_path):
+    # a run rehydrated from a JSON artifact (written with sort_keys=True) has ragas_means keys in
+    # alphabetical order, not _RAGAS_METRIC_NAMES order — the rendered row must not leak that
+    run = _minimal_run(
+        ragas_means={
+            "answer_relevancy": 0.681,
+            "context_precision": 0.894,
+            "context_recall": 1.0,
+            "faithfulness": 0.866,
+        },
+        ragas_scored_count=17,
+        ragas_excluded_refusals=[{}] * 7,
+    )
+    path = tmp_path / "eval_summary.md"
+
+    run_release._write_summary_report(run, path)
+
+    text = path.read_text(encoding="utf-8")
+    assert (
+        "faithfulness=0.866, answer_relevancy=0.681, context_precision=0.894, context_recall=1.000"
+        in text
+    )
+
+
 def test_holdout_run_is_refused_when_the_protocol_is_not_sealed(tmp_path, monkeypatch):
     protocol_path = tmp_path / "protocol.json"
     protocol_path.write_text(json.dumps({"sealed": False}), encoding="utf-8")

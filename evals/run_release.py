@@ -303,10 +303,16 @@ def _write_summary_report(run: ReleaseRun, path) -> None:
         f" {_ci(m['verified_citation_count'], len(run.items))} |",
     ]
     if run.ragas_means:
+        # explicit _RAGAS_METRIC_NAMES order, not dict iteration order: a run loaded back from a
+        # JSON artifact (written with sort_keys=True) would otherwise render this row
+        # alphabetically instead of matching a freshly-computed run's insertion order
+        rendered_metrics = ", ".join(
+            f"{name}={run.ragas_means[name]:.3f}" for name in _RAGAS_METRIC_NAMES
+        )
         lines.append(
             f"| RAGAS (over {run.ragas_scored_count} answered answerable items, "
             f"{len(run.ragas_excluded_refusals)} refusal(s) excluded) | "
-            + ", ".join(f"{k}={v:.3f}" for k, v in run.ragas_means.items())
+            + rendered_metrics
             + " | — |"
         )
     lines.append("")
