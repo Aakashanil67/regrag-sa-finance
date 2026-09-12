@@ -14,6 +14,15 @@ HMAC-SHA256 of the normalised question instead of nothing — enough to notice "
 keeps recurring" without recovering what it said. Called pseudonymous, not anonymous, deliberately:
 an HMAC is reversible by anyone who also holds the key or can brute-force a small question space,
 which a plain hash would be trivially reversible to anyone, key or not.
+
+`LOG_RAW_MODEL_OUTPUT` (default false, independent of `LOG_RAW_CONTENT`) additionally captures the
+model's raw pre-validation text — what it actually generated before `validate_generated_answer`
+replaced a refusal with the canned phrase and discarded the parsed citations. That's a superset of
+`question`/`answer`: it can contain text that was never shown to anyone, including a hallucinated
+citation or the hedge that tripped `malformed_refusal`, which is exactly what makes diagnosing a
+refusal expensive without it (re-running the live API is the only other way to see it, and it may
+not even reproduce). A cache hit never calls the model, so there is nothing to capture — that case
+is a logged, deliberate "off" rather than an empty string, via `raw_output_logged`.
 """
 
 import hashlib
@@ -42,6 +51,8 @@ _COLUMNS = [
     ("answer", "TEXT NULL"),
     ("question_hmac", "TEXT NULL"),
     ("content_logged", "INTEGER NOT NULL DEFAULT 0"),
+    ("raw_model_output", "TEXT NULL"),
+    ("raw_output_logged", "INTEGER NOT NULL DEFAULT 0"),
     ("refused", "INTEGER NOT NULL"),
     ("flagged_injection", "INTEGER NOT NULL DEFAULT 0"),
     ("cache_hit", "INTEGER NOT NULL DEFAULT 0"),
@@ -122,6 +133,7 @@ def log_query(timed: TimedRAGResult) -> None:
     unverified = sum(1 for c in result.citations if not c.verified)
 
     log_raw = os.environ.get("LOG_RAW_CONTENT", "false").strip().lower() == "true"
+    log_raw_output = os.environ.get("LOG_RAW_MODEL_OUTPUT", "false").strip().lower() == "true"
     hash_key = os.environ.get("LOG_HASH_KEY") or None
 
     question = result.question if log_raw else None
@@ -133,20 +145,28 @@ def log_query(timed: TimedRAGResult) -> None:
         if hash_key
         else None
     )
+    # a cache hit never calls the model, so llm_response.text is the *validated* answer
+    # reconstructed by cache.get_cached, not raw model output — storing it under this column would
+    # be indistinguishable from a real capture. `or None` folds NO_CONTEXT's empty string to NULL.
+    raw_model_output = (
+        (result.llm_response.text or None) if (log_raw_output and not timed.cache_hit) else None
+    )
 
     with _connect() as conn:
         conn.execute(
             "INSERT INTO queries (timestamp, question, answer, question_hmac, content_logged, "
-            "refused, flagged_injection, cache_hit, citation_count, unverified_citation_count, "
-            "retrieved_chunk_ids, model, input_tokens, output_tokens, cost_usd, latency_ms, "
-            "refusal_reason) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "raw_model_output, raw_output_logged, refused, flagged_injection, cache_hit, "
+            "citation_count, unverified_citation_count, retrieved_chunk_ids, model, input_tokens, "
+            "output_tokens, cost_usd, latency_ms, refusal_reason) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 time.time(),
                 question,
                 answer,
                 question_hmac,
                 int(log_raw),
+                raw_model_output,
+                int(log_raw_output),
                 int(result.refused),
                 int(result.flagged_injection),
                 int(timed.cache_hit),
@@ -175,14 +195,17 @@ def purge_expired(retention_days: int | None = None, now: float | None = None) -
 
 
 def scrub_content() -> int:
-    """Explicit, one-time removal of raw question/answer text from rows that logged it — for a
-    local user who ran with LOG_RAW_CONTENT=true and changed their mind. Nulls content only;
-    aggregate metrics (timings, refusal reason, citation counts) are untouched, since those were
-    never the privacy concern."""
+    """Explicit, one-time removal of raw text from rows that logged it — for a local user who ran
+    with LOG_RAW_CONTENT and/or LOG_RAW_MODEL_OUTPUT true and changed their mind. Nulls content
+    only; aggregate metrics (timings, refusal reason, citation counts) are untouched, since those
+    were never the privacy concern. Both flags are scrubbed together, in one statement: a row can
+    have raw_output_logged=1 with content_logged=0 (LOG_RAW_MODEL_OUTPUT on, LOG_RAW_CONTENT off),
+    and scrubbing only rows matching one flag would silently leave the other's text behind."""
     with _connect() as conn:
         cursor = conn.execute(
-            "UPDATE queries SET question = NULL, answer = NULL, content_logged = 0 "
-            "WHERE content_logged = 1"
+            "UPDATE queries SET question = NULL, answer = NULL, raw_model_output = NULL, "
+            "content_logged = 0, raw_output_logged = 0 "
+            "WHERE content_logged = 1 OR raw_output_logged = 1"
         )
         return cursor.rowcount
 
@@ -257,7 +280,10 @@ def main() -> None:
     parser.add_argument(
         "--scrub-content",
         action="store_true",
-        help="null raw question/answer text from rows that logged it, keeping aggregate metrics",
+        help=(
+            "null raw question/answer/model-output text from rows that logged any of it, "
+            "keeping aggregate metrics"
+        ),
     )
     parser.add_argument(
         "--purge-expired",

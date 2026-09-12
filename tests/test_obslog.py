@@ -10,7 +10,9 @@ from src.obslog import TimedRAGResult, log_query, recent_queries, stats_summary,
 from src.rag import Citation, RAGResult, RefusalReason
 
 
-def _result(refused=False, citations=None, cost_usd=0.001, refusal_reason=None) -> RAGResult:
+def _result(
+    refused=False, citations=None, cost_usd=0.001, refusal_reason=None, llm_text="..."
+) -> RAGResult:
     return RAGResult(
         question="What must banks do?",
         answer="Banks must comply. [sarb_d3_2023, p.3]",
@@ -19,7 +21,7 @@ def _result(refused=False, citations=None, cost_usd=0.001, refusal_reason=None) 
         refused=refused,
         flagged_injection=False,
         llm_response=LLMResponse(
-            text="...",
+            text=llm_text,
             model="claude-haiku-4-5",
             input_tokens=100,
             output_tokens=50,
@@ -198,6 +200,114 @@ def test_raw_content_is_stored_with_explicit_opt_in(tmp_path, monkeypatch):
     assert row["question"] == "What must banks do?"
     assert row["answer"] == "Banks must comply. [sarb_d3_2023, p.3]"
     assert row["content_logged"] == 1
+
+
+def test_raw_model_output_is_not_stored_unless_the_operator_opts_in(tmp_path, monkeypatch):
+    monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "test_log.sqlite3")
+    monkeypatch.delenv("LOG_RAW_MODEL_OUTPUT", raising=False)
+
+    log_query(
+        TimedRAGResult(
+            result=_result(llm_text="I don't have a source for that. Actually, here's a hedge."),
+            latency_ms=100.0,
+        )
+    )
+
+    row = recent_queries(limit=1)[0]
+    assert row["raw_model_output"] is None
+    assert row["raw_output_logged"] == 0
+
+
+def test_raw_model_output_is_stored_when_the_flag_is_on(tmp_path, monkeypatch):
+    monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "test_log.sqlite3")
+    monkeypatch.setenv("LOG_RAW_MODEL_OUTPUT", "true")
+    raw_text = "I don't have a source for that. Actually, here's a hedge the contract discarded."
+
+    log_query(TimedRAGResult(result=_result(llm_text=raw_text), latency_ms=100.0))
+
+    row = recent_queries(limit=1)[0]
+    assert row["raw_model_output"] == raw_text
+    assert row["raw_output_logged"] == 1
+
+
+def test_a_cache_hit_records_no_raw_model_output_because_it_never_produced_any(
+    tmp_path, monkeypatch
+):
+    # on a hit, llm_response.text is cache.get_cached's reconstructed *validated* answer, not raw
+    # model output — storing it under this column would be an indistinguishable lie, so a cache
+    # hit must always record NULL here even with the flag on, distinguishably from "capture off"
+    monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "test_log.sqlite3")
+    monkeypatch.setenv("LOG_RAW_MODEL_OUTPUT", "true")
+
+    log_query(
+        TimedRAGResult(
+            result=_result(llm_text="Banks must comply. [sarb_d3_2023, p.3]"),
+            latency_ms=1.0,
+            cache_hit=True,
+        )
+    )
+
+    row = recent_queries(limit=1)[0]
+    assert row["raw_model_output"] is None
+    assert row["raw_output_logged"] == 1  # capture was on — just nothing to capture on a hit
+
+
+def test_scrub_content_removes_raw_model_output_even_when_question_text_was_never_logged(
+    tmp_path, monkeypatch
+):
+    # LOG_RAW_MODEL_OUTPUT on, LOG_RAW_CONTENT off — content_logged stays 0 while
+    # raw_output_logged is 1, so scrub_content must key off either flag, not just content_logged
+    monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "test_log.sqlite3")
+    monkeypatch.delenv("LOG_RAW_CONTENT", raising=False)
+    monkeypatch.setenv("LOG_RAW_MODEL_OUTPUT", "true")
+    log_query(
+        TimedRAGResult(result=_result(llm_text="raw text nobody should keep"), latency_ms=100.0)
+    )
+
+    scrubbed = obslog.scrub_content()
+
+    assert scrubbed == 1
+    row = recent_queries(limit=1)[0]
+    assert row["raw_model_output"] is None
+    assert row["raw_output_logged"] == 0
+    assert row["citation_count"] == 1  # aggregate metadata survives the scrub
+
+
+def test_the_migration_adds_the_raw_output_columns_to_an_existing_database(tmp_path, monkeypatch):
+    # same failure shape as test_log_query_migrates_a_table_created_before_later_columns_existed:
+    # a table on disk from before raw_model_output/raw_output_logged existed must not crash
+    db_path = tmp_path / "old_schema.sqlite3"
+    monkeypatch.setattr(obslog, "DB_PATH", db_path)
+
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("""
+            CREATE TABLE queries (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp REAL NOT NULL,
+                question TEXT NULL,
+                answer TEXT NULL,
+                question_hmac TEXT NULL,
+                content_logged INTEGER NOT NULL DEFAULT 0,
+                refused INTEGER NOT NULL,
+                flagged_injection INTEGER NOT NULL DEFAULT 0,
+                cache_hit INTEGER NOT NULL DEFAULT 0,
+                citation_count INTEGER NOT NULL,
+                unverified_citation_count INTEGER NOT NULL,
+                retrieved_chunk_ids TEXT NOT NULL,
+                model TEXT NOT NULL,
+                input_tokens INTEGER NOT NULL,
+                output_tokens INTEGER NOT NULL,
+                cost_usd REAL NOT NULL,
+                latency_ms REAL NOT NULL,
+                refusal_reason TEXT NULL
+            )
+        """)
+
+    log_query(TimedRAGResult(result=_result(), latency_ms=100.0))
+
+    row = recent_queries(limit=1)[0]
+    assert row["raw_model_output"] is None
+    assert row["raw_output_logged"] == 0
 
 
 def test_question_hmac_is_null_without_a_hash_key(tmp_path, monkeypatch):

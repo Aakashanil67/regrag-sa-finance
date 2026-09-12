@@ -15,7 +15,12 @@ from src.retrieve import RetrievedChunk
 
 
 def _result(
-    question, refused=False, citations=None, refusal_reason=None, source_notices=None
+    question,
+    refused=False,
+    citations=None,
+    refusal_reason=None,
+    source_notices=None,
+    llm_text="...",
 ) -> RAGResult:
     citations = citations if citations is not None else [Citation("doc_a", 1, True)]
     return RAGResult(
@@ -26,7 +31,7 @@ def _result(
         refused=refused,
         flagged_injection=False,
         llm_response=LLMResponse(
-            text="...", model="fake", input_tokens=1, output_tokens=1, cost_usd=0.0
+            text=llm_text, model="fake", input_tokens=1, output_tokens=1, cost_usd=0.0
         ),
         source_notices=source_notices or [],
         refusal_reason=refusal_reason,
@@ -184,6 +189,19 @@ def test_run_item_records_an_empty_list_when_no_source_notice_applies():
     )
 
     assert row["source_notices"] == []
+
+
+def test_run_item_records_the_raw_pre_validation_model_output_unconditionally():
+    # unlike src/obslog.py's opt-in column, an eval artifact already stores the full question and
+    # answer for every item with no privacy gate — no flag should be needed here either
+    row = run_release.run_item(
+        {"id": "f1", "type": "factual", "question": "q"},
+        lambda q: _result(
+            q, refused=True, llm_text="I don't have a source for that. Here's a hedge though."
+        ),
+    )
+
+    assert row["raw_model_output"] == "I don't have a source for that. Here's a hedge though."
 
 
 @pytest.mark.asyncio

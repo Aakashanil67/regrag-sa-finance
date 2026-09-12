@@ -67,7 +67,14 @@ def run_item(item: dict, answer_fn) -> dict:
     """Generate for one golden item and classify it structurally. `answer_fn` takes a question and
     returns a RAGResult-shaped object; it's an injected dependency so this function (and the
     metrics built on it) can be tested against a fake pipeline instead of the real LLM/vector
-    store."""
+    store.
+
+    `raw_model_output` records the pre-validation text unconditionally — unlike src/obslog.py's
+    same-named opt-in column, an eval artifact already stores the full question and answer for
+    every item with no privacy gate, since it's evaluation output, not a live user log. Recording
+    the raw text alongside the validated one is what makes a refused item's failure mode (a
+    citation-format near-miss vs. a genuine hedge vs. a clean model_refusal) auditable from the
+    artifact instead of requiring another live API call."""
     result = answer_fn(item["question"])
     citations = [
         {"doc_id": c.doc_id, "page": c.page, "verified": c.verified} for c in result.citations
@@ -88,6 +95,7 @@ def run_item(item: dict, answer_fn) -> dict:
         "type": item["type"],
         "question": item["question"],
         "answer": result.answer,
+        "raw_model_output": result.llm_response.text or None,
         "refused": result.refused,
         "refusal_reason": result.refusal_reason.value if result.refusal_reason else None,
         "citations": citations,
