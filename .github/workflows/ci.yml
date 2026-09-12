@@ -28,4 +28,17 @@ jobs:
       - run: ruff check .
       - run: ruff format --check .
 
+      # A fresh clone on a machine with core.autocrlf=true (a common Windows default) checked
+      # eval/text files out as CRLF even though the committed blob is LF, silently breaking
+      # evals/protocol.json's pinned SHA-256 of the sealed holdout files. .gitattributes
+      # (`* text=auto eol=lf`) fixes it by pinning line endings regardless of the cloning
+      # machine's setting. This step proves it on Linux, in about two seconds, by forcing the
+      # exact checkout behaviour that exposed the bug and running the real hash-matching test
+      # against the result — delete .gitattributes and this goes red.
+      - name: A CRLF-defaulting checkout must still reproduce the sealed holdout hash
+        run: |
+          git -c core.autocrlf=true checkout-index -a -f --prefix="$RUNNER_TEMP/crlf-check/"
+          cd "$RUNNER_TEMP/crlf-check"
+          python -m pytest tests/test_eval_protocol.py -k protocol_hash -v
+
       - run: pytest -v

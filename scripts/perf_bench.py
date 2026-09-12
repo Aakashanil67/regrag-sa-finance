@@ -78,7 +78,7 @@ def write_report(results: dict) -> None:
         "is only ever served for the literal question it was generated for, which matters for a "
         "tool whose whole premise is citation accuracy.",
     ]
-    (REPORTS_DIR / "perf.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (REPORTS_DIR / "perf.md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     print(
         f"wrote reports/perf.md — cold p50={cold['p50_ms']:.0f}ms warm p50={warm['p50_ms']:.0f}ms"
     )

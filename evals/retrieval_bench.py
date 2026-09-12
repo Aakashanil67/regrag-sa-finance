@@ -98,7 +98,9 @@ def write_report(results: dict, split: str = "dev") -> None:
         rank = q["first_hit_rank"] if q["first_hit_rank"] else f"miss (not in top {MAX_K})"
         lines.append(f"| {q['id']} | {q['question']} | {q['doc_id']} p.{q['page']} | {rank} |")
 
-    (REPORTS_DIR / "retrieval_bench.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (REPORTS_DIR / "retrieval_bench.md").write_text(
+        "\n".join(lines) + "\n", encoding="utf-8", newline="\n"
+    )
     print(
         f"wrote reports/retrieval_bench.md (split={split}) — "
         f"hit-rate@5={results['hit_rates'][5]:.0%}, MRR={results['mrr']:.3f}"

@@ -267,14 +267,16 @@ async def execute_run(
 def write_run_artifact(run: ReleaseRun, runs_dir=RUNS_DIR) -> "os.PathLike":
     runs_dir.mkdir(parents=True, exist_ok=True)
     path = runs_dir / f"{run.run_id}.json"
-    path.write_text(json.dumps(run.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
+    path.write_text(
+        json.dumps(run.to_dict(), indent=2, sort_keys=True), encoding="utf-8", newline="\n"
+    )
     return path
 
 
 def _write_atomically(path, content: str) -> None:
     fd, tmp_path = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
     try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
             f.write(content)
         os.replace(tmp_path, path)
     except BaseException:
@@ -324,7 +326,7 @@ def _write_summary_report(run: ReleaseRun, path) -> None:
             + " | — |"
         )
     lines.append("")
-    (path).write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (path).write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
 
 
 def _pct(value: float | None) -> str:
@@ -356,7 +358,7 @@ def promote_to_canonical(run: ReleaseRun) -> None:
         f"{run.structural_metrics['citation_contract_pass_rate']},"
         f"{run.structural_metrics['verified_citation_rate']}\n"
     )
-    with open(EVAL_HISTORY_CSV, "a", encoding="utf-8") as f:
+    with open(EVAL_HISTORY_CSV, "a", encoding="utf-8", newline="\n") as f:
         if is_new:
             f.write(header)
         f.write(row)

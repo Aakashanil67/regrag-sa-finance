@@ -73,7 +73,7 @@ def main() -> None:
     fixture = {"metadata": compute_snapshot_metadata(), "records": records}
     FIXTURES_PATH.parent.mkdir(parents=True, exist_ok=True)
     FIXTURES_PATH.write_text(
-        json.dumps(fixture, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        json.dumps(fixture, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"
     )
     print(f"wrote {FIXTURES_PATH.relative_to(EVALS_DIR.parent)} ({len(records)} records)")
 

@@ -120,7 +120,7 @@ def _write_build_record(chunk_count: int) -> None:
     CHROMA_DIR.mkdir(parents=True, exist_ok=True)
     fd, tmp_path = tempfile.mkstemp(dir=CHROMA_DIR, prefix=".build_", suffix=".json.tmp")
     try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
             json.dump(record, f, indent=2, sort_keys=True)
         os.replace(tmp_path, CHROMA_DIR / "build.json")
     except BaseException:
