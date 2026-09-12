@@ -60,6 +60,7 @@ class RefusalReason(StrEnum):
     MODEL_REFUSAL = "model_refusal"
     MALFORMED_REFUSAL = "malformed_refusal"
     MISSING_CITATION = "missing_citation"
+    MALFORMED_CITATION = "malformed_citation"
     UNCITED_LINE = "uncited_line"
     UNVERIFIED_CITATION = "unverified_citation"
 
@@ -93,6 +94,16 @@ the (doc_id, p.X) body text below it, never the metadata line itself, as your so
 _CITATION_TOKEN = r"\[[\w\-\.]+,\s*p\.\d+(?:-\d+)?(?:,[^\]]*)?\]"
 _CITATION_PATTERN = re.compile(r"\[([\w\-\.]+),\s*p\.(\d+)(?:-(\d+))?(?:,[^\]]*)?\]")
 _LINE_ENDS_IN_CITATION_PATTERN = re.compile(rf"(?:{_CITATION_TOKEN}\s*)+$")
+
+# Deliberately looser than _CITATION_PATTERN, and used ONLY to choose a refusal label, never to
+# extract a citation — feeding a permissive match into _extract_citations would accept answers the
+# strict contract is designed to reject, exactly the behaviour change CITATION_CONTRACT_VERSION
+# exists to gate. This exists to distinguish "the model tried to cite and got the form wrong"
+# (real holdout near-misses: a space after "p.", no comma, "page" instead of "p.", parentheses
+# instead of brackets) from "the model wrote no citation at all" — both currently collapse into the
+# same MISSING_CITATION reason, indistinguishable in logs or eval artifacts. The bounded lazy
+# quantifier over a negated class keeps this linear-time regardless of input length.
+_CITATION_SHAPED_PATTERN = re.compile(r"[\[(][^\])\n]{0,160}?p+[\s.]{0,3}\d", re.IGNORECASE)
 
 
 @dataclass
@@ -308,6 +319,8 @@ def validate_generated_answer(answer: str, chunks: list[RetrievedChunk]) -> Answ
 
     citations = _extract_citations(stripped, chunks)
     if not citations:
+        if _CITATION_SHAPED_PATTERN.search(stripped):
+            return _refuse(RefusalReason.MALFORMED_CITATION)
         return _refuse(RefusalReason.MISSING_CITATION)
 
     for line in stripped.splitlines():

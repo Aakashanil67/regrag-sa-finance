@@ -43,6 +43,49 @@ def test_validator_refuses_missing_citation():
     assert result.refusal_reason == rag.RefusalReason.MISSING_CITATION
 
 
+def test_validator_distinguishes_a_citation_shaped_near_miss_from_no_citation_at_all():
+    # a real holdout near-miss: a space after "p." that the strict regex doesn't accept — the
+    # model tried to cite, and got the form wrong, which is a different failure than writing no
+    # citation at all and should carry a distinct, more informative refusal reason
+    text = "Banks must comply. [sarb_d3_2023, p. 1]"
+    result = rag.validate_generated_answer(text, [_chunk()])
+
+    assert result.refused is True
+    assert result.refusal_reason == rag.RefusalReason.MALFORMED_CITATION
+
+
+def test_validator_still_calls_it_missing_citation_when_nothing_looks_like_one():
+    result = rag.validate_generated_answer("The Act requires disclosure.", [_chunk()])
+
+    assert result.refused is True
+    assert result.refusal_reason == rag.RefusalReason.MISSING_CITATION
+
+
+def test_a_permissive_citation_match_is_never_accepted_as_a_real_citation():
+    # the near-miss detector must only ever choose a refusal *label* — feeding a permissive match
+    # into citation extraction would silently accept answers the strict contract is designed to
+    # reject, which is exactly the behaviour change CITATION_CONTRACT_VERSION exists to gate
+    text = "Banks must comply. [sarb_d3_2023, p. 1]"
+    result = rag.validate_generated_answer(text, [_chunk()])
+
+    assert result.refused is True
+    assert result.citations == []
+
+
+def test_labelling_a_near_miss_does_not_change_which_answers_refuse():
+    # the neutrality guarantee this whole feature depends on: adding MALFORMED_CITATION must not
+    # move a single case across the refused/accepted line — only the reason label may change
+    cases = [
+        ("Banks must comply. [sarb_d3_2023, p.1]", False),  # exact match: unaffected, accepted
+        ("The Act requires disclosure.", True),  # no citation shape at all: still refused
+        ("Banks must comply. [sarb_d3_2023, p. 1]", True),  # near miss: still refused
+        (rag.INSUFFICIENT_CONTEXT_PHRASE, True),  # clean refusal: still refused
+    ]
+    for text, expect_refused in cases:
+        result = rag.validate_generated_answer(text, [_chunk()])
+        assert result.refused is expect_refused, text
+
+
 def test_validator_refuses_uncited_line_even_with_a_cited_line_present():
     text = "First supported claim. [sarb_d3_2023, p.1]\nSecond unsupported claim."
     result = rag.validate_generated_answer(text, [_chunk()])

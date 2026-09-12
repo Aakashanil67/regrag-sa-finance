@@ -26,7 +26,11 @@ BEHAVIOR_CRITICAL_FILES = (
     "src/config.py",
 )
 
-REQUIREMENTS_FILES = ("requirements.txt",)
+# requirements.txt itself is just `-r requirements-dev.txt` — hashing only the shim would let a
+# chromadb, sentence-transformers, anthropic, or ragas version bump in the files it actually
+# resolves to change what CI installs and what record_fixtures.py would produce, invisibly to this
+# staleness check
+REQUIREMENTS_FILES = ("requirements.txt", "requirements-api.txt", "requirements-dev.txt")
 
 CI_SUBSET_IDS = ["g01", "g04", "g12", "g18", "g25", "g36", "g40", "g46", "g50", "g54"]
 

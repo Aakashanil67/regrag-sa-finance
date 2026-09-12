@@ -10,7 +10,11 @@ launches of this same, unchanged pipeline. That's incompatible with a sealed, ru
 protocol, which requires identical input to produce identical output. At this corpus's size
 (low thousands of chunks), brute-force cosine similarity over every chunk costs low milliseconds —
 cheap enough that the "approximate" in approximate nearest neighbour buys nothing here and only
-costs reproducibility. `RetrievedChunk.score` is that cosine similarity (-1 to 1, higher is more
+costs reproducibility. This is a scale trade-off, not a free win: past roughly tens of thousands of
+chunks, exact search stops being cheap and an ANN index becomes necessary again — which brings this
+exact non-determinism back and needs its own answer at that point (a persisted, deterministically
+rebuilt index; a different store; a real seeded index build), not an assumption that this fix still
+applies unchanged. `RetrievedChunk.score` is that cosine similarity (-1 to 1, higher is more
 relevant) except when reranking is on, where `score` is the cross-encoder's own relevance score
 instead (unbounded); "higher is more relevant" still holds either way, which is the property
 callers actually depend on.

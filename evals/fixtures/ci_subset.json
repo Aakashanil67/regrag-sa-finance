@@ -2,8 +2,8 @@
   "metadata": {
     "schema": 1,
     "file_sha256": {
-      "src/rag.py": "8bd16e23b5f271b42903dfbef90ed0376f28b368b5da2cdb1fcedf2e50fafa39",
-      "src/retrieve.py": "5370ebc569ac0a0251dc18cbca5a5db4197ed4720afd77b3faee642038716a70",
+      "src/rag.py": "499a47e51537832cbad089451f16afd1fc98e55741f426cc947001a12f4f660b",
+      "src/retrieve.py": "45f9a64c5a8a2f81b99ff7edd71a59786ee9aa5e09ef54ded6f3a93dafbb5069",
       "src/chunking.py": "b5174f748b0b016da57beca0421169a1e8b51699a3a5860fa74e6549e2bb58f7",
       "src/ingest.py": "f1d79bd2eb4e244bfffc9a8fb51637aceb08bb8c18ad750f3d41d5c28b7b9a64",
       "src/config.py": "33d8a4e2cf515fb49a69dcbe5c37c21e2d32732e95972ff8448d33a092f3883d"
@@ -16,7 +16,9 @@
     "temperature": 0.0,
     "golden_subset_sha256": "a951c325df789d55669859776e93bbbb914f18e058b5edc2379295eabeb4420f",
     "requirements_sha256": {
-      "requirements.txt": "052245d4659799f03b703d8074ff984fa53f1cd6721cde291fec77332533c614"
+      "requirements.txt": "052245d4659799f03b703d8074ff984fa53f1cd6721cde291fec77332533c614",
+      "requirements-api.txt": "94274db432cc2623bd35f59c3b78121c6bf9154daada6f4e5cb32177de5489c9",
+      "requirements-dev.txt": "ace7fde1b04ef33c0b2cee370bcf65abbb5fb13e2e68e7f0506b32a908f6795a"
     }
   },
   "records": [

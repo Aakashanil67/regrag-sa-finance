@@ -19,6 +19,10 @@ _REFUSAL_REASON_LABELS = {
     "model_refusal": "The model reported it has no source for this question.",
     "malformed_refusal": "Refused because the model's response didn't match the expected refusal format.",
     "missing_citation": "Refused because the generated answer had no citation.",
+    "malformed_citation": (
+        "Refused because the generated answer had a citation-like reference that didn't match "
+        "the expected format."
+    ),
     "uncited_line": "Refused because part of the generated answer had no citation.",
     "unverified_citation": "Refused because the generated citation did not match a retrieved page.",
 }

@@ -9,8 +9,9 @@ tiktoken==0.8.0
 # --- vector store + embeddings ---
 chromadb==0.5.23
 sentence-transformers==3.3.1
-# numpy isn't imported directly anywhere in this project — left unpinned so pip can pick
-# whatever chromadb/sentence-transformers actually resolve to
+# numpy IS imported directly now (src/retrieve.py's exact cosine-similarity search) — still left
+# unpinned, matching whatever chromadb/sentence-transformers already resolve to rather than adding
+# a second constraint on the same transitive dependency
 
 # --- LLM providers (anthropic default; openai/ollama optional per .env) ---
 anthropic==0.69.0
