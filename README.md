@@ -20,18 +20,22 @@ wrong answer, stated as if it were current law, costs more than that.
 against them, run exactly once (`python -m evals.run_release --split holdout --label v1.1.0-rc2`)
 against the final, frozen pipeline:
 
-| metric | value |
-|---|---|
-| Retrieval hit-rate@5 | 28/30 (93%), Wilson 95% CI 79–98% |
-| Answerable answer rate | 17/24 (71%) |
-| Unanswerable refusal recall | 6/6 (100%) |
-| Citation-contract pass rate | 23/30 (77%) |
-| Verified-citation rate | 30/30 (100%) |
-| RAGAS (17 answered items) | faithfulness 0.866, answer relevancy 0.681, context precision 0.894, context recall 1.000 |
+| metric | value | 95% CI |
+|---|---|---|
+| Retrieval hit-rate@5 | 28/30 (93%) | 79%–98% |
+| Answerable answer rate | 17/24 (71%) | 51%–85% |
+| Unanswerable refusal recall | 6/6 (100%) | 61%–100% |
+| Citation-contract pass rate | 23/30 (77%) | 59%–88% |
+| Verified-citation rate | 30/30 (100%) | 89%–100% |
+| RAGAS (17 answered items) | faithfulness 0.866, answer relevancy 0.681, context precision 0.894, context recall 1.000 | — |
 
-**Every citation that reached the user was verified against a page the system actually
-retrieved — no fabricated reference slipped through.** That's the release gate this system exists
-to hold, and the holdout confirms it holds.
+The CI is a Wilson interval on the observed rate over 30 items, not a claim that the true rate
+equals the point estimate — a sample this size leaves real uncertainty even at 100%. Worth being
+explicit about the two different claims in the top row: **observed**, zero fabricated citations
+across all 30 items, a fact about what happened, no interval needed; **estimated**, the
+underlying failure rate this observation is consistent with is bounded at roughly 0–11% at 95%
+confidence, not at exactly zero. Both are true; only the first is the release gate, and only the
+second is what the CI column actually says.
 
 **The honest limitation:** two of the six multi-document holdout questions (comparisons like
 "which subject do Directive 8/2023 and Directive 8/2025 both address") failed because top-k
@@ -85,9 +89,10 @@ streamlit run app/chat.py
 streamlit run app/ops.py
 ```
 
-`ruff check .`, `ruff format --check .` and `pytest -q` should all pass clean. There are 201
-tests, all run against a mocked LLM and a temporary vector store, so none of them need an API key
-or the real corpus.
+`ruff check .`, `ruff format --check .` and `pytest -q` should all pass clean. Most of the 227
+tests run against a mocked LLM and a temporary vector store and need neither an API key nor the
+real corpus; the one exception, a cross-process retrieval-determinism check, skips itself when the
+real vector store isn't built rather than failing.
 
 ### Docker
 
@@ -154,7 +159,13 @@ launches — I caught this because two back-to-back holdout retrieval runs score
 zero code changed between them, which shouldn't be possible on a frozen pipeline. At this corpus's
 scale (795 chunks), brute-force cosine similarity costs low milliseconds, so the "approximate" in
 approximate nearest neighbour bought nothing here and cost reproducibility — a sealed, run-once
-release protocol needs identical input to give identical output.
+release protocol needs identical input to give identical output. This is a scale trade-off, not a
+free win: it works *because* the corpus is small. Past roughly tens of thousands of chunks, exact
+search stops being cheap and an ANN index becomes necessary again — which reintroduces the exact
+non-determinism this fix removes, and would need its own answer at that point, not an assumption
+that this fix still applies. `tests/test_retrieval_determinism.py` regression-tests the property
+directly (two separate interpreter launches, same query, same top-k) rather than trusting the
+implementation not to regress.
 
 **Structural citation verification, not trusted model output, and explicitly not semantic
 entailment.** Every citation is checked against the (doc_id, page) pairs the retrieved chunks
@@ -223,6 +234,13 @@ Three tiers, deliberately kept apart:
   edit to make a result pass" clause) before any tuning touched it. `python -m evals.run_release
   --split holdout` is meant to run exactly once per release candidate; a partial run (a generation
   or judge failure) blocks promotion outright rather than producing a partial number.
+  `python -m evals.render_summary <artifact>` re-renders `reports/eval_summary.md` from an
+  already-saved run with no LLM call, so a formatting fix (like the CI column above) doesn't need
+  a new paid run — it refuses to render unless the artifact's own items still recompute to its
+  stored metrics. `python -m scripts.build_review_packet <artifact>` exports every item —
+  question, generated answer, the actual chunk text of every cited page, what retrieval returned,
+  the reference answer — into `reports/holdout_review_packet.md`, so entailment can be checked by
+  someone who knows this domain without reading any code.
 
 ## Security, privacy, and deployment boundary
 
@@ -239,6 +257,11 @@ Three tiers, deliberately kept apart:
 - **Query logging is off by default** (`LOG_RAW_CONTENT=false`); see Design decisions, above.
   `LOG_RETENTION_DAYS` (default 30) bounds how long any row survives; `python -m src.obslog
   --purge-expired` / `--scrub-content` are explicit, user-triggered operations, not automatic.
+- **Raw pre-validation model output is a separate, also-off-by-default opt-in**
+  (`LOG_RAW_MODEL_OUTPUT`), independent of `LOG_RAW_CONTENT`. It's a superset of question/answer —
+  it can contain text that was never shown to anyone, including a hallucinated citation or the
+  hedge that tripped a refusal — captured only to diagnose a refusal without re-running the live
+  API. `--scrub-content` clears both flags' content in one pass.
 - **Rate limiting** is per-process, in-memory, keyed on remote address — real protection against
   casual abuse, trivially defeated by a distributed client or a shared NAT. Fine for a portfolio
   demo, not a production deployment.
@@ -252,8 +275,11 @@ Full reasoning in `reports/security_notes.md`.
   retrieve-decide-requery loop was built and measured against this exact failure class: it fixed
   zero of its two target cases while tripling cost, and a same-question rerun afterward flipped
   one case from refusal to correct with identical code — pointing at LLM non-determinism moving the
-  failure point rather than a clean fix. Query decomposition (a separate retrieval call per named
-  document) is the more promising untried fix.
+  failure point rather than a clean fix. **It is not a serving path** — the API answers every
+  request through `rag.answer_question` directly, never through the agent — kept only as a
+  documented negative result and because `tests/test_pipeline_contract.py` uses it as a second real
+  caller pinning the fail-closed gate's behaviour. Query decomposition (a separate retrieval call
+  per named document) is the more promising untried fix.
 - **The final FMA Conduct Standard 2 of 2018 and FSCA Conduct Standard 3 of 2020 (Banks)** are not
   in the corpus. The only obtainable copy of the latter is a scanned image PDF with zero
   extractable text; ingesting it would have silently produced zero retrievable chunks, so it was
@@ -268,8 +294,9 @@ Full reasoning in `reports/security_notes.md`.
   and a manual read disagreed.
 - **The golden and holdout sets were authored by one person (me) and are not independently
   reviewed.** A subtly wrong reference answer produces a confidently wrong score, and nothing in
-  the harness would catch it on its own — independent review is the highest-value thing I know
-  this project is still missing.
+  the harness would catch it on its own. `reports/holdout_review_packet.md` now exists so a domain
+  expert could check entailment on every sealed item without reading code — but no one has actually
+  done that review yet. The gap is still open; only the cost of closing it has gone down.
 
 ## Further reading
 

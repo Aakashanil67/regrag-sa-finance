@@ -1,6 +1,17 @@
 """Bounded retrieve-decide-requery loop, built to test one specific, already-diagnosed failure
 class rather than "agents are generally better."
 
+NOT A SERVING PATH. Nothing in api/, app/, or src/rag.py imports this module — the API answers
+every request through rag.answer_question directly. This is a recorded negative result, kept for
+what it proved, not for what it does: measured against plain single-shot RAG on the exact failure
+class it targeted, it fixed zero of two target cases while tripling cost and adding real latency,
+and a same-question rerun afterward flipped one case from refusal to correct with identical code —
+pointing at LLM non-determinism moving the failure point, not a clean fix (see reports/agent_eval.md
+and DECISIONS.md's Agent extension section). It still exists, still has tests, because
+tests/test_pipeline_contract.py uses it as the second real caller of validate_generated_answer,
+pinning that both callers of the fail-closed gate behave identically — that guarantee is worth
+keeping even though the agent loop itself isn't.
+
 reports/failure_analysis.md found that a two-document comparison question ("what do X and Y have
 in common") embeds as a single query, which under-retrieves whichever named document has fewer
 chunks — the larger document's vocabulary dominates the top-k regardless of relevance (g37, g44).
