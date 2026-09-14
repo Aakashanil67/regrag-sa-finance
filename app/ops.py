@@ -21,6 +21,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from evals.ops_history import prepare_eval_history  # noqa: E402
 from src.config import REPORTS_DIR  # noqa: E402
 
 API_URL = os.environ.get("API_URL", "http://localhost:8000")
@@ -29,10 +30,14 @@ st.set_page_config(page_title="RegRAG — Ops", page_icon="📊", layout="wide")
 st.title("RegRAG Ops Dashboard")
 
 st.header("Eval score history")
-eval_history_path = REPORTS_DIR / "eval_history.csv"
+eval_history_path = REPORTS_DIR / "eval_history_v2.csv"
+if not eval_history_path.exists():
+    eval_history_path = REPORTS_DIR / "eval_history.csv"
 if eval_history_path.exists():
     eval_df = pd.read_csv(eval_history_path, parse_dates=["timestamp"])
-    metric_cols = [c for c in eval_df.columns if c != "timestamp"]
+    eval_df, metric_cols = prepare_eval_history(eval_df)
+    if "evidence_scope" in eval_df:
+        st.caption("Development and release/holdout observations are labelled separately.")
     st.line_chart(eval_df.set_index("timestamp")[metric_cols])
     st.dataframe(eval_df.tail(10), use_container_width=True)
 else:

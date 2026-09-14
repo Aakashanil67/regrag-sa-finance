@@ -9,7 +9,7 @@ import json
 import pytest
 
 from evals import render_summary
-from evals.run_release import ReleaseRun, compute_structural_metrics
+from evals.run_release import ReleaseRun, compute_metrics_v2, compute_structural_metrics
 
 
 def _write_artifact(path, **overrides) -> dict:
@@ -132,3 +132,90 @@ def test_rerendering_the_sealed_rc2_artifact_reproduces_its_published_numbers():
     assert "23/30 (77%)" in published
     assert "30/30 (100%)" in published
     assert "89%–100%" in published
+
+
+def _write_schema2_artifact(path):
+    items = [
+        {
+            "id": "a1",
+            "reference_answerable": True,
+            "refused": False,
+            "served_answer": "supported",
+            "raw_model_output": "supported [doc_a, p.1]",
+            "refusal_reason": None,
+            "structural_validator_pass": True,
+            "citations": [{"verified": True}, {"verified": True}],
+        },
+        {
+            "id": "a2",
+            "reference_answerable": True,
+            "refused": True,
+            "served_answer": None,
+            "raw_model_output": "I cannot answer",
+            "refusal_reason": "no_context",
+            "structural_validator_pass": False,
+            "citations": [],
+        },
+        {
+            "id": "u1",
+            "reference_answerable": False,
+            "refused": False,
+            "served_answer": "unsupported",
+            "raw_model_output": "unsupported [doc_a, p.1]",
+            "refusal_reason": None,
+            "structural_validator_pass": True,
+            "citations": [{"verified": True}],
+        },
+    ]
+    payload = {
+        "schema_version": 2,
+        "run_id": "holdout-v2abc",
+        "split": "holdout",
+        "label": "schema2",
+        "started_at": "t0",
+        "finished_at": "t1",
+        "status": "complete",
+        "holdout_sha256": "h",
+        "pipeline_fingerprint": "fp",
+        "manifest_sha256": "mf",
+        "structural_metrics": compute_metrics_v2(items),
+        "ragas_means": None,
+        "ragas_scored_count": 0,
+        "ragas_excluded_refusals": [],
+        "ragas_failures": [],
+        "items": items,
+        "error": None,
+    }
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return payload
+
+
+def test_schema2_load_recomputes_metrics_and_rejects_tampering(tmp_path):
+    artifact_path = tmp_path / "schema2.json"
+    payload = _write_schema2_artifact(artifact_path)
+
+    run = render_summary.load_run(artifact_path)
+    assert run.schema_version == 2
+    assert run.structural_metrics == compute_metrics_v2(run.items)
+
+    payload["structural_metrics"]["task_outcome"]["rate"] = 1.0
+    artifact_path.write_text(json.dumps(payload), encoding="utf-8")
+    tampered = render_summary.load_run(artifact_path)
+    with pytest.raises(render_summary.StaleMetricsError):
+        render_summary.render(tampered, tmp_path / "eval_summary.md")
+
+
+def test_schema2_summary_keeps_citation_occurrences_without_an_item_ci(tmp_path):
+    artifact_path = tmp_path / "schema2.json"
+    _write_schema2_artifact(artifact_path)
+    run = render_summary.load_run(artifact_path)
+    summary_path = tmp_path / "eval_summary.md"
+
+    render_summary.render(run, summary_path)
+
+    text = summary_path.read_text(encoding="utf-8")
+    assert "Answer coverage | 1/2 (50%)" in text
+    assert "Refusal recall | 0/1 (0%)" in text
+    assert "Structurally verified citations | 3/3 (100%) | — (citation occurrences) |" in text
+    assert "Task outcome | 1/3 (33%)" in text
+    assert "Independently reviewed supported-answer accuracy | unavailable" in text

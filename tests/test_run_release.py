@@ -132,6 +132,84 @@ def test_structural_metrics_report_none_not_a_fake_zero_for_an_empty_denominator
     assert m["unanswerable_refusal_recall"] is None  # no unanswerable items in this set
 
 
+def test_metrics_v2_separates_verified_citations_from_task_outcome():
+    items = [
+        {
+            "id": "answered-answerable",
+            "reference_answerable": True,
+            "refused": False,
+            "served_answer": "Supported answer",
+            "structural_validator_pass": True,
+            "citations": [{"verified": True}, {"verified": True}],
+            "refusal_reason": None,
+        },
+        {
+            "id": "refused-answerable",
+            "reference_answerable": True,
+            "refused": True,
+            "served_answer": None,
+            "structural_validator_pass": False,
+            "citations": [],
+            "refusal_reason": "no_context",
+        },
+        {
+            "id": "answered-unanswerable",
+            "reference_answerable": False,
+            "refused": False,
+            "served_answer": "Unsupported answer",
+            "structural_validator_pass": True,
+            "citations": [{"verified": True}],
+            "refusal_reason": None,
+        },
+    ]
+
+    metrics = run_release.compute_metrics_v2(items)
+
+    assert metrics["answer_coverage"] == {"numerator": 1, "denominator": 2, "rate": 0.5}
+    assert metrics["refusal_recall"] == {"numerator": 0, "denominator": 1, "rate": 0.0}
+    assert metrics["citation_verification"] == {
+        "numerator": 3,
+        "denominator": 3,
+        "rate": 1.0,
+    }
+    assert metrics["task_outcome"] == {"numerator": 1, "denominator": 3, "rate": 1 / 3}
+    assert metrics["structural_pass_rate"] == {"numerator": 2, "denominator": 2, "rate": 1.0}
+
+
+def test_metrics_v2_uses_null_citation_rates_for_all_refusals_and_no_items():
+    all_refused = [
+        {
+            "reference_answerable": True,
+            "refused": True,
+            "served_answer": None,
+            "structural_validator_pass": False,
+            "citations": [],
+        },
+        {
+            "reference_answerable": False,
+            "refused": True,
+            "served_answer": None,
+            "structural_validator_pass": False,
+            "citations": [],
+        },
+    ]
+
+    metrics = run_release.compute_metrics_v2(all_refused)
+
+    assert metrics["citation_verification"]["rate"] is None
+    assert metrics["structural_pass_rate"]["rate"] is None
+    assert metrics["answer_coverage"] == {"numerator": 0, "denominator": 1, "rate": 0.0}
+    assert metrics["refusal_recall"] == {"numerator": 1, "denominator": 1, "rate": 1.0}
+    assert metrics["task_outcome"] == {"numerator": 1, "denominator": 2, "rate": 0.5}
+
+    empty = run_release.compute_metrics_v2([])
+    assert empty["citation_verification"]["rate"] is None
+    assert empty["structural_pass_rate"]["rate"] is None
+    assert empty["answer_coverage"]["rate"] is None
+    assert empty["refusal_recall"]["rate"] is None
+    assert empty["task_outcome"]["rate"] is None
+
+
 def test_run_item_marks_an_answered_answerable_item_as_passing_the_contract():
     row = run_release.run_item(
         {"id": "f1", "type": "factual", "question": "q"}, lambda q: _result(q)
@@ -139,6 +217,9 @@ def test_run_item_marks_an_answered_answerable_item_as_passing_the_contract():
 
     assert row["citation_contract_pass"] is True
     assert row["all_citations_verified"] is True
+    assert row["served_answer"] is not None
+    assert row["reference_answerable"] is True
+    assert row["structural_validator_pass"] is True
 
 
 def test_run_item_marks_a_correct_refusal_on_an_unanswerable_item_as_passing():
@@ -149,6 +230,9 @@ def test_run_item_marks_a_correct_refusal_on_an_unanswerable_item_as_passing():
 
     assert row["citation_contract_pass"] is True
     assert row["refused"] is True
+    assert row["served_answer"] is None
+    assert row["reference_answerable"] is False
+    assert row["refusal_reason"] == "no_context"
 
 
 def test_run_item_marks_a_refusal_on_an_answerable_item_as_failing_the_contract():
@@ -209,6 +293,8 @@ async def test_a_complete_run_has_no_generation_or_judge_failures(dev_golden):
     run = await run_release.execute_run("dev", "test-label", _result, _fake_judge_success)
 
     assert run.status == "complete"
+    assert run.schema_version == 2
+    assert "task_outcome" in run.structural_metrics
     assert run.error is None
     assert run.ragas_scored_count == 3  # f1, f2, m1 (factual + multi-doc), not u1/u2
     assert run.ragas_means is not None
@@ -321,6 +407,55 @@ def test_promote_to_canonical_writes_summary_and_appends_history(tmp_path, monke
     assert (tmp_path / "eval_summary.md").exists()
     history = (tmp_path / "eval_history.csv").read_text(encoding="utf-8")
     assert "dev-abc123" in history
+
+
+def test_promote_schema2_appends_new_history_without_mutating_legacy_csv(tmp_path, monkeypatch):
+    monkeypatch.setattr(run_release, "REPORTS_DIR", tmp_path)
+    legacy_path = tmp_path / "eval_history.csv"
+    legacy_path.write_text("legacy bytes\n", encoding="utf-8")
+    v2_path = tmp_path / "eval_history_v2.csv"
+    monkeypatch.setattr(run_release, "EVAL_HISTORY_V2_CSV", v2_path)
+    items = [
+        {
+            "reference_answerable": True,
+            "refused": False,
+            "served_answer": "answer",
+            "structural_validator_pass": True,
+            "citations": [{"verified": True}],
+        },
+        {
+            "reference_answerable": False,
+            "refused": True,
+            "served_answer": None,
+            "structural_validator_pass": False,
+            "citations": [],
+        },
+    ]
+    run = run_release.ReleaseRun(
+        run_id="dev-v2abc",
+        split="dev",
+        label="schema2",
+        started_at="t0",
+        finished_at="t1",
+        status="complete",
+        holdout_sha256=None,
+        pipeline_fingerprint="fp",
+        manifest_sha256="mf",
+        structural_metrics=run_release.compute_metrics_v2(items),
+        ragas_means=None,
+        ragas_scored_count=0,
+        ragas_excluded_refusals=[],
+        ragas_failures=[],
+        items=items,
+        schema_version=2,
+    )
+
+    run_release.promote_to_canonical(run)
+
+    assert legacy_path.read_text(encoding="utf-8") == "legacy bytes\n"
+    history = v2_path.read_text(encoding="utf-8")
+    assert history.startswith("schema_version,timestamp,run_id,split,label,")
+    assert "dev-v2abc" in history
 
 
 def _minimal_run(**overrides) -> run_release.ReleaseRun:

@@ -21,10 +21,12 @@ from evals.run_release import (
     REPORTS_DIR,
     ReleaseRun,
     _write_summary_report,
+    compute_metrics_v2,
     compute_structural_metrics,
 )
 
 _RUN_FIELDS = {f.name for f in dataclasses.fields(ReleaseRun)}
+_LEGACY_RUN_FIELDS = _RUN_FIELDS - {"schema_version"}
 
 
 class ArtifactSchemaError(ValueError):
@@ -39,18 +41,28 @@ class StaleMetricsError(ValueError):
 def load_run(path: Path) -> ReleaseRun:
     raw = json.loads(path.read_text(encoding="utf-8"))
     raw_keys = set(raw)
-    missing = _RUN_FIELDS - raw_keys
-    unexpected = raw_keys - _RUN_FIELDS
+    schema_version = raw.get("schema_version", 1)
+    expected_fields = _LEGACY_RUN_FIELDS if schema_version == 1 else _RUN_FIELDS
+    missing = expected_fields - raw_keys
+    unexpected = raw_keys - expected_fields
     if missing or unexpected:
         raise ArtifactSchemaError(
             f"{path} does not match ReleaseRun's fields — missing={sorted(missing)}, "
             f"unexpected={sorted(unexpected)}"
         )
+    if schema_version not in {1, 2}:
+        raise ArtifactSchemaError(f"{path} has unsupported schema_version={schema_version!r}")
+    if schema_version == 1:
+        return ReleaseRun(**raw, schema_version=1)
     return ReleaseRun(**raw)
 
 
 def render(run: ReleaseRun, path: Path) -> None:
-    recomputed = compute_structural_metrics(run.items)
+    recomputed = (
+        compute_metrics_v2(run.items)
+        if run.schema_version >= 2
+        else compute_structural_metrics(run.items)
+    )
     if recomputed != run.structural_metrics:
         raise StaleMetricsError(
             f"run {run.run_id}: stored structural_metrics do not match what run.items "

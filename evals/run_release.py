@@ -17,6 +17,7 @@ together produces a rate that looks clean but no longer means what its name says
 
 import argparse
 import asyncio
+import csv
 import json
 import os
 import sys
@@ -43,6 +44,7 @@ _SCORED_TYPES = {"factual", "multi-doc"}
 _RAGAS_METRIC_NAMES = ("faithfulness", "answer_relevancy", "context_precision", "context_recall")
 
 RUNS_DIR = REPORTS_DIR / "runs"
+EVAL_HISTORY_V2_CSV = REPORTS_DIR / "eval_history_v2.csv"
 
 
 class HoldoutNotSealedError(RuntimeError):
@@ -95,12 +97,21 @@ def run_item(item: dict, answer_fn) -> dict:
         "type": item["type"],
         "question": item["question"],
         "answer": result.answer,
+        # Keep the raw model output and the answer actually served by the validator distinct. A
+        # refusal explanation is an artifact field, not a served answer for citation metrics.
+        "served_answer": result.answer if not result.refused else None,
         "raw_model_output": result.llm_response.text or None,
         "refused": result.refused,
         "refusal_reason": result.refusal_reason.value if result.refusal_reason else None,
+        "reference_answerable": item["type"] != "unanswerable",
+        "reference_answerability": (
+            "answerable" if item["type"] != "unanswerable" else "unanswerable"
+        ),
         "citations": citations,
         "retrieved_chunk_ids": [c.chunk_id for c in result.retrieved_chunks],
         "citation_contract_pass": citation_contract_pass,
+        "structural_validator_pass": bool(not result.refused),
+        "structural_validator_outcome": "passed" if not result.refused else "refused",
         "all_citations_verified": all(c["verified"] for c in citations) if citations else True,
         "source_notices": source_notices,
     }
@@ -131,6 +142,78 @@ def compute_structural_metrics(items: list[dict]) -> dict:
         "verified_citation_count": len(verified),
         "verified_citation_rate": rate(len(verified), len(items)),
     }
+
+
+def _ratio(numerator: int, denominator: int) -> dict[str, int | float | None]:
+    return {
+        "numerator": numerator,
+        "denominator": denominator,
+        "rate": numerator / denominator if denominator else None,
+    }
+
+
+def compute_metrics_v2(items: list[dict]) -> dict:
+    """Compute the schema-2 structural metrics without reinterpreting schema-1 values.
+
+    Citation occurrences are counted only in non-refused served answers. They are useful for
+    validation, but are not independent item-level trials; the summary therefore does not attach
+    Wilson intervals to this ratio. Semantic review fields remain explicitly unavailable until a
+    real review dataset is joined.
+    """
+
+    def is_answerable(item: dict) -> bool:
+        return item.get("reference_answerable", item.get("type") != "unanswerable")
+
+    answerable = [item for item in items if is_answerable(item)]
+    unanswerable = [item for item in items if not is_answerable(item)]
+
+    def served(item: dict) -> bool:
+        if item.get("refused", False):
+            return False
+        # Legacy-shaped synthetic rows have no explicit served_answer. New rows do, and a null
+        # value means the validator did not serve an answer even if raw output was present.
+        return item.get("served_answer", item.get("answer")) is not None
+
+    served_items = [item for item in items if served(item)]
+    served_citations = [citation for item in served_items for citation in item.get("citations", [])]
+    verified_citations = [
+        citation for citation in served_citations if citation.get("verified", False)
+    ]
+    structurally_valid = [
+        item
+        for item in served_items
+        if item.get("structural_validator_pass", item.get("citation_contract_pass", False))
+    ]
+    answered_answerable = [item for item in answerable if served(item)]
+    refused_unanswerable = [item for item in unanswerable if item.get("refused", False)]
+    task_successes = [
+        item
+        for item in answerable
+        if served(item)
+        and item.get("structural_validator_pass", item.get("citation_contract_pass", False))
+    ] + refused_unanswerable
+
+    metrics = {
+        "answer_coverage": _ratio(len(answered_answerable), len(answerable)),
+        "refusal_recall": _ratio(len(refused_unanswerable), len(unanswerable)),
+        "citation_verification": _ratio(len(verified_citations), len(served_citations)),
+        "structural_pass_rate": _ratio(len(structurally_valid), len(served_items)),
+        "task_outcome": _ratio(len(task_successes), len(items)),
+        "reviewed_supported_answer_accuracy": None,
+        "reviewed_supported_answer_yield": None,
+    }
+    # These counts make the denominators machine-readable for history consumers without requiring
+    # them to infer meaning from a display label.
+    metrics["answerable_count"] = len(answerable)
+    metrics["answered_answerable_count"] = len(answered_answerable)
+    metrics["unanswerable_count"] = len(unanswerable)
+    metrics["refused_unanswerable_count"] = len(refused_unanswerable)
+    metrics["served_answer_count"] = len(served_items)
+    metrics["structurally_valid_served_answer_count"] = len(structurally_valid)
+    metrics["citation_occurrence_count"] = len(served_citations)
+    metrics["verified_citation_occurrence_count"] = len(verified_citations)
+    metrics["task_success_count"] = len(task_successes)
+    return metrics
 
 
 async def score_ragas(
@@ -186,9 +269,10 @@ class ReleaseRun:
     ragas_failures: list[dict]
     items: list[dict]
     error: str | None = None
+    schema_version: int = 1
 
     def to_dict(self) -> dict:
-        return {
+        payload = {
             "run_id": self.run_id,
             "split": self.split,
             "label": self.label,
@@ -206,6 +290,11 @@ class ReleaseRun:
             "items": self.items,
             "error": self.error,
         }
+        # Omitting this field for schema-1 objects keeps historical artifact bytes and the
+        # legacy loader contract unchanged. All newly executed runs are explicitly schema 2.
+        if self.schema_version >= 2:
+            payload["schema_version"] = self.schema_version
+        return payload
 
 
 async def execute_run(
@@ -249,7 +338,7 @@ async def execute_run(
         holdout_sha256=protocol["holdout_sha256"] if protocol else None,
         pipeline_fingerprint=pipeline_fingerprint(k=k),
         manifest_sha256=manifest_digest(),
-        structural_metrics=compute_structural_metrics(items),
+        structural_metrics=compute_metrics_v2(items),
         ragas_means=_ragas_means(ragas_scored),
         ragas_scored_count=len(ragas_scored),
         ragas_excluded_refusals=ragas_excluded_refusals,
@@ -261,6 +350,7 @@ async def execute_run(
             if status == "partial"
             else None
         ),
+        schema_version=2,
     )
 
 
@@ -285,6 +375,8 @@ def _write_atomically(path, content: str) -> None:
 
 
 def _write_summary_report(run: ReleaseRun, path) -> None:
+    if run.schema_version >= 2:
+        return _write_summary_report_v2(run, path)
     m = run.structural_metrics
     lines = [
         "# Release evaluation summary",
@@ -329,6 +421,51 @@ def _write_summary_report(run: ReleaseRun, path) -> None:
     (path).write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
 
 
+def _write_summary_report_v2(run: ReleaseRun, path) -> None:
+    m = run.structural_metrics
+    answer = m["answer_coverage"]
+    refusal = m["refusal_recall"]
+    citation = m["citation_verification"]
+    structural = m["structural_pass_rate"]
+    outcome = m["task_outcome"]
+    lines = [
+        "# Release evaluation summary",
+        "",
+        f"**Schema:** {run.schema_version} | **Split:** {run.split} | **Label:** {run.label} | "
+        f"**Run:** {run.run_id} | **Status:** {run.status}",
+        "",
+        "Rates use the numerator and denominator shown. Wilson 95% intervals apply only to "
+        "item-level proportions; citation occurrences are dependent within answers and have no "
+        "item-level binomial interval.",
+        "",
+        "| metric | value | 95% CI |",
+        "|---|---|---|",
+        f"| Answer coverage | {answer['numerator']}/{answer['denominator']} ({_pct(answer['rate'])}) | "
+        f"{_ci(answer['numerator'], answer['denominator'])} |",
+        f"| Refusal recall | {refusal['numerator']}/{refusal['denominator']} ({_pct(refusal['rate'])}) | "
+        f"{_ci(refusal['numerator'], refusal['denominator'])} |",
+        f"| Structurally verified citations | {citation['numerator']}/{citation['denominator']} "
+        f"({_pct(citation['rate'])}) | — (citation occurrences) |",
+        f"| Structural pass rate among served answers | {structural['numerator']}/"
+        f"{structural['denominator']} ({_pct(structural['rate'])}) | "
+        f"{_ci(structural['numerator'], structural['denominator'])} |",
+        f"| Task outcome | {outcome['numerator']}/{outcome['denominator']} "
+        f"({_pct(outcome['rate'])}) | {_ci(outcome['numerator'], outcome['denominator'])} |",
+        "| Independently reviewed supported-answer accuracy | unavailable | — |",
+        "| Independently reviewed supported-answer yield | unavailable | — |",
+    ]
+    if run.ragas_means:
+        rendered_metrics = ", ".join(
+            f"{name}={run.ragas_means[name]:.3f}" for name in _RAGAS_METRIC_NAMES
+        )
+        lines.append(
+            f"| RAGAS (over {run.ragas_scored_count} answered answerable items, "
+            f"{len(run.ragas_excluded_refusals)} refusal(s) excluded) | {rendered_metrics} | — |"
+        )
+    lines.append("")
+    path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
+
+
 def _pct(value: float | None) -> str:
     return f"{value:.0%}" if value is not None else "n/a"
 
@@ -349,6 +486,10 @@ def promote_to_canonical(run: ReleaseRun) -> None:
     _write_summary_report(run, tmp_summary)
     os.replace(tmp_summary, summary_path)
 
+    if run.schema_version >= 2:
+        _append_history_v2(run)
+        return
+
     is_new = not EVAL_HISTORY_CSV.exists()
     header = "timestamp,run_id,split,label,answerable_answer_rate,unanswerable_refusal_recall,citation_contract_pass_rate,verified_citation_rate\n"
     row = (
@@ -362,6 +503,32 @@ def promote_to_canonical(run: ReleaseRun) -> None:
         if is_new:
             f.write(header)
         f.write(row)
+
+
+def _append_history_v2(run: ReleaseRun) -> None:
+    """Append only schema-2 runs to the new history file; the legacy CSV is immutable."""
+    metric_names = (
+        "answer_coverage",
+        "refusal_recall",
+        "citation_verification",
+        "structural_pass_rate",
+        "task_outcome",
+    )
+    header = ["schema_version", "timestamp", "run_id", "split", "label"]
+    for name in metric_names:
+        header.extend([f"{name}_numerator", f"{name}_denominator", name])
+    header.append("ragas_scored_count")
+    row = [run.schema_version, run.finished_at, run.run_id, run.split, run.label]
+    for name in metric_names:
+        metric = run.structural_metrics[name]
+        row.extend([metric["numerator"], metric["denominator"], metric["rate"]])
+    row.append(run.ragas_scored_count)
+    is_new = not EVAL_HISTORY_V2_CSV.exists()
+    with open(EVAL_HISTORY_V2_CSV, "a", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        if is_new:
+            writer.writerow(header)
+        writer.writerow(row)
 
 
 def main() -> None:
