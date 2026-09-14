@@ -99,6 +99,24 @@ def _candidate_errors(candidate: dict) -> list[str]:
 
     if run.get("status") != "complete":
         errors.append("candidate run is not complete")
+    if run.get("schema_version") != 2:
+        errors.append("candidate run is not a schema-2 release artifact")
+    metrics = run.get("structural_metrics")
+    if isinstance(metrics, dict):
+        for name in (
+            "reviewed_supported_answer_accuracy",
+            "reviewed_supported_answer_yield",
+        ):
+            if metrics.get(name) is None:
+                errors.append(f"candidate run has no completed review field: {name}")
+    else:
+        errors.append("candidate run has no structural metrics")
+
+    protocol_path = candidate.get("protocol_path")
+    if protocol_path:
+        errors.extend(
+            _hash_errors("candidate protocol", protocol_path, candidate.get("protocol_sha256"))
+        )
 
     k = candidate.get("k", 5)
     try:

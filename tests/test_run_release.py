@@ -388,7 +388,7 @@ def test_write_run_artifact_writes_a_json_file_under_the_runs_dir(tmp_path):
     assert json.loads(path.read_text(encoding="utf-8"))["run_id"] == "dev-abc123"
 
 
-def test_promote_to_canonical_writes_summary_and_appends_history(tmp_path, monkeypatch):
+def test_promote_to_canonical_rejects_a_schema1_development_run(tmp_path, monkeypatch):
     monkeypatch.setattr(run_release, "REPORTS_DIR", tmp_path)
     monkeypatch.setattr(run_release, "EVAL_HISTORY_CSV", tmp_path / "eval_history.csv")
     run = run_release.ReleaseRun(
@@ -425,14 +425,42 @@ def test_promote_to_canonical_writes_summary_and_appends_history(tmp_path, monke
         ],
     )
 
-    run_release.promote_to_canonical(run)
+    with pytest.raises(ValueError, match="schema-1"):
+        run_release.promote_to_canonical(run)
 
-    assert (tmp_path / "eval_summary.md").exists()
-    history = (tmp_path / "eval_history.csv").read_text(encoding="utf-8")
-    assert "dev-abc123" in history
+    assert not (tmp_path / "eval_summary.md").exists()
+    assert not (tmp_path / "eval_history.csv").exists()
 
 
-def test_promote_schema2_appends_new_history_without_mutating_legacy_csv(tmp_path, monkeypatch):
+def test_promote_to_canonical_rejects_partial_schema2_run_before_writing(tmp_path, monkeypatch):
+    monkeypatch.setattr(run_release, "REPORTS_DIR", tmp_path)
+    items = []
+    run = run_release.ReleaseRun(
+        run_id="holdout-partial",
+        split="holdout",
+        label="partial",
+        started_at="t0",
+        finished_at="t1",
+        status="partial",
+        holdout_sha256="golden-hash",
+        pipeline_fingerprint="fp",
+        manifest_sha256="mf",
+        structural_metrics=run_release.compute_metrics_v2(items),
+        ragas_means=None,
+        ragas_scored_count=0,
+        ragas_excluded_refusals=[],
+        ragas_failures=[],
+        items=items,
+        schema_version=2,
+    )
+
+    with pytest.raises(ValueError, match="partial"):
+        run_release.promote_to_canonical(run)
+
+    assert not (tmp_path / "eval_summary.md").exists()
+
+
+def test_schema2_history_appends_without_mutating_legacy_csv(tmp_path, monkeypatch):
     monkeypatch.setattr(run_release, "REPORTS_DIR", tmp_path)
     legacy_path = tmp_path / "eval_history.csv"
     legacy_path.write_text("legacy bytes\n", encoding="utf-8")
@@ -473,7 +501,7 @@ def test_promote_schema2_appends_new_history_without_mutating_legacy_csv(tmp_pat
         schema_version=2,
     )
 
-    run_release.promote_to_canonical(run)
+    run_release._append_history_v2(run)
 
     assert legacy_path.read_text(encoding="utf-8") == "legacy bytes\n"
     history = v2_path.read_text(encoding="utf-8")

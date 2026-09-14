@@ -8,17 +8,21 @@ import sys
 from pathlib import Path
 
 from evals.evidence import REGISTRY_PATH, current_evidence_errors, load_registry
+from evals.sealed_run import ProtocolValidationError, validate_protocol
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--registry", type=Path, default=REGISTRY_PATH)
+    parser.add_argument("--protocol", type=Path, help="provider-free schema-2 protocol preflight")
     args = parser.parse_args(argv)
 
     try:
+        if args.protocol:
+            validate_protocol(args.protocol)
         registry = load_registry(args.registry)
         errors = current_evidence_errors(registry)
-    except (OSError, ValueError) as exc:
+    except (OSError, ValueError, ProtocolValidationError) as exc:
         print(f"NOT RELEASE-READY: {exc}")
         return 1
 

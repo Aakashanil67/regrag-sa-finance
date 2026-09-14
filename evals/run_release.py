@@ -25,10 +25,10 @@ import tempfile
 import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from pathlib import Path
 
 from evals.stats import wilson_interval
 from src.config import (
-    EVAL_HISTORY_CSV,
     EVAL_PROTOCOL_PATH,
     GOLDEN_DEV_PATH,
     GOLDEN_HOLDOUT_PATH,
@@ -44,7 +44,11 @@ _SCORED_TYPES = {"factual", "multi-doc"}
 _RAGAS_METRIC_NAMES = ("faithfulness", "answer_relevancy", "context_precision", "context_recall")
 
 RUNS_DIR = REPORTS_DIR / "runs"
+EVAL_HISTORY_CSV = (
+    REPORTS_DIR / "eval_history.csv"
+)  # legacy test/config compatibility; never appended
 EVAL_HISTORY_V2_CSV = REPORTS_DIR / "eval_history_v2.csv"
+CURRENT_RELEASE_POINTER = REPORTS_DIR / "current_release.json"
 
 
 class HoldoutNotSealedError(RuntimeError):
@@ -101,6 +105,11 @@ def run_item(item: dict, answer_fn) -> dict:
         # refusal explanation is an artifact field, not a served answer for citation metrics.
         "served_answer": result.answer if not result.refused else None,
         "raw_model_output": result.llm_response.text or None,
+        "usage": {
+            "input_tokens": result.llm_response.input_tokens,
+            "output_tokens": result.llm_response.output_tokens,
+            "cost_usd": result.llm_response.cost_usd,
+        },
         "refused": result.refused,
         "refusal_reason": result.refusal_reason.value if result.refusal_reason else None,
         "reference_answerable": item["type"] != "unanswerable",
@@ -231,13 +240,21 @@ def compute_metrics_v2(items: list[dict]) -> dict:
 
 
 async def score_ragas(
-    items: list[dict], run_results: dict[str, dict], judge_fn
+    items: list[dict],
+    run_results: dict[str, dict],
+    judge_fn,
+    *,
+    journal=None,
+    saved_scores: dict[str, dict] | None = None,
+    budget=None,
+    judge_estimate_usd: float = 0.0,
 ) -> tuple[list[dict], list[dict], list[dict]]:
     """RAGAS-scores every answered (not refused) factual/multi-doc item. `judge_fn` is
     `(question, answer, contexts, reference) -> awaitable[dict[str, float]]` — injected so tests
     exercise the denominator/failure bookkeeping without a real judge model. Returns
     (scored, excluded_refusals, failures)."""
     scored, excluded_refusals, failures = [], [], []
+    saved_scores = saved_scores or {}
     for item in items:
         if item["type"] not in _SCORED_TYPES or item["id"] not in run_results:
             continue  # a generation failure already excludes this item; nothing to judge
@@ -245,6 +262,24 @@ async def score_ragas(
         if run_result["refused"]:
             excluded_refusals.append({"id": item["id"], "question": item["question"]})
             continue
+        if item["id"] in saved_scores:
+            scored.append(saved_scores[item["id"]])
+            continue
+        if budget is not None:
+            try:
+                budget.reserve(judge_estimate_usd)
+            except Exception as exc:  # budget exhaustion is a recorded partial-run condition
+                failures.append(
+                    {
+                        "id": item["id"],
+                        "question": item["question"],
+                        "error_type": type(exc).__name__,
+                        "error": str(exc),
+                    }
+                )
+                break
+        if journal is not None:
+            journal.intent("judge", item["id"], 0.0)
         try:
             metric_values = await judge_fn(
                 item["question"],
@@ -253,9 +288,21 @@ async def score_ragas(
                 item["reference_answer"],
             )
         except Exception as exc:  # noqa: BLE001 - a judge failure is data for the run, not a crash
-            failures.append({"id": item["id"], "question": item["question"], "error": str(exc)})
+            if journal is not None:
+                journal.failure("judge", item["id"], type(exc).__name__)
+            failures.append(
+                {
+                    "id": item["id"],
+                    "question": item["question"],
+                    "error_type": type(exc).__name__,
+                    "error": str(exc),
+                }
+            )
             continue
-        scored.append({"id": item["id"], "question": item["question"], **metric_values})
+        scored_row = {"id": item["id"], "question": item["question"], **metric_values}
+        if journal is not None:
+            journal.success("judge", item["id"], scored_row)
+        scored.append(scored_row)
     return scored, excluded_refusals, failures
 
 
@@ -312,29 +359,84 @@ class ReleaseRun:
 
 
 async def execute_run(
-    split: str, label: str, answer_fn, judge_fn, *, k: int = 5, item_failures: dict | None = None
+    split: str,
+    label: str,
+    answer_fn,
+    judge_fn,
+    *,
+    k: int = 5,
+    item_failures: dict | None = None,
+    golden_path: Path | None = None,
+    journal=None,
+    resume_items: dict[str, dict] | None = None,
+    resume_judgments: dict[str, dict] | None = None,
+    run_id_override: str | None = None,
+    holdout_sha256_override: str | None = None,
+    budget=None,
+    generation_estimate_usd: float = 0.0,
+    judge_estimate_usd: float = 0.0,
 ) -> ReleaseRun:
     """`item_failures` lets tests inject a generation failure for a specific item id without a
     real pipeline raising one."""
-    assert_split_runnable(split)
+    if split == "holdout" and golden_path is None:
+        assert_split_runnable(split)
     item_failures = item_failures or {}
+    resume_items = resume_items or {}
 
     started_at = datetime.now(UTC).isoformat()
-    golden = _load_golden(_GOLDEN_PATHS[split])
+    golden = _load_golden(golden_path or _GOLDEN_PATHS[split])
 
     items: list[dict] = []
     generation_failures: list[dict] = []
     run_results: dict[str, dict] = {}
     for item in golden:
+        if item["id"] in resume_items:
+            row = resume_items[item["id"]]
+            run_results[item["id"]] = row
+            items.append(row)
+            continue
         if item["id"] in item_failures:
             generation_failures.append({"id": item["id"], "error": item_failures[item["id"]]})
             continue
-        row = run_item(item, answer_fn)
+        if budget is not None:
+            try:
+                budget.reserve(generation_estimate_usd)
+            except Exception as exc:  # budget exhaustion is a recorded partial-run condition
+                generation_failures.append(
+                    {
+                        "id": item["id"],
+                        "error_type": type(exc).__name__,
+                        "error": str(exc),
+                    }
+                )
+                break
+        if journal is not None:
+            journal.intent("generation", item["id"], 0.0)
+        try:
+            row = run_item(item, answer_fn)
+        except Exception as exc:  # noqa: BLE001 - retain prior outputs and journal this item
+            if journal is not None:
+                journal.failure("generation", item["id"], type(exc).__name__)
+            generation_failures.append(
+                {"id": item["id"], "error_type": type(exc).__name__, "error": str(exc)}
+            )
+            continue
+        if journal is not None:
+            actual_cost = row.get("usage", {}).get("cost_usd")
+            journal.success("generation", item["id"], row, actual_cost)
+        if budget is not None:
+            budget.record_actual(row.get("usage", {}).get("cost_usd", 0.0))
         run_results[item["id"]] = row
         items.append(row)
 
     ragas_scored, ragas_excluded_refusals, ragas_failures = await score_ragas(
-        golden, run_results, judge_fn
+        golden,
+        run_results,
+        judge_fn,
+        journal=journal,
+        saved_scores=resume_judgments,
+        budget=budget,
+        judge_estimate_usd=judge_estimate_usd,
     )
 
     protocol = (
@@ -343,13 +445,14 @@ async def execute_run(
     status = "partial" if (generation_failures or ragas_failures) else "complete"
 
     return ReleaseRun(
-        run_id=f"{split}-{uuid.uuid4().hex[:12]}",
+        run_id=run_id_override or f"{split}-{uuid.uuid4().hex[:12]}",
         split=split,
         label=label,
         started_at=started_at,
         finished_at=datetime.now(UTC).isoformat(),
         status=status,
-        holdout_sha256=protocol["holdout_sha256"] if protocol else None,
+        holdout_sha256=holdout_sha256_override
+        or (protocol["holdout_sha256"] if protocol else None),
         pipeline_fingerprint=pipeline_fingerprint(k=k),
         manifest_sha256=manifest_digest(),
         structural_metrics=compute_metrics_v2(items),
@@ -492,31 +595,39 @@ def _ci(successes: int, denominator: int) -> str:
 
 
 def promote_to_canonical(run: ReleaseRun) -> None:
-    """Only called for a `complete` run — writes/replaces the canonical summary and appends to
-    history atomically, so a crash mid-write can never leave a corrupt or half-updated canonical
-    report."""
+    """Promote only a complete, reviewed, current schema-2 release run.
+
+    Development runs and schema-1 historical artifacts remain renderable, but cannot replace the
+    current release reports. The old history file is intentionally never appended here.
+    """
+    if run.schema_version < 2:
+        raise ValueError("schema-1 historical artifacts cannot be promoted")
+    if run.status != "complete":
+        raise ValueError("partial runs cannot be promoted")
+    if run.split != "holdout":
+        raise ValueError("only holdout runs can be promoted as releases")
+    if run.holdout_sha256 is None:
+        raise ValueError("release run has no sealed dataset identity")
+    if any(
+        run.structural_metrics.get(name) is None
+        for name in (
+            "reviewed_supported_answer_accuracy",
+            "reviewed_supported_answer_yield",
+        )
+    ):
+        raise ValueError("release run has no completed independent semantic review")
+    if run.pipeline_fingerprint != pipeline_fingerprint(k=5):
+        raise ValueError("release run pipeline fingerprint is stale")
+    if run.manifest_sha256 != manifest_digest():
+        raise ValueError("release run manifest fingerprint is stale")
+
     summary_path = REPORTS_DIR / "eval_summary.md"
     tmp_summary = REPORTS_DIR / ".eval_summary.md.tmp"
     _write_summary_report(run, tmp_summary)
     os.replace(tmp_summary, summary_path)
 
-    if run.schema_version >= 2:
-        _append_history_v2(run)
-        return
-
-    is_new = not EVAL_HISTORY_CSV.exists()
-    header = "timestamp,run_id,split,label,answerable_answer_rate,unanswerable_refusal_recall,citation_contract_pass_rate,verified_citation_rate\n"
-    row = (
-        f"{run.finished_at},{run.run_id},{run.split},{run.label},"
-        f"{run.structural_metrics['answerable_answer_rate']},"
-        f"{run.structural_metrics['unanswerable_refusal_recall']},"
-        f"{run.structural_metrics['citation_contract_pass_rate']},"
-        f"{run.structural_metrics['verified_citation_rate']}\n"
-    )
-    with open(EVAL_HISTORY_CSV, "a", encoding="utf-8", newline="\n") as f:
-        if is_new:
-            f.write(header)
-        f.write(row)
+    _append_history_v2(run)
+    _write_current_release_pointer(run)
 
 
 def _append_history_v2(run: ReleaseRun) -> None:
@@ -545,11 +656,82 @@ def _append_history_v2(run: ReleaseRun) -> None:
         writer.writerow(row)
 
 
+def _write_current_release_pointer(run: ReleaseRun) -> None:
+    pointer = {
+        "schema_version": 1,
+        "run_id": run.run_id,
+        "artifact": f"reports/runs/{run.run_id}.json",
+        "pipeline_fingerprint": run.pipeline_fingerprint,
+        "manifest_sha256": run.manifest_sha256,
+        "updated_at": datetime.now(UTC).isoformat(),
+    }
+    pointer_path = REPORTS_DIR / "current_release.json"
+    pointer_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = pointer_path.with_name(f".{pointer_path.name}.tmp")
+    temporary.write_text(json.dumps(pointer, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    os.replace(temporary, pointer_path)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--split", choices=["dev", "holdout"], required=True)
     parser.add_argument("--label", required=True)
+    parser.add_argument("--protocol", type=Path)
+    parser.add_argument("--output-dir", type=Path, default=RUNS_DIR)
+    parser.add_argument("--max-cost-usd", type=float)
+    parser.add_argument("--resume")
     args = parser.parse_args()
+
+    validated = None
+    ledger = None
+    run_id = None
+    journal = None
+    resume_items = None
+    resume_judgments = None
+    budget = None
+    generation_estimate_usd = 0.0
+    judge_estimate_usd = 0.0
+    if args.split == "holdout":
+        if args.protocol is None:
+            print("ERROR: holdout runs require an explicit --protocol path", file=sys.stderr)
+            raise SystemExit(1)
+        from evals.sealed_run import RunJournal, preflight
+
+        try:
+            validated, ledger, run_id = preflight(
+                args.protocol,
+                args.output_dir,
+                args.max_cost_usd,
+                label=args.label,
+                resume=args.resume,
+            )
+            journal = RunJournal(args.output_dir / f"{run_id}.journal.json")
+            from evals.sealed_run import CostBudget, estimate_cost_usd
+            from src.config import RAG_MAX_ANSWER_TOKENS
+            from src.llm import effective_llm_settings
+
+            model = effective_llm_settings().model
+            generation_estimate_usd = estimate_cost_usd(model, 8192, RAG_MAX_ANSWER_TOKENS)
+            # Reserve all four RAGAS subcalls independently; async fan-out does not reduce their
+            # budget exposure.
+            judge_estimate_usd = 4 * estimate_cost_usd(model, 4096, 512)
+            budget = CostBudget(args.max_cost_usd)
+            if args.resume:
+                if journal.ambiguous():
+                    raise ValueError(
+                        "resume has an operation intent without a confirmed response; "
+                        "resolve it explicitly before retrying"
+                    )
+                prior_path = args.output_dir / f"{run_id}.json"
+                if prior_path.exists():
+                    prior = json.loads(prior_path.read_text(encoding="utf-8"))
+                    if prior.get("pipeline_fingerprint") != validated.pipeline_fingerprint:
+                        raise ValueError("resume artifact pipeline identity is stale")
+                    resume_items = {item["id"]: item for item in prior.get("items", [])}
+                resume_judgments = journal.successful_payloads("judge")
+        except (OSError, ValueError) as exc:
+            print(f"PREFLIGHT FAILED: {exc}", file=sys.stderr)
+            raise SystemExit(1) from exc
 
     from ragas.metrics.collections import (
         AnswerRelevancy,
@@ -590,20 +772,39 @@ def main() -> None:
         }
 
     try:
-        run = asyncio.run(execute_run(args.split, args.label, answer_question, judge_fn))
+        run = asyncio.run(
+            execute_run(
+                args.split,
+                args.label,
+                answer_question,
+                judge_fn,
+                golden_path=validated.golden_path if validated else None,
+                journal=journal,
+                resume_items=resume_items,
+                resume_judgments=resume_judgments,
+                run_id_override=run_id,
+                holdout_sha256_override=validated.golden_sha256 if validated else None,
+                budget=budget,
+                generation_estimate_usd=generation_estimate_usd,
+                judge_estimate_usd=judge_estimate_usd,
+            )
+        )
     except HoldoutNotSealedError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         raise SystemExit(1) from exc
 
-    artifact_path = write_run_artifact(run)
+    artifact_path = write_run_artifact(run, runs_dir=args.output_dir)
     print(f"wrote {artifact_path} (status={run.status})")
 
     if run.status != "complete":
+        if ledger and run_id:
+            ledger.update_state(run_id, "partial")
         print(f"PARTIAL RUN: {run.error}", file=sys.stderr)
         raise SystemExit(1)
 
-    promote_to_canonical(run)
-    print("promoted to reports/eval_summary.md and appended reports/eval_history.csv")
+    if ledger and run_id:
+        ledger.update_state(run_id, "complete")
+    print("complete run saved; promotion is a separate reviewed-release operation")
 
 
 if __name__ == "__main__":
