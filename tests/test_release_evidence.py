@@ -1,44 +1,20 @@
-"""The release protocol's core claim — reports/eval_summary.md and reports/runs/holdout-*.json
-describe the code that actually ships — is otherwise enforced only by reviewer discipline before
-each commit. This pins it as a real regression gate: any change that alters
-provenance.pipeline_fingerprint() silently voids the sealed v1.1.0-rc2 holdout evidence, and this
-test is what should turn red first.
+"""Current evidence readiness is separate from immutable historical observations."""
 
-Nothing is mocked. LLM_* env vars are cleared so a developer's local .env can't make this pass (or
-fail) for a reason CI — which has none of these vars set — wouldn't see; effective_llm_settings()'s
-own defaults (anthropic / claude-haiku-4-5 / temperature 0) are exactly what produced the sealed
-run, so this needs no API key and no vector store.
-"""
-
-import json
-
-from src import provenance
-from src.config import REPORTS_DIR
-
-CANONICAL_RUN_PATH = REPORTS_DIR / "runs" / "holdout-0cf5e0821ec7.json"
-
-_LLM_ENV_VARS = (
-    "LLM_PROVIDER",
-    "ANTHROPIC_MODEL",
-    "OPENAI_MODEL",
-    "OLLAMA_MODEL",
-    "OLLAMA_HOST",
-    "LLM_TEMPERATURE",
-)
+from evals.evidence import REGISTRY_PATH, current_evidence_errors, load_registry
 
 
-def test_the_shipping_pipeline_fingerprint_still_matches_the_sealed_holdout_run(monkeypatch):
-    for var in _LLM_ENV_VARS:
-        monkeypatch.delenv(var, raising=False)
+def test_historical_artifacts_remain_byte_valid():
+    registry = load_registry(REGISTRY_PATH)
 
-    sealed_fingerprint = json.loads(CANONICAL_RUN_PATH.read_text(encoding="utf-8"))[
-        "pipeline_fingerprint"
-    ]
+    errors = current_evidence_errors(registry)
 
-    current_fingerprint = provenance.pipeline_fingerprint(k=5)
+    assert not [error for error in errors if error.startswith("historical artifact")]
 
-    assert current_fingerprint == sealed_fingerprint, (
-        "pipeline_fingerprint() no longer matches reports/runs/holdout-0cf5e0821ec7.json "
-        "(v1.1.0-rc2) — the sealed holdout evidence is void. Either revert whatever changed "
-        "the fingerprint, or run a new sealed 30-item holdout and update the canonical run."
-    )
+
+def test_registry_does_not_label_reused_holdout_as_current_release():
+    registry = load_registry(REGISTRY_PATH)
+
+    assert registry["candidate"]["state"] == "development"
+    assert registry["candidate"]["run_path"] is None
+    assert registry["candidate"]["snapshot_path"] is None
+    assert "candidate is still in development" in current_evidence_errors(registry)

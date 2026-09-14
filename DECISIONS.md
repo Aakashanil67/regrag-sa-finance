@@ -659,3 +659,14 @@ images (`importlib.util.find_spec` returning `None` for all four excluded packag
 image), not assumed from the requirements file split alone. The API image itself dropped to
 2.73GB after the same CPU-only-torch fix the v1.0 audit applied, re-verified on this split's
 rebuild rather than assumed still true.
+
+## Expert-readiness evidence lifecycle (2026-09-14)
+
+The old holdout protocol, question files, CI fixture, and three holdout run artifacts are now
+registered as `historical_reused` evidence with their original SHA-256 values. The completed rc2
+run remains a useful observation of the pipeline it recorded, but its hash and old pipeline
+fingerprint cannot make changed code a current release. `evals/evidence_registry.json` keeps the
+new candidate in `development` until a fresh run and snapshot are recorded; `scripts.check_release`
+fails closed with named reasons and performs no provider calls. This corrects the earlier wording
+that treated reused holdout numbers as the current shipping gate without changing those observed
+numbers or rewriting the original artifacts.

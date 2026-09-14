@@ -1,8 +1,9 @@
 # Failure analysis
 
-Source: `reports/runs/holdout-0cf5e0821ec7.json` — the sealed holdout run (`python -m
-evals.run_release --split holdout --label v1.1.0-rc2`), Task 12 of the hardening pass. 30 holdout
-items, never used for tuning before this run, retrieval `k=5`, reranking on.
+Source: `reports/runs/holdout-0cf5e0821ec7.json` — the historical/reused sealed holdout run
+(`python -m evals.run_release --split holdout --label v1.1.0-rc2`), Task 12 of the hardening pass.
+30 holdout items, never used for tuning before that run, retrieval `k=5`, reranking on. This
+artifact remains an observation of its recorded pipeline, not current release evidence.
 
 **Headline numbers** (see `reports/eval_summary.md` for the full table): answerable answer rate
 17/24 (71%), unanswerable refusal recall 6/6 (100%), citation-contract pass rate 23/30 (77%),
@@ -50,7 +51,7 @@ the golden item's expected source document(s):
 | gh21 | multi-doc | `sarb_d8_2023_threshold_amounts` p.1 + `sarb_d8_2025_threshold_amounts` p.1 | **miss** (neither doc) | model_refusal |
 | gh22 | multi-doc | `ifrs9_project_summary_2014` p.4 + `ifrs9_issued_2021` p.1 | hit (both) | uncited_line |
 
-**4 retrieval misses** (gh11, gh16, gh19, gh21 — three of them multi-doc comparisons).
+**4 retrieval misses** (gh11, gh16, gh19, gh21 — two of them multi-doc comparisons).
 **3 retrieved-but-refused** (gh09, gh20, gh22): the correct context reached the model and it
 still failed the citation contract.
 
@@ -60,8 +61,8 @@ top-k semantic search over the whole corpus doesn't reliably surface both when t
 specific sources by number (e.g. "Directive 8/2023" and "Directive 8/2025") rather than by
 distinguishing content — the embeddings for sibling directives on the same subject are close
 enough together that one crowds out the other in the top 5. **Accepted limitation for this
-release**: a second, per-named-document retrieval pass (the approach `src/agent.py` exists to
-test) is explicitly out of scope until the plain-RAG release passes, per
+historical observation**: a second, per-named-document retrieval pass (the approach `src/agent.py`
+exists to test) was explicitly out of scope for that plain-RAG release, per
 `regrag-release-hardening-spec.md`'s scope boundaries.
 
 ## Retrieved-but-refused — verified live, not just from the artifact
@@ -93,11 +94,13 @@ cites `sarb_c1_2026_status_of_circulars`, but that document's own status is `cur
 notice is expected there and none was triggered. No answered item in this holdout cited a
 third-party or otherwise-flagged source without triggering the notice apparatus.
 
-## What this means for the release
+## What this means for the historical observation
 
 Zero materially unsupported or legally misleading answers were found in a page-by-page audit of
 all 17 answered items against their reference answers and cited source pages (`gh05`–`gh07` were
 additionally checked for withdrawn-status handling, above). Every refusal traces to either a real
 retrieval gap on comparison-style questions naming two similar sibling documents, a model hedge
 correctly caught by the fail-closed contract, or measured sampling variance — none of it a
-citation-safety defect. That is the release gate this task exists to check, and it holds.
+citation-safety defect in that recorded run. This does not make the current implementation
+release-ready; `scripts.check_release` remains intentionally nonzero until a fresh current run and
+snapshot are recorded.

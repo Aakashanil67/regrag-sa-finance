@@ -14,11 +14,14 @@ circular or third-party commentary, and refuses outright — rather than guessin
 retrieved context can't support an answer. A wrong refusal costs a user a follow-up question. A
 wrong answer, stated as if it were current law, costs more than that.
 
-## Sealed holdout results
+## Historical holdout observation (reused evidence)
 
-30 questions, held out and cryptographically sealed (`evals/protocol.json`) before any tuning
-against them, run exactly once (`python -m evals.run_release --split holdout --label v1.1.0-rc2`)
-against the final, frozen pipeline:
+The following is the completed `v1.1.0-rc2` observation from 30 questions, originally held out
+and cryptographically sealed (`evals/protocol.json`) before tuning against them. Its raw protocol,
+questions, and run artifact are preserved unchanged. It remains valid evidence about the pipeline
+recorded at that time, but it is historical/reused evidence rather than a current release test:
+later behaviour changes require a new current snapshot. The registry therefore keeps this project
+in `development` until fresh release evidence exists.
 
 | metric | value | 95% CI |
 |---|---|---|
@@ -37,13 +40,14 @@ underlying failure rate this observation is consistent with is bounded at roughl
 confidence, not at exactly zero. Both are true; only the first is the release gate, and only the
 second is what the CI column actually says.
 
-**The honest limitation:** two of the six multi-document holdout questions (comparisons like
+**The honest limitation:** two of the seven refused answerable items were multi-document questions
+(comparisons like
 "which subject do Directive 8/2023 and Directive 8/2025 both address") failed because top-k
 semantic search over the whole corpus doesn't reliably surface both named documents at once when
 they're close siblings on the same subject — one crowds the other out of the top 5. That's the
-majority of this holdout's answerable-rate shortfall; see `reports/failure_analysis.md` for the
-full per-item breakdown, including which refusals were retrieval gaps versus the model correctly
-declining to guess.
+two-item multi-document portion of the answerable shortfall, not a majority of all seven refusals;
+see `reports/failure_analysis.md` for the full per-item breakdown, including which refusals were
+retrieval gaps versus the model correctly declining to guess.
 
 This is the second candidate. The first (`v1.1.0-rc1`) completed but diagnosing its failures found
 a real citation-parsing defect, which by this project's own release rule means that holdout run was
