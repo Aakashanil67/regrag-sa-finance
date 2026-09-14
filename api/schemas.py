@@ -13,6 +13,8 @@ class CitationOut(BaseModel):
     doc_id: str
     page: int
     verified: bool
+    title: str | None = None
+    source_url: str | None = None
 
 
 class RetrievedChunkOut(BaseModel):

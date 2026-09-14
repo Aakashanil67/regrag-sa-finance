@@ -56,10 +56,23 @@ def render_source_notices(notices: list[dict]) -> None:
             st.info(label)
 
 
+def render_refusal_explanation(refused: bool, refusal_reason: str | None) -> None:
+    if refused and refusal_reason:
+        st.caption(_REFUSAL_REASON_LABELS.get(refusal_reason, refusal_reason))
+
+
 def render_sources(citations: list[dict], chunks: list[dict]) -> None:
     if citations:
-        labels = ", ".join(f"[{c['doc_id']}, p.{c['page']}]" for c in citations)
-        st.caption(f"Citations: {labels}")
+        labels = []
+        for citation in citations:
+            title = citation.get("title") or citation["doc_id"]
+            label = f"{title}, p.{citation['page']}"
+            if citation.get("source_url"):
+                label = f"[{label}]({citation['source_url']})"
+            else:
+                label = f"`{label}`"
+            labels.append(label)
+        st.markdown(f"Citations: {', '.join(dict.fromkeys(labels))}")
         unverified = [c for c in citations if not c["verified"]]
         if unverified:
             st.warning(
@@ -67,6 +80,8 @@ def render_sources(citations: list[dict], chunks: list[dict]) -> None:
                 "retrieved — the model may have invented them."
             )
 
+    if not chunks:
+        return
     with st.expander(f"What was retrieved ({len(chunks)} chunks)"):
         for chunk in chunks:
             st.markdown(
@@ -79,9 +94,10 @@ def render_sources(citations: list[dict], chunks: list[dict]) -> None:
 for turn in st.session_state.history:
     with st.chat_message(turn["role"]):
         st.write(turn["content"])
-        if turn["role"] == "assistant" and turn.get("chunks"):
+        if turn["role"] == "assistant":
+            render_refusal_explanation(turn.get("refused", False), turn.get("refusal_reason"))
             render_source_notices(turn.get("source_notices", []))
-            render_sources(turn["citations"], turn["chunks"])
+            render_sources(turn.get("citations", []), turn.get("chunks", []))
 
 question = st.chat_input("Ask about SARB, IFRS 9, the National Credit Act, or FSCA rules...")
 
@@ -99,10 +115,7 @@ if question:
             st.error(f"Couldn't reach the API at {API_URL}: {exc}")
         else:
             st.write(data["answer"])
-            if data["refused"] and data.get("refusal_reason"):
-                st.caption(
-                    _REFUSAL_REASON_LABELS.get(data["refusal_reason"], data["refusal_reason"])
-                )
+            render_refusal_explanation(data["refused"], data.get("refusal_reason"))
             render_source_notices(data.get("source_notices", []))
             render_sources(data["citations"], data["retrieved_chunks"])
             st.caption(f"{data['latency_ms']:.0f} ms · ${data['cost_usd']:.4f} · {data['model']}")
@@ -114,5 +127,7 @@ if question:
                     "citations": data["citations"],
                     "chunks": data["retrieved_chunks"],
                     "source_notices": data.get("source_notices", []),
+                    "refused": data.get("refused", False),
+                    "refusal_reason": data.get("refusal_reason"),
                 }
             )

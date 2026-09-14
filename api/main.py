@@ -9,6 +9,8 @@ import json
 import logging
 import os
 import uuid
+from functools import lru_cache
+from urllib.parse import urlsplit
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -29,9 +31,42 @@ from api.schemas import (
     SourceReferenceOut,
     StatsResponse,
 )
+from src.config import MANIFEST_PATH
 from src.obslog import content_logging_enabled, recent_queries, stats_summary, timed_answer
 
 logger = logging.getLogger("regrag.api")
+
+
+@lru_cache(maxsize=1)
+def _manifest_records() -> dict[str, dict]:
+    """Return curated manifest records used to label and link served citations."""
+    try:
+        entries = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return {entry["id"]: entry for entry in entries}
+
+
+def _citation_source_url(record: dict, page: int) -> str | None:
+    url = record.get("download_url") or record.get("landing_page_url")
+    if not url:
+        return None
+    parsed = urlsplit(url)
+    if parsed.path.lower().endswith(".pdf"):
+        return f"{url}#page={page}"
+    return url
+
+
+def _citation_out(citation) -> CitationOut:
+    record = _manifest_records().get(citation.doc_id, {})
+    return CitationOut(
+        doc_id=citation.doc_id,
+        page=citation.page,
+        verified=citation.verified,
+        title=record.get("title"),
+        source_url=_citation_source_url(record, citation.page),
+    )
+
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title="RegRAG API")
@@ -154,9 +189,7 @@ def ask(request: Request, body: AskRequest) -> AskResponse | JSONResponse:
     result = timed.result
     return AskResponse(
         answer=result.answer,
-        citations=[
-            CitationOut(doc_id=c.doc_id, page=c.page, verified=c.verified) for c in result.citations
-        ],
+        citations=[_citation_out(citation) for citation in result.citations],
         retrieved_chunks=[
             RetrievedChunkOut(
                 doc_id=chunk.doc_id,

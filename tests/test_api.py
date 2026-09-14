@@ -124,14 +124,28 @@ def test_health_ready_never_calls_the_llm(monkeypatch):
 
 
 def test_ask_returns_answer_with_citations(monkeypatch):
-    monkeypatch.setattr(main, "timed_answer", lambda q: _timed_result())
+    timed = _timed_result()
+    timed.result.citations = [Citation("sarb_d3_2023_accounting_provisions_ifrs9", 3, True)]
+    monkeypatch.setattr(main, "timed_answer", lambda q: timed)
 
     response = client.post("/ask", json={"question": "What must banks do?"})
 
     assert response.status_code == 200
     body = response.json()
     assert body["answer"] == "Banks must comply. [sarb_d3_2023, p.3]"
-    assert body["citations"] == [{"doc_id": "sarb_d3_2023", "page": 3, "verified": True}]
+    assert body["citations"] == [
+        {
+            "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+            "page": 3,
+            "verified": True,
+            "title": "Directive 3/2023: Regulatory Treatment of Accounting Provisions (IFRS 9)",
+            "source_url": (
+                "https://www.resbank.co.za/content/dam/sarb/publications/prudential-authority/"
+                "pa-deposit-takers/banks-directives/2023/D3-2023-Regulatory%20treatment%20of%20"
+                "accounting%20provisions.pdf#page=3"
+            ),
+        }
+    ]
     assert body["retrieved_chunks"][0]["doc_id"] == "sarb_d3_2023"
     assert body["refused"] is False
     assert body["model"] == "claude-haiku-4-5"
