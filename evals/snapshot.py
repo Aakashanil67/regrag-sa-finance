@@ -13,7 +13,7 @@ import json
 
 from src.config import GOLDEN_DEV_PATH, ROOT
 from src.llm import effective_llm_settings
-from src.provenance import manifest_digest
+from src.provenance import index_fingerprint, manifest_digest, pipeline_fingerprint
 from src.rag import _SYSTEM_PROMPT, CITATION_CONTRACT_VERSION
 
 # every file whose behaviour the recorded fixture answers actually depend on — a change to any of
@@ -53,6 +53,8 @@ def compute_snapshot_metadata() -> dict:
     settings = effective_llm_settings()
     return {
         "schema": 1,
+        "index_fingerprint": index_fingerprint(),
+        "pipeline_fingerprint": pipeline_fingerprint(k=5),
         "file_sha256": {path: _file_sha256(path) for path in BEHAVIOR_CRITICAL_FILES},
         "manifest_sha256": manifest_digest(),
         "prompt_sha256": hashlib.sha256(_SYSTEM_PROMPT.encode()).hexdigest(),
@@ -80,6 +82,8 @@ def find_stale_inputs(recorded_metadata: dict) -> list[str]:
 
     for key in (
         "manifest_sha256",
+        "index_fingerprint",
+        "pipeline_fingerprint",
         "prompt_sha256",
         "citation_contract_version",
         "provider",

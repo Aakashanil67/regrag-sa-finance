@@ -1,7 +1,7 @@
 """Edge cases in chunking.py: the parts that are easy to get subtly wrong, not the happy path."""
 
 from src import chunking
-from src.chunking import chunk_document
+from src.chunking import Chunk, chunk_document
 from src.ingest import Element
 
 
@@ -100,3 +100,12 @@ def test_chunk_spanning_pages_records_start_and_end_page(monkeypatch):
     assert len(chunks) == 1
     assert chunks[0].page_start == 4
     assert chunks[0].page_end == 6
+
+
+def test_chunk_hash_changes_when_page_end_or_section_metadata_changes():
+    base = Chunk("doc", 0, "same text", 1, 1, "Section A")
+    different_page = Chunk("doc", 0, "same text", 1, 2, "Section A")
+    different_section = Chunk("doc", 0, "same text", 1, 1, "Section B")
+
+    assert base.chunk_hash != different_page.chunk_hash
+    assert base.chunk_hash != different_section.chunk_hash

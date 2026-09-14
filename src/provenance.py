@@ -17,7 +17,10 @@ model.
 
 import hashlib
 import json
+import os
+import platform
 from datetime import UTC, datetime
+from importlib.metadata import PackageNotFoundError, version
 
 from src.config import (
     CHROMA_DIR,
@@ -28,6 +31,7 @@ from src.config import (
     EMBEDDING_MODEL_NAME,
     MANIFEST_PATH,
     RERANK_CANDIDATE_POOL_SIZE,
+    ROOT,
 )
 
 
@@ -36,11 +40,68 @@ class StoreProvenanceError(RuntimeError):
     manifest/retrieval config, or no build record exists at all."""
 
 
+_INDEX_BEHAVIOR_FILES = (
+    "src/ingest.py",
+    "src/chunking.py",
+    "src/store.py",
+    "src/config.py",
+)
+_PIPELINE_BEHAVIOR_FILES = (
+    "src/retrieve.py",
+    "src/rag.py",
+    "src/llm.py",
+    "src/config.py",
+)
+_REQUIREMENTS_FILES = ("requirements-api.txt", "requirements-dev.txt")
+
+
 def manifest_digest() -> str:
     return hashlib.sha256(MANIFEST_PATH.read_bytes()).hexdigest()
 
 
-def _retrieval_config() -> dict[str, object]:
+def _file_sha256(relative_path: str) -> str:
+    return hashlib.sha256((ROOT / relative_path).read_bytes()).hexdigest()
+
+
+def _runtime_versions() -> dict[str, str]:
+    packages = ("chromadb", "sentence-transformers", "pymupdf", "tiktoken")
+    versions = {"python": platform.python_version(), "platform": platform.platform()}
+    for package in packages:
+        try:
+            versions[package] = version(package)
+        except PackageNotFoundError:
+            versions[package] = "not-installed"
+    return versions
+
+
+def _model_revision(env_name: str, model_name: str) -> str:
+    return os.environ.get(env_name, f"unresolved:{model_name}")
+
+
+def _canonical_fingerprint(payload: dict[str, object]) -> str:
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode()).hexdigest()
+
+
+def index_fingerprint() -> str:
+    """Identify every input that changes extracted chunks or their embeddings."""
+    payload = {
+        "schema": 2,
+        "behavior_files": {path: _file_sha256(path) for path in _INDEX_BEHAVIOR_FILES},
+        "requirements": {path: _file_sha256(path) for path in _REQUIREMENTS_FILES},
+        "manifest_sha256": manifest_digest(),
+        "embedding_model": EMBEDDING_MODEL_NAME,
+        "embedding_model_revision": _model_revision(
+            "EMBEDDING_MODEL_REVISION", EMBEDDING_MODEL_NAME
+        ),
+        "chunk_target": CHUNK_TARGET_TOKENS,
+        "chunk_overlap": CHUNK_OVERLAP_TOKENS,
+        "runtime_versions": _runtime_versions(),
+    }
+    return _canonical_fingerprint(payload)
+
+
+def _retrieval_config(*, index_identity: str | None = None) -> dict[str, object]:
     return {
         "manifest_sha256": manifest_digest(),
         "embedding_model": EMBEDDING_MODEL_NAME,
@@ -49,6 +110,7 @@ def _retrieval_config() -> dict[str, object]:
         "chunk_target": CHUNK_TARGET_TOKENS,
         "chunk_overlap": CHUNK_OVERLAP_TOKENS,
         "candidate_pool": RERANK_CANDIDATE_POOL_SIZE,
+        "index_fingerprint": index_identity or index_fingerprint(),
     }
 
 
@@ -58,7 +120,9 @@ def pipeline_fingerprint(*, k: int) -> str:
 
     settings = effective_llm_settings()
     payload = {
-        "schema": 1,
+        "schema": 2,
+        "behavior_files": {path: _file_sha256(path) for path in _PIPELINE_BEHAVIOR_FILES},
+        "requirements": {path: _file_sha256(path) for path in _REQUIREMENTS_FILES},
         "citation_contract": CITATION_CONTRACT_VERSION,
         "provider": settings.provider,
         "model": settings.model,
@@ -70,16 +134,15 @@ def pipeline_fingerprint(*, k: int) -> str:
         "prompt_sha256": hashlib.sha256(_SYSTEM_PROMPT.encode()).hexdigest(),
         **_retrieval_config(),
     }
-    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
-    return hashlib.sha256(canonical.encode()).hexdigest()
+    return _canonical_fingerprint(payload)
 
 
-def store_build_record(*, chunk_count: int) -> dict[str, object]:
+def store_build_record(*, chunk_count: int, index_identity: str | None = None) -> dict[str, object]:
     return {
-        "schema": 1,
+        "schema": 2,
         "built_at": datetime.now(UTC).isoformat(),
         "chunk_count": chunk_count,
-        **_retrieval_config(),
+        **_retrieval_config(index_identity=index_identity),
     }
 
 
@@ -92,6 +155,11 @@ def assert_store_compatible() -> None:
         record = json.loads(build_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as e:
         raise StoreProvenanceError(f"{build_path} is malformed: {e}") from e
+
+    if record.get("schema") != 2:
+        raise StoreProvenanceError(
+            f"{build_path} uses schema {record.get('schema')!r}; rebuild the store"
+        )
 
     expected = _retrieval_config()
     for key, value in expected.items():

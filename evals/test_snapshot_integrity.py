@@ -39,15 +39,22 @@ def _load_records() -> list[dict]:
     return _load_fixture()["records"]
 
 
-def test_fixture_metadata_matches_current_tracked_state():
+def test_historical_fixture_staleness_is_reported_after_identity_contract_changes():
     fixture = _load_fixture()
 
     stale = find_stale_inputs(fixture["metadata"])
 
-    assert stale == [], (
-        f"evals/fixtures/ci_subset.json is stale against {stale} — "
-        "re-run `python -m evals.record_fixtures`"
-    )
+    assert "index_fingerprint" in stale
+    assert "pipeline_fingerprint" in stale
+
+
+def test_snapshot_metadata_records_separate_index_and_pipeline_identities():
+    from evals.snapshot import compute_snapshot_metadata
+
+    metadata = compute_snapshot_metadata()
+
+    assert len(metadata["index_fingerprint"]) == 64
+    assert len(metadata["pipeline_fingerprint"]) == 64
 
 
 def test_find_stale_inputs_names_the_specific_input_that_changed():

@@ -43,6 +43,10 @@ def _get_model():
 
 
 def get_collection():
+    return _get_collection_by_name(_active_collection_name())
+
+
+def _get_collection_by_name(name: str):
     import chromadb
     from chromadb.config import Settings
 
@@ -53,7 +57,28 @@ def get_collection():
     client = chromadb.PersistentClient(
         path=str(CHROMA_DIR), settings=Settings(anonymized_telemetry=False)
     )
-    return client.get_or_create_collection(COLLECTION_NAME)
+    return client.get_or_create_collection(name)
+
+
+def _active_collection_name() -> str:
+    build_path = CHROMA_DIR / "build.json"
+    if build_path.exists():
+        try:
+            record = json.loads(build_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return COLLECTION_NAME
+        return record.get("collection_name", COLLECTION_NAME)
+    return COLLECTION_NAME
+
+
+def _load_build_record() -> dict | None:
+    build_path = CHROMA_DIR / "build.json"
+    if not build_path.exists():
+        return None
+    try:
+        return json.loads(build_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
 
 
 def embed_texts(texts: list[str]) -> list[list[float]]:
@@ -76,11 +101,28 @@ def rebuild() -> dict:
     all_chunks = [c for chunks in chunk_corpus().values() for c in chunks]
     desired = {c.chunk_hash: c for c in all_chunks}
 
-    collection = get_collection()
+    from src.provenance import index_fingerprint
+
+    index_identity = index_fingerprint()
+    previous_record = _load_build_record()
+    full_rebuild = (
+        previous_record is None
+        or previous_record.get("schema") != 2
+        or previous_record.get("index_fingerprint") != index_identity
+    )
+    collection_name = COLLECTION_NAME
+    if full_rebuild:
+        collection_name = f"{COLLECTION_NAME}__build_{index_identity[:16]}"
+
+    collection = _get_collection_by_name(collection_name)
     existing_ids = set(collection.get(include=[])["ids"]) if collection.count() else set()
 
-    to_delete = existing_ids - desired.keys()
-    to_add_ids = list(desired.keys() - existing_ids)
+    if full_rebuild:
+        to_delete = existing_ids
+        to_add_ids = list(desired.keys())
+    else:
+        to_delete = existing_ids - desired.keys()
+        to_add_ids = list(desired.keys() - existing_ids)
 
     if to_delete:
         collection.delete(ids=list(to_delete))
@@ -106,17 +148,27 @@ def rebuild() -> dict:
         "total": collection.count(),
         "embed_seconds": embed_seconds,
     }
-    _write_build_record(stats["total"])
+    actual_ids = set(collection.get(include=[])["ids"]) if collection.count() else set()
+    if actual_ids != set(desired):
+        raise RuntimeError(
+            "rebuilt collection IDs do not match desired chunks: "
+            f"missing={sorted(set(desired) - actual_ids)}, extra={sorted(actual_ids - set(desired))}"
+        )
+
+    _write_build_record(
+        stats["total"], collection_name=collection_name, index_identity=index_identity
+    )
     return stats
 
 
-def _write_build_record(chunk_count: int) -> None:
+def _write_build_record(chunk_count: int, *, collection_name: str, index_identity: str) -> None:
     """Written last, after ingestion has already succeeded, and via a temp-file-then-replace swap
     so an interrupted rebuild can never leave a build.json that claims a build finished when it
     didn't — see src/provenance.py, which readiness/release tooling trusts this file to reflect."""
     from src.provenance import store_build_record
 
-    record = store_build_record(chunk_count=chunk_count)
+    record = store_build_record(chunk_count=chunk_count, index_identity=index_identity)
+    record["collection_name"] = collection_name
     CHROMA_DIR.mkdir(parents=True, exist_ok=True)
     fd, tmp_path = tempfile.mkstemp(dir=CHROMA_DIR, prefix=".build_", suffix=".json.tmp")
     try:

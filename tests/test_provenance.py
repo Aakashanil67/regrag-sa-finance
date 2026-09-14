@@ -25,6 +25,53 @@ def test_retrieval_k_changes_pipeline_fingerprint():
     assert provenance.pipeline_fingerprint(k=5) != provenance.pipeline_fingerprint(k=10)
 
 
+def test_pipeline_fingerprint_changes_when_retrieval_bytes_change_but_not_readme(
+    tmp_path, monkeypatch
+):
+    (tmp_path / "src").mkdir()
+    retrieve = tmp_path / "src" / "retrieve.py"
+    rag = tmp_path / "src" / "rag.py"
+    retrieve.write_text("retrieval-v1", encoding="utf-8")
+    rag.write_text("rag-v1", encoding="utf-8")
+    for name in ("requirements-api.txt", "requirements-dev.txt"):
+        (tmp_path / name).write_text(name, encoding="utf-8")
+    monkeypatch.setattr(provenance, "ROOT", tmp_path)
+    monkeypatch.setattr(provenance, "_PIPELINE_BEHAVIOR_FILES", ("src/retrieve.py", "src/rag.py"))
+    monkeypatch.setattr(provenance, "_INDEX_BEHAVIOR_FILES", ())
+    monkeypatch.setattr(provenance, "manifest_digest", lambda: "manifest")
+
+    first = provenance.pipeline_fingerprint(k=5)
+    retrieve.write_text("retrieval-v2", encoding="utf-8")
+    second = provenance.pipeline_fingerprint(k=5)
+    (tmp_path / "README.md").write_text("presentation-only", encoding="utf-8")
+    third = provenance.pipeline_fingerprint(k=5)
+
+    assert second != first
+    assert third == second
+
+
+def test_index_fingerprint_changes_when_chunker_or_model_revision_changes(tmp_path, monkeypatch):
+    (tmp_path / "src").mkdir()
+    chunking = tmp_path / "src" / "chunking.py"
+    chunking.write_text("chunker-v1", encoding="utf-8")
+    for name in ("requirements-api.txt", "requirements-dev.txt"):
+        (tmp_path / name).write_text(name, encoding="utf-8")
+    monkeypatch.setattr(provenance, "ROOT", tmp_path)
+    monkeypatch.setattr(provenance, "_PIPELINE_BEHAVIOR_FILES", ())
+    monkeypatch.setattr(provenance, "_INDEX_BEHAVIOR_FILES", ("src/chunking.py",))
+    monkeypatch.setattr(provenance, "manifest_digest", lambda: "manifest")
+    monkeypatch.setenv("EMBEDDING_MODEL_REVISION", "revision-a")
+
+    first = provenance.index_fingerprint()
+    chunking.write_text("chunker-v2", encoding="utf-8")
+    second = provenance.index_fingerprint()
+    monkeypatch.setenv("EMBEDDING_MODEL_REVISION", "revision-b")
+    third = provenance.index_fingerprint()
+
+    assert second != first
+    assert third != second
+
+
 def test_temperature_changes_pipeline_fingerprint(monkeypatch):
     monkeypatch.delenv("LLM_TEMPERATURE", raising=False)
     default_fp = provenance.pipeline_fingerprint(k=5)

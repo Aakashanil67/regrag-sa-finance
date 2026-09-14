@@ -60,14 +60,13 @@ class Chunk:
 
     def __post_init__(self):
         self.token_count = _token_count(self.text)
-        # page_start, not just (doc_id, text): legislative documents genuinely repeat identical
-        # passages at different pages (the NCA repeats definitional clauses across schedules) —
-        # hashing on text alone would collapse two real locations into one stored vector and
-        # silently keep whichever page happened to be ingested first, breaking that location's
-        # citation. Not index: an edit earlier in the document would shift every later chunk's
-        # index and defeat idempotent re-ingestion for content that didn't actually change.
+        # Location metadata is part of the identity: legislative documents genuinely repeat
+        # identical passages at different pages, and a chunk can span a different page range or
+        # section after extraction changes. Hashing only text/page_start would silently retain
+        # stale citation metadata in the vector store. Not index: an edit earlier in the document
+        # would shift every later chunk index and defeat idempotent re-ingestion unnecessarily.
         self.chunk_hash = hashlib.sha256(
-            f"{self.doc_id}:{self.page_start}:{self.text}".encode()
+            f"{self.doc_id}:{self.page_start}:{self.page_end}:{self.section or ''}:{self.text}".encode()
         ).hexdigest()
 
 
