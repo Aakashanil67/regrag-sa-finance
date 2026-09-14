@@ -158,7 +158,6 @@ def _split_oversized_paragraph(
     sentences = _SENTENCE_SPLIT.split(text)
     pieces: list[tuple[str, int, str | None]] = []
     current: list[str] = []
-    current_tokens = 0
 
     for sentence in sentences:
         sentence_tokens = _packing_token_count(sentence, tokenizer)
@@ -168,7 +167,7 @@ def _split_oversized_paragraph(
         if sentence_tokens > body_budget:
             if current:
                 pieces.append((" ".join(current), page, section))
-                current, current_tokens = [], 0
+                current = []
             pieces.extend(
                 (piece, page, section)
                 for piece in _hard_split_by_tokens(
@@ -180,13 +179,17 @@ def _split_oversized_paragraph(
             )
             continue
 
-        if current and current_tokens + sentence_tokens > body_budget:
+        candidate = " ".join([*current, sentence]) if current else sentence
+        if current and _packing_token_count(candidate, tokenizer) > body_budget:
             pieces.append((" ".join(current), page, section))
             overlap_text = _overlap_tail(" ".join(current), overlap_tokens, tokenizer)
             current = [overlap_text] if overlap_text else []
-            current_tokens = _packing_token_count(overlap_text, tokenizer) if overlap_text else 0
+            if (
+                current
+                and _packing_token_count(" ".join([*current, sentence]), tokenizer) > body_budget
+            ):
+                current = []
         current.append(sentence)
-        current_tokens += sentence_tokens
 
     if current:
         pieces.append((" ".join(current), page, section))
@@ -276,7 +279,7 @@ def chunk_document(
 
     for element in elements:
         if element.kind == "heading":
-            if current_tokens >= CHUNK_TARGET_TOKENS * _HEADING_FLUSH_FRACTION:
+            if current_tokens >= target_tokens * _HEADING_FLUSH_FRACTION:
                 flush()
             current_section = element.text
             continue
@@ -315,14 +318,29 @@ def chunk_document(
             current_page_end = last_piece_page
             continue
 
-        if current_tokens + paragraph_tokens > body_budget and current_parts:
+        candidate = " ".join([*current_parts, element.text]) if current_parts else element.text
+        exceeds_budget = (
+            _packing_token_count(candidate, tokenizer) > body_budget
+            if tokenizer is not None
+            else current_tokens + paragraph_tokens > body_budget
+        )
+        if exceeds_budget and current_parts:
             flush()
+            if tokenizer is not None and current_parts:
+                overlap_candidate = " ".join([*current_parts, element.text])
+                if _packing_token_count(overlap_candidate, tokenizer) > body_budget:
+                    current_parts, current_tokens = [], 0
+                    current_page_start = element.page
 
         if current_page_start is None:
             current_page_start = element.page
         current_page_end = element.page
         current_parts.append(element.text)
-        current_tokens += paragraph_tokens
+        current_tokens = (
+            _packing_token_count(" ".join(current_parts), tokenizer)
+            if tokenizer is not None
+            else current_tokens + paragraph_tokens
+        )
 
     flush()
     return [c for c in chunks if c.text.strip()]

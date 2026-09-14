@@ -46,6 +46,17 @@ class FakeWordpieceTokenizer:
         return " ".join(self._id_to_token[token_id] for token_id in body)
 
 
+class BoundaryExpansionTokenizer(FakeWordpieceTokenizer):
+    """Synthetic tokenizer whose joined text needs extra boundary tokens."""
+
+    def encode(self, text, add_special_tokens=True, truncation=False):
+        tokens = super().encode(text, add_special_tokens=add_special_tokens, truncation=truncation)
+        if len(text.split()) >= 6:
+            insertion = len(tokens) - (1 if add_special_tokens else 0)
+            tokens[insertion:insertion] = list(range(2000, 2010))
+        return tokens
+
+
 def test_tokenizer_budget_includes_special_tokens_and_legacy_count_remains_available():
     tokenizer = FakeWordpieceTokenizer()
     chunks = chunk_document(
@@ -108,6 +119,21 @@ def test_tokenizer_overlap_must_be_smaller_than_budget():
             target_tokens=8,
             overlap_tokens=8,
         )
+
+
+def test_tokenizer_budget_checks_joined_text_not_only_element_token_sums():
+    chunks = chunk_document(
+        "doc-a",
+        [
+            Element(kind="paragraph", text="one two three", page=1),
+            Element(kind="paragraph", text="four five six", page=1),
+        ],
+        tokenizer=BoundaryExpansionTokenizer(),
+        target_tokens=10,
+        overlap_tokens=0,
+    )
+
+    assert all(chunk.embedding_token_count <= 10 for chunk in chunks)
 
 
 def test_store_metadata_records_legacy_and_embedding_token_counts():
