@@ -29,9 +29,11 @@ from pathlib import Path
 
 from evals.stats import wilson_interval
 from src.config import (
+    DEFAULT_ANTHROPIC_MODEL,
     EVAL_PROTOCOL_PATH,
     GOLDEN_DEV_PATH,
     GOLDEN_HOLDOUT_PATH,
+    RAG_MAX_ANSWER_TOKENS,
     REPORTS_DIR,
     RETRIEVAL_DEV_PATH,
     RETRIEVAL_HOLDOUT_PATH,
@@ -42,6 +44,9 @@ _GOLDEN_PATHS = {"dev": GOLDEN_DEV_PATH, "holdout": GOLDEN_HOLDOUT_PATH}
 _RETRIEVAL_PATHS = {"dev": RETRIEVAL_DEV_PATH, "holdout": RETRIEVAL_HOLDOUT_PATH}
 _SCORED_TYPES = {"factual", "multi-doc"}
 _RAGAS_METRIC_NAMES = ("faithfulness", "answer_relevancy", "context_precision", "context_recall")
+GENERATION_INPUT_TOKENS = 8192
+JUDGE_INPUT_TOKENS = 4096
+JUDGE_OUTPUT_TOKENS = 512
 
 RUNS_DIR = REPORTS_DIR / "runs"
 EVAL_HISTORY_CSV = (
@@ -67,6 +72,58 @@ def assert_split_runnable(split: str) -> None:
         raise HoldoutNotSealedError(
             "evals/protocol.json is not sealed — the holdout cannot be run until it is"
         )
+
+
+def dry_run_preflight(protocol_path: Path, *, max_cost_usd: float) -> dict:
+    """Validate a sealed protocol and estimate its provider calls without constructing a client."""
+    from evals.sealed_run import BudgetExceeded, estimate_cost_usd, validate_protocol
+    from src.llm import effective_llm_settings
+
+    if max_cost_usd <= 0:
+        raise ValueError("dry-run requires a positive --max-cost-usd cap")
+    validated = validate_protocol(Path(protocol_path))
+    golden = _load_golden(validated.golden_path)
+    retrieval = json.loads(validated.retrieval_path.read_text(encoding="utf-8"))
+    answerable = sum(item["type"] != "unanswerable" for item in golden)
+    settings = effective_llm_settings()
+    generation_estimate = estimate_cost_usd(
+        settings.model, GENERATION_INPUT_TOKENS, RAG_MAX_ANSWER_TOKENS
+    )
+    judge_estimate = estimate_cost_usd(
+        DEFAULT_ANTHROPIC_MODEL, JUDGE_INPUT_TOKENS, JUDGE_OUTPUT_TOKENS
+    )
+    estimated_cost = len(golden) * generation_estimate + answerable * 4 * judge_estimate
+    if estimated_cost > max_cost_usd + 1e-12:
+        raise BudgetExceeded(
+            f"dry-run estimate ${estimated_cost:.6f} exceeds cap ${max_cost_usd:.6f}"
+        )
+    return {
+        "protocol": str(Path(protocol_path)),
+        "counts": {
+            "golden": len(golden),
+            "answerable": answerable,
+            "unanswerable": len(golden) - answerable,
+            "retrieval": len(retrieval),
+        },
+        "calls": {
+            "generation": len(golden),
+            "judge_metric_subcalls": answerable * 4,
+            "provider_requests": len(golden) + answerable * 4,
+        },
+        "models": {
+            "answer": {"provider": settings.provider, "model": settings.model},
+            "judge": {"provider": "anthropic", "model": DEFAULT_ANTHROPIC_MODEL},
+        },
+        "token_caps": {
+            "generation_input_estimate": GENERATION_INPUT_TOKENS,
+            "generation_output_cap": RAG_MAX_ANSWER_TOKENS,
+            "judge_input_estimate": JUDGE_INPUT_TOKENS,
+            "judge_output_cap": JUDGE_OUTPUT_TOKENS,
+        },
+        "estimated_cost_usd": estimated_cost,
+        "max_cost_usd": max_cost_usd,
+        "provider_constructed": False,
+    }
 
 
 def run_item(item: dict, answer_fn) -> dict:
@@ -680,7 +737,23 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path, default=RUNS_DIR)
     parser.add_argument("--max-cost-usd", type=float)
     parser.add_argument("--resume")
+    parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
+
+    if args.dry_run:
+        if args.split != "holdout" or args.protocol is None:
+            print(
+                "PREFLIGHT FAILED: --dry-run requires --split holdout and --protocol",
+                file=sys.stderr,
+            )
+            raise SystemExit(1)
+        try:
+            summary = dry_run_preflight(args.protocol, max_cost_usd=args.max_cost_usd or 0.0)
+        except (OSError, ValueError) as exc:
+            print(f"PREFLIGHT FAILED: {exc}", file=sys.stderr)
+            raise SystemExit(1) from exc
+        print(json.dumps({"dry_run": True, **summary}, indent=2, sort_keys=True))
+        return
 
     validated = None
     ledger = None

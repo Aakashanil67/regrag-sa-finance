@@ -210,6 +210,31 @@ def test_run_state_contains_only_non_secret_provenance(tmp_path):
     assert "answer" not in state
 
 
+def test_dry_run_preflight_counts_budget_without_provider_construction(tmp_path, monkeypatch):
+    path, _, _, _, manifest, build = _write_protocol(tmp_path)
+    from evals import sealed_run
+
+    monkeypatch.setattr(sealed_run, "pipeline_fingerprint", lambda k: "pipeline-a")
+    monkeypatch.setattr(sealed_run, "manifest_digest", lambda: sha256_file(manifest))
+    monkeypatch.setattr(sealed_run, "index_fingerprint", lambda: "index-a")
+    monkeypatch.setattr(sealed_run, "CHROMA_DIR", tmp_path)
+
+    summary = run_release.dry_run_preflight(path, max_cost_usd=1.0)
+
+    assert summary["counts"] == {
+        "golden": 2,
+        "answerable": 1,
+        "unanswerable": 1,
+        "retrieval": 1,
+    }
+    assert summary["calls"] == {
+        "generation": 2,
+        "judge_metric_subcalls": 4,
+        "provider_requests": 6,
+    }
+    assert summary["estimated_cost_usd"] > 0
+
+
 def _result(question):
     return RAGResult(
         question=question,
