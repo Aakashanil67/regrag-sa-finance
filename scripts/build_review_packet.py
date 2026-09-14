@@ -37,6 +37,18 @@ returned (useful for a refused item — was the right material even available), 
 answer this project's author wrote when the holdout was built.
 """
 
+_HEADER_V2 = """# Schema-2 evaluation review packet
+
+This packet is rendered from the run artifact alone. It contains the exact ordered context
+supplied to generation, the formatted context string, saved citations, source notices, and the
+reference data recorded with each item. It does not open the current vector store or reconstruct
+evidence from a later corpus.
+
+Context entries are excerpts supplied to generation, not complete PDF pages. A citation is
+structurally verifiable here only when its document and page are covered by one of the saved
+context entries; semantic support still requires domain review.
+"""
+
 
 def _dedupe_in_order(pairs):
     seen = set()
@@ -139,8 +151,96 @@ def _render_item(
     return lines
 
 
+def _render_saved_item(item: dict) -> list[str]:
+    """Render a schema-2 item without consulting Chroma or the current corpus."""
+    required = {"contexts", "formatted_context", "reference_answer", "reference_sources"}
+    missing = sorted(required - set(item))
+    if missing:
+        raise ValueError(f"schema-2 item {item.get('id')} is missing saved fields: {missing}")
+
+    lines = [f"## {item['id']} ({item.get('type', 'unknown')}): {item['question']}", ""]
+    lines.append("**Served answer:**")
+    lines.append("")
+    lines.append(item.get("served_answer") or "(no served answer — refusal)")
+    lines.append("")
+    lines.append(f"**Refusal reason:** {item.get('refusal_reason') or 'none'}")
+    lines.append("")
+    if item.get("raw_model_output") is not None:
+        lines.append("**Raw model output:**")
+        lines.append("")
+        lines.append(item["raw_model_output"])
+        lines.append("")
+
+    lines.append(f"**Reference answer:** {item.get('reference_answer') or 'not recorded'}")
+    lines.append("")
+    citations = item.get("citations", [])
+    contexts = item["contexts"]
+    if citations:
+        lines.append("**Saved generation-context excerpts for cited pages:**")
+        lines.append("")
+        for citation in _dedupe_in_order((c["doc_id"], c["page"]) for c in citations):
+            doc_id, page = citation
+            matches = [
+                context
+                for context in contexts
+                if context["doc_id"] == doc_id
+                and context["page_start"] <= page <= context["page_end"]
+            ]
+            if not matches:
+                lines.append(
+                    f"- `{doc_id}` p.{page}: **not covered by the saved generation context** "
+                    "— unverified citation"
+                )
+                continue
+            for context in matches:
+                excerpt = context["text"].replace("\n", " ").strip()
+                pages = (
+                    f"p.{context['page_start']}"
+                    if context["page_start"] == context["page_end"]
+                    else f"p.{context['page_start']}-{context['page_end']}"
+                )
+                lines.append(f"- `{context['doc_id']}` {pages} (saved context excerpt):")
+                lines.append(f"  - > {excerpt}")
+        lines.append("")
+
+    lines.append(
+        "**Retrieved candidates recorded by the run:** "
+        + ", ".join(item.get("retrieved_chunk_ids", []))
+        if item.get("retrieved_chunk_ids")
+        else "**Retrieved candidates recorded by the run:** none"
+    )
+    lines.append("")
+    lines.append("**Formatted context supplied to generation:**")
+    lines.append("")
+    lines.append("```")
+    lines.append(item["formatted_context"] or "(empty)")
+    lines.append("```")
+    lines.append("")
+    if item.get("source_notices"):
+        lines.append("**Source notices:**")
+        for notice in item["source_notices"]:
+            lines.append(f"- ({notice['kind']}) {notice['text']}")
+    else:
+        lines.append("**Source notices:** none")
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+    return lines
+
+
 def build_packet(run_path: Path, golden_path: Path = GOLDEN_HOLDOUT_PATH) -> str:
     run = load_run(run_path)
+    if run.schema_version >= 2:
+        lines = [
+            _HEADER_V2,
+            f"**Run:** `{run.run_id}` | **Label:** `{run.label}` | **Status:** {run.status} | "
+            f"**Items:** {len(run.items)}",
+            "",
+        ]
+        for item in run.items:
+            lines += _render_saved_item(item)
+        return "\n".join(lines) + "\n"
+
     reference_by_id = {
         row["id"]: row
         for row in (

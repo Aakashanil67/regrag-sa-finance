@@ -137,6 +137,9 @@ class RAGResult:
     llm_response: LLMResponse
     source_notices: list[SourceNotice] = field(default_factory=list)
     refusal_reason: RefusalReason | None = None
+    # Exact formatted context supplied to generation. Kept internal and optional so cached and
+    # synthetic results remain compatible; schema-2 evaluation artifacts persist it when present.
+    formatted_context: str | None = None
 
 
 @dataclass(frozen=True)
@@ -353,9 +356,11 @@ def answer_question(question: str, k: int = 5) -> RAGResult:
                 text="", model="none", input_tokens=0, output_tokens=0, cost_usd=0.0
             ),
             refusal_reason=RefusalReason.NO_CONTEXT,
+            formatted_context="",
         )
 
-    user_message = f"{_format_context(chunks)}\n\nQuestion: {question}"
+    formatted_context = _format_context(chunks)
+    user_message = f"{formatted_context}\n\nQuestion: {question}"
     llm_response = complete(system=_SYSTEM_PROMPT, user=user_message)
 
     validated = validate_generated_answer(llm_response.text, chunks)
@@ -371,4 +376,5 @@ def answer_question(question: str, k: int = 5) -> RAGResult:
         llm_response=llm_response,
         source_notices=notices,
         refusal_reason=validated.refusal_reason,
+        formatted_context=formatted_context,
     )

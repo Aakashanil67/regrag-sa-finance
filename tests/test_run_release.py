@@ -220,6 +220,7 @@ def test_run_item_marks_an_answered_answerable_item_as_passing_the_contract():
     assert row["served_answer"] is not None
     assert row["reference_answerable"] is True
     assert row["structural_validator_pass"] is True
+    assert row["contexts"][0]["text"] == "text"
 
 
 def test_run_item_marks_a_correct_refusal_on_an_unanswerable_item_as_passing():
@@ -338,6 +339,28 @@ async def test_a_refused_answerable_item_is_excluded_from_ragas_not_scored_as_ze
 
     assert run.ragas_scored_count == 2  # f2 and m1; f1's refusal is excluded, not scored as 0
     assert run.ragas_excluded_refusals == [{"id": "f1", "question": "f1?"}]
+
+
+@pytest.mark.asyncio
+async def test_judge_receives_the_saved_generation_context_not_a_fresh_retrieval(dev_golden):
+    captured = []
+
+    def answer_fn(question):
+        result = _result(question)
+        result.retrieved_chunks = [
+            RetrievedChunk("saved", "doc_a", "exact context A", 1, 1, "", 0.9)
+        ]
+        result.formatted_context = "(doc_a, p.1)\nexact context A"
+        return result
+
+    async def judge(question, answer, contexts, reference):
+        captured.append(contexts)
+        return await _fake_judge_success(question, answer, contexts, reference)
+
+    await run_release.execute_run("dev", "test-label", answer_fn, judge)
+
+    assert captured
+    assert all(contexts == ["exact context A"] for contexts in captured)
 
 
 def test_write_run_artifact_writes_a_json_file_under_the_runs_dir(tmp_path):

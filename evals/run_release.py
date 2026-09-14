@@ -107,7 +107,21 @@ def run_item(item: dict, answer_fn) -> dict:
         "reference_answerability": (
             "answerable" if item["type"] != "unanswerable" else "unanswerable"
         ),
+        "reference_answer": item.get("reference_answer"),
+        "reference_sources": item.get("source", []),
         "citations": citations,
+        "contexts": [
+            {
+                "chunk_id": c.chunk_id,
+                "doc_id": c.doc_id,
+                "page_start": c.page_start,
+                "page_end": c.page_end,
+                "section": c.section,
+                "text": c.text,
+            }
+            for c in result.retrieved_chunks
+        ],
+        "formatted_context": getattr(result, "formatted_context", None),
         "retrieved_chunk_ids": [c.chunk_id for c in result.retrieved_chunks],
         "citation_contract_pass": citation_contract_pass,
         "structural_validator_pass": bool(not result.refused),
@@ -234,8 +248,8 @@ async def score_ragas(
         try:
             metric_values = await judge_fn(
                 item["question"],
-                run_result["answer"],
-                run_result["retrieved_chunk_ids"],
+                run_result.get("served_answer") or run_result["answer"],
+                [context["text"] for context in run_result.get("contexts", [])],
                 item["reference_answer"],
             )
         except Exception as exc:  # noqa: BLE001 - a judge failure is data for the run, not a crash
@@ -555,10 +569,7 @@ def main() -> None:
         "context_recall": ContextRecall(llm=llm),
     }
 
-    async def judge_fn(question, answer, chunk_ids, reference):
-        from src.retrieve import retrieve
-
-        contexts = [c.text for c in retrieve(question, k=5, rerank=True)]
+    async def judge_fn(question, answer, contexts, reference):
         faithfulness, relevancy, precision, recall = await asyncio.gather(
             metrics["faithfulness"].ascore(
                 user_input=question, response=answer, retrieved_contexts=contexts

@@ -271,3 +271,72 @@ def test_header_states_the_holdout_is_sealed_and_should_not_be_edited(tmp_path, 
 
     assert "sealed" in packet.lower()
     assert "protocol" in packet.lower()
+
+
+def test_schema2_packet_uses_saved_context_without_opening_the_current_store(tmp_path, monkeypatch):
+    from evals.run_release import compute_metrics_v2
+
+    item = {
+        "id": "v2-1",
+        "type": "factual",
+        "question": "What did generation see?",
+        "answer": "Saved answer [doc_a, p.1]",
+        "served_answer": "Saved answer [doc_a, p.1]",
+        "raw_model_output": "Saved answer [doc_a, p.1]",
+        "refused": False,
+        "refusal_reason": None,
+        "reference_answerable": True,
+        "reference_answerability": "answerable",
+        "reference_answer": "The saved reference.",
+        "reference_sources": [{"doc_id": "doc_a", "page": 1}],
+        "citation_contract_pass": True,
+        "structural_validator_pass": True,
+        "structural_validator_outcome": "passed",
+        "all_citations_verified": True,
+        "citations": [{"doc_id": "doc_a", "page": 1, "verified": True}],
+        "contexts": [
+            {
+                "chunk_id": "saved-c1",
+                "doc_id": "doc_a",
+                "page_start": 1,
+                "page_end": 1,
+                "section": "",
+                "text": "The exact source text shown during generation.",
+            }
+        ],
+        "formatted_context": "(doc_a, p.1)\nThe exact source text shown during generation.",
+        "retrieved_chunk_ids": ["saved-c1"],
+        "source_notices": [],
+    }
+    payload = {
+        "schema_version": 2,
+        "run_id": "holdout-v2packet",
+        "split": "holdout",
+        "label": "v2",
+        "started_at": "t0",
+        "finished_at": "t1",
+        "status": "complete",
+        "holdout_sha256": "h",
+        "pipeline_fingerprint": "fp",
+        "manifest_sha256": "mf",
+        "structural_metrics": compute_metrics_v2([item]),
+        "ragas_means": None,
+        "ragas_scored_count": 0,
+        "ragas_excluded_refusals": [],
+        "ragas_failures": [],
+        "items": [item],
+        "error": None,
+    }
+    run_path = tmp_path / "schema2.json"
+    run_path.write_text(json.dumps(payload), encoding="utf-8")
+    monkeypatch.setattr(
+        "scripts.build_review_packet.get_collection",
+        lambda: (_ for _ in ()).throw(AssertionError("schema-2 packet opened Chroma")),
+    )
+
+    packet = build_packet(run_path, _write_golden(tmp_path, []))
+
+    assert "The exact source text shown during generation." in packet
+    assert "Formatted context supplied to generation" in packet
+    assert "saved-c1" in packet
+    assert "The saved reference." in packet
