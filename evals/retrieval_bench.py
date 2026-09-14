@@ -36,6 +36,31 @@ def _first_hit_rank(
     return None
 
 
+def source_coverage(results: list[RetrievedChunk], required_sources: list[dict]) -> dict:
+    """Return page-aware any/all coverage and first relevant rank for one question.
+
+    A multi-document item can therefore be an any-source hit while still failing its all-source
+    requirement. Empty source lists are treated as unsupported rather than as vacuous passes.
+    """
+    hit_flags = [
+        any(_is_hit(chunk, source["doc_id"], source["page"]) for chunk in results)
+        for source in required_sources
+    ]
+    relevant_ranks = [
+        rank
+        for rank, chunk in enumerate(results, start=1)
+        if any(_is_hit(chunk, source["doc_id"], source["page"]) for source in required_sources)
+    ]
+    first_rank = min(relevant_ranks) if relevant_ranks else None
+    return {
+        "required_source_hits": hit_flags,
+        "any_required_source_hit": bool(required_sources) and any(hit_flags),
+        "all_required_source_hit": bool(required_sources) and all(hit_flags),
+        "first_relevant_rank": first_rank,
+        "first_relevant_mrr": (1 / first_rank if first_rank else 0.0),
+    }
+
+
 def run_benchmark(split: str = "dev") -> dict:
     questions = json.loads(_SPLIT_PATHS[split].read_text(encoding="utf-8"))
 

@@ -25,7 +25,7 @@ from src import config
 from src.chunking import chunk_document
 from src.ingest import extract_elements
 from src.retrieve import retrieve
-from src.store import embed_texts
+from src.store import _chunk_metadata, embed_texts
 
 SWEEP_CHROMA_DIR = config.ROOT / "chroma_sweep"
 CHUNK_SIZES = (300, 500, 800)
@@ -33,31 +33,42 @@ K_VALUES = (3, 5, 10)
 MAX_K = max(K_VALUES)
 
 
-def _build_variant_collection(chunk_target_tokens: int):
-    """Re-chunk the whole corpus at the given target size and embed it into a fresh, uniquely
-    named throwaway collection. Monkeypatches config.CHUNK_TARGET_TOKENS for the duration of
-    chunking only — chunking.py reads it as a module global at call time, so this is enough to
-    steer chunk_document() without touching the production module's own state."""
-    import src.chunking as chunking_module
+def _build_isolated_collection(
+    chunk_target_tokens: int,
+    *,
+    chunk_overlap_tokens: int,
+    tokenizer=None,
+    root_dir=SWEEP_CHROMA_DIR,
+    collection_name: str | None = None,
+):
+    """Build one isolated corpus collection for a bounded retrieval experiment.
 
-    original = chunking_module.CHUNK_TARGET_TOKENS
-    chunking_module.CHUNK_TARGET_TOKENS = chunk_target_tokens
-    try:
-        manifest = json.loads(config.MANIFEST_PATH.read_text(encoding="utf-8"))
-        all_chunks = []
-        for entry in manifest:
-            pdf_path = config.CORPUS_DIR / entry["filename"]
-            if not pdf_path.exists():
-                continue
-            elements = extract_elements(pdf_path)
-            all_chunks.extend(chunk_document(entry["id"], elements))
-    finally:
-        chunking_module.CHUNK_TARGET_TOKENS = original
+    This is the shared construction path for the historical chunk-size sweep and the Stage B
+    three-variant comparison. The production Chroma directory is never touched.
+    """
+    start = time.perf_counter()
+    manifest = json.loads(config.MANIFEST_PATH.read_text(encoding="utf-8"))
+    all_chunks = []
+    for entry in manifest:
+        pdf_path = config.CORPUS_DIR / entry["filename"]
+        if not pdf_path.exists():
+            continue
+        elements = extract_elements(pdf_path)
+        all_chunks.extend(
+            chunk_document(
+                entry["id"],
+                elements,
+                tokenizer=tokenizer,
+                target_tokens=chunk_target_tokens,
+                overlap_tokens=chunk_overlap_tokens,
+            )
+        )
 
+    root_dir.mkdir(parents=True, exist_ok=True)
     client = chromadb.PersistentClient(
-        path=str(SWEEP_CHROMA_DIR), settings=Settings(anonymized_telemetry=False)
+        path=str(root_dir), settings=Settings(anonymized_telemetry=False)
     )
-    collection_name = f"sweep_{chunk_target_tokens}"
+    collection_name = collection_name or f"sweep_{chunk_target_tokens}"
     try:
         client.delete_collection(collection_name)
     except ValueError:
@@ -69,17 +80,17 @@ def _build_variant_collection(chunk_target_tokens: int):
         ids=[c.chunk_hash for c in all_chunks],
         embeddings=embeddings,
         documents=[c.text for c in all_chunks],
-        metadatas=[
-            {
-                "doc_id": c.doc_id,
-                "page_start": c.page_start,
-                "page_end": c.page_end,
-                "section": c.section or "",
-            }
-            for c in all_chunks
-        ],
+        metadatas=[_chunk_metadata(c) for c in all_chunks],
     )
-    return collection, len(all_chunks)
+    return collection, len(all_chunks), time.perf_counter() - start, all_chunks
+
+
+def _build_variant_collection(chunk_target_tokens: int):
+    collection, count, _, _ = _build_isolated_collection(
+        chunk_target_tokens,
+        chunk_overlap_tokens=config.CHUNK_OVERLAP_TOKENS,
+    )
+    return collection, count
 
 
 def _is_hit(chunk, expected_doc_id: str, expected_page: int) -> bool:
