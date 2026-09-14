@@ -136,6 +136,24 @@ def test_tokenizer_budget_checks_joined_text_not_only_element_token_sums():
     assert all(chunk.embedding_token_count <= 10 for chunk in chunks)
 
 
+def test_legacy_sentence_packing_keeps_tiktoken_sum_semantics(monkeypatch):
+    def legacy_count(text, tokenizer=None):
+        del tokenizer
+        words = len(text.split())
+        return words + (10 if words >= 6 else 0)
+
+    monkeypatch.setattr(chunking, "_packing_token_count", legacy_count)
+    chunks = chunk_document(
+        "doc-a",
+        [Element(kind="paragraph", text="one two three. four five six.", page=1)],
+        target_tokens=10,
+        overlap_tokens=0,
+    )
+
+    assert len(chunks) == 1
+    assert "four five six" in chunks[0].text
+
+
 def test_store_metadata_records_legacy_and_embedding_token_counts():
     chunk = Chunk("doc-a", 0, "same text", 1, 1, "section", embedding_token_count=7)
 

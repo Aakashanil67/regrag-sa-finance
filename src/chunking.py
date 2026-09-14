@@ -158,6 +158,7 @@ def _split_oversized_paragraph(
     sentences = _SENTENCE_SPLIT.split(text)
     pieces: list[tuple[str, int, str | None]] = []
     current: list[str] = []
+    current_tokens = 0
 
     for sentence in sentences:
         sentence_tokens = _packing_token_count(sentence, tokenizer)
@@ -167,7 +168,7 @@ def _split_oversized_paragraph(
         if sentence_tokens > body_budget:
             if current:
                 pieces.append((" ".join(current), page, section))
-                current = []
+                current, current_tokens = [], 0
             pieces.extend(
                 (piece, page, section)
                 for piece in _hard_split_by_tokens(
@@ -180,16 +181,25 @@ def _split_oversized_paragraph(
             continue
 
         candidate = " ".join([*current, sentence]) if current else sentence
-        if current and _packing_token_count(candidate, tokenizer) > body_budget:
+        exceeds_budget = (
+            _packing_token_count(candidate, tokenizer) > body_budget
+            if tokenizer is not None
+            else current_tokens + sentence_tokens > body_budget
+        )
+        if current and exceeds_budget:
             pieces.append((" ".join(current), page, section))
             overlap_text = _overlap_tail(" ".join(current), overlap_tokens, tokenizer)
             current = [overlap_text] if overlap_text else []
-            if (
-                current
-                and _packing_token_count(" ".join([*current, sentence]), tokenizer) > body_budget
-            ):
-                current = []
+            current_tokens = _packing_token_count(overlap_text, tokenizer) if overlap_text else 0
+            if tokenizer is not None and current:
+                if _packing_token_count(" ".join([*current, sentence]), tokenizer) > body_budget:
+                    current, current_tokens = [], 0
         current.append(sentence)
+        current_tokens = (
+            _packing_token_count(" ".join(current), tokenizer)
+            if tokenizer is not None
+            else current_tokens + sentence_tokens
+        )
 
     if current:
         pieces.append((" ".join(current), page, section))
