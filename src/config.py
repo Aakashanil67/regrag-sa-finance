@@ -61,6 +61,7 @@ TOKENIZER_AWARE_CHUNK_OVERLAP_TOKENS = 32
 # --- retrieval / reranking ---
 CROSS_ENCODER_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 RERANK_CANDIDATE_POOL_SIZE = 20  # how many embedding-search candidates the reranker sees
+RETRIEVAL_STRATEGY = "semantic"  # production default; named_balanced is an experiment variant
 
 # --- LLM ---
 DEFAULT_ANTHROPIC_MODEL = "claude-haiku-4-5"

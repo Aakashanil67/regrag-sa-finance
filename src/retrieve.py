@@ -28,11 +28,19 @@ collection — so it only reranks the bi-encoder's top `RERANK_CANDIDATE_POOL_SI
 everything.
 """
 
+import json
+import re
 from dataclasses import dataclass
+from functools import lru_cache
 
 import numpy as np
 
-from src.config import CROSS_ENCODER_MODEL_NAME, RERANK_CANDIDATE_POOL_SIZE
+from src.config import (
+    CROSS_ENCODER_MODEL_NAME,
+    MANIFEST_PATH,
+    RERANK_CANDIDATE_POOL_SIZE,
+    RETRIEVAL_STRATEGY,
+)
 from src.store import embed_texts, get_collection
 
 _cross_encoder = None
@@ -56,6 +64,19 @@ class RetrievedChunk:
     page_end: int
     section: str
     score: float
+
+
+class RetrievedChunks(list[RetrievedChunk]):
+    """List-compatible retrieval output with named-source coverage metadata."""
+
+    def __init__(self, chunks=(), *, coverage=None):
+        super().__init__(chunks)
+        self.coverage = coverage or {
+            "requested": [],
+            "resolved": [],
+            "represented": list(dict.fromkeys(chunk.doc_id for chunk in self)),
+            "incomplete": False,
+        }
 
 
 def _fetch_candidates(
@@ -98,27 +119,157 @@ def _fetch_candidates(
     ]
 
 
+def _normalise_name(value: str) -> str:
+    return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9]+", " ", value.lower())).strip()
+
+
+def _entry_aliases(entry: dict) -> set[str]:
+    title = entry.get("title", "")
+    aliases = {entry["id"], title}
+    aliases.add(title.split(":", 1)[0])
+    title_without_parenthetical = re.sub(r"\s*\([^)]*\)", "", title)
+    title_without_year = re.sub(r"\b(?:19|20)\d{2}\b", "", title_without_parenthetical)
+    aliases.update(
+        {
+            title_without_parenthetical,
+            title_without_year,
+            title_without_parenthetical.split(":", 1)[-1],
+            title_without_year.split(":", 1)[-1],
+            re.sub("over(?:-the-| )counter", "OTC", title_without_year, flags=re.IGNORECASE),
+        }
+    )
+    year_match = re.search(r"\b(19|20)\d{2}\b", title)
+    subject_match = re.search(r"\b(IFRS\s+\d+)\b", title, re.IGNORECASE)
+    if year_match and subject_match and "issued text" in title.lower():
+        aliases.add(f"{year_match.group(0)} issued {subject_match.group(1)} text")
+    for match in re.finditer(
+        r"\b(directive|guidance\s+note|guideline|circular)\s+([dgc]?)\s*(\d{1,3})\s*(?:/|of)\s*(\d{4})\b",
+        title,
+        re.IGNORECASE,
+    ):
+        kind, prefix, number, year = match.groups()
+        kind = kind.lower().replace("  ", " ")
+        aliases.update(
+            {
+                f"{kind} {number}/{year}",
+                f"{kind} {prefix}{number}/{year}",
+                f"{prefix or kind[0]}{number}/{year}",
+            }
+        )
+    return {_normalise_name(alias) for alias in aliases if alias}
+
+
+def resolve_named_documents(query: str, manifest: list[dict]) -> list[str]:
+    """Resolve explicit, manifest-backed document names without guessing bare numbers.
+
+    Aliases are only accepted when they map to one manifest entry. This intentionally leaves a
+    query such as ``3/2020`` unresolved: a number/year without an instrument type is ambiguous in
+    a regulatory corpus and must not silently select a document.
+    """
+    alias_to_ids: dict[str, set[str]] = {}
+    for entry in manifest:
+        for alias in _entry_aliases(entry):
+            alias_to_ids.setdefault(alias, set()).add(entry["id"])
+
+    normalised_query = _normalise_name(query)
+    padded_query = f" {normalised_query} "
+    matches: set[str] = set()
+    for alias, ids in alias_to_ids.items():
+        if len(ids) != 1:
+            continue
+        if f" {alias} " in padded_query:
+            matches.update(ids)
+
+    manifest_order = {entry["id"]: index for index, entry in enumerate(manifest)}
+    return sorted(matches, key=lambda doc_id: manifest_order[doc_id])
+
+
+@lru_cache(maxsize=1)
+def _manifest() -> list[dict]:
+    return json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+
+
+def _rerank_candidates(query: str, candidates: list[RetrievedChunk]) -> list[RetrievedChunk]:
+    if not candidates:
+        return candidates
+    cross_encoder = _get_cross_encoder()
+    pairs = [(query, candidate.text) for candidate in candidates]
+    cross_scores = cross_encoder.predict(pairs)
+    for chunk, score in zip(candidates, cross_scores, strict=True):
+        chunk.score = float(score)
+    candidates.sort(key=lambda chunk: (-chunk.score, chunk.chunk_id))
+    return candidates
+
+
+def _named_balanced(
+    query: str,
+    *,
+    k: int,
+    rerank: bool,
+    collection,
+) -> RetrievedChunks:
+    requested = resolve_named_documents(query, _manifest())
+    pool_size = max(k, RERANK_CANDIDATE_POOL_SIZE) if rerank else k
+    global_candidates = _fetch_candidates(query, pool_size, None, collection=collection)
+    named_candidates = (
+        _fetch_candidates(query, pool_size, requested, collection=collection) if requested else []
+    )
+
+    deduped: dict[str, RetrievedChunk] = {}
+    for candidate in global_candidates + named_candidates:
+        deduped.setdefault(candidate.chunk_id, candidate)
+    candidates = list(deduped.values())
+    if rerank:
+        _rerank_candidates(query, candidates)
+    else:
+        candidates.sort(key=lambda chunk: (-chunk.score, chunk.chunk_id))
+
+    available_named = [
+        doc_id for doc_id in requested if any(chunk.doc_id == doc_id for chunk in candidates)
+    ]
+    reserved = []
+    reserved_ids = set()
+    for doc_id in available_named:
+        source_candidates = [chunk for chunk in candidates if chunk.doc_id == doc_id]
+        if source_candidates and len(reserved) < k:
+            selected = source_candidates[0]
+            reserved.append(selected)
+            reserved_ids.add(selected.chunk_id)
+
+    remaining = [chunk for chunk in candidates if chunk.chunk_id not in reserved_ids]
+    selected = (reserved + remaining)[:k]
+    represented = list(dict.fromkeys(chunk.doc_id for chunk in selected))
+    return RetrievedChunks(
+        selected,
+        coverage={
+            "requested": requested,
+            "resolved": available_named,
+            "represented": represented,
+            "incomplete": any(doc_id not in represented for doc_id in requested),
+        },
+    )
+
+
 def retrieve(
     query: str,
     k: int = 5,
     doc_ids: list[str] | None = None,
     rerank: bool = False,
     collection=None,
-) -> list[RetrievedChunk]:
+    strategy: str = RETRIEVAL_STRATEGY,
+) -> RetrievedChunks:
+    if strategy not in {"semantic", "named_balanced"}:
+        raise ValueError(f"unknown retrieval strategy: {strategy}")
+    if strategy == "named_balanced":
+        return _named_balanced(query, k=k, rerank=rerank, collection=collection)
+
     pool_size = max(k, RERANK_CANDIDATE_POOL_SIZE) if rerank else k
     candidates = _fetch_candidates(query, pool_size, doc_ids, collection=collection)
 
     if not rerank or not candidates:
-        return candidates[:k]
+        return RetrievedChunks(candidates[:k])
 
-    cross_encoder = _get_cross_encoder()
-    pairs = [(query, c.text) for c in candidates]
-    cross_scores = cross_encoder.predict(pairs)
-    for chunk, score in zip(candidates, cross_scores, strict=True):
-        chunk.score = float(score)
-
-    candidates.sort(key=lambda c: c.score, reverse=True)
-    return candidates[:k]
+    return RetrievedChunks(_rerank_candidates(query, candidates)[:k])
 
 
 def fetch_document_page(doc_id: str, page: int, collection=None) -> list[RetrievedChunk]:

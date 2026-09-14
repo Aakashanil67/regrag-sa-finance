@@ -32,6 +32,7 @@ from src.config import (
     EMBEDDING_TOKENIZER_NAME,
     MANIFEST_PATH,
     RERANK_CANDIDATE_POOL_SIZE,
+    RETRIEVAL_STRATEGY,
     ROOT,
     TOKENIZER_AWARE_CHUNK_OVERLAP_TOKENS,
     TOKENIZER_AWARE_CHUNK_TARGET_TOKENS,
@@ -128,6 +129,7 @@ def _retrieval_config(*, index_identity: str | None = None) -> dict[str, object]
             "EMBEDDING_TOKENIZER_REVISION", EMBEDDING_TOKENIZER_NAME
         ),
         "candidate_pool": RERANK_CANDIDATE_POOL_SIZE,
+        "retrieval_strategy": RETRIEVAL_STRATEGY,
         "index_fingerprint": index_identity or index_fingerprint(),
     }
 

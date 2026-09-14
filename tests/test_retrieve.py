@@ -2,7 +2,13 @@
 chromadb collection or embedding model needed to test the reordering behaviour itself."""
 
 from src import retrieve as retrieve_module
-from src.retrieve import RetrievedChunk, _fetch_candidates, fetch_document_page, retrieve
+from src.retrieve import (
+    RetrievedChunk,
+    _fetch_candidates,
+    fetch_document_page,
+    resolve_named_documents,
+    retrieve,
+)
 
 
 class _FakeCollection:
@@ -40,6 +46,18 @@ def _chunk(chunk_id, text, score=0.5):
         page_start=1,
         page_end=1,
         section=None,
+        score=score,
+    )
+
+
+def _doc_chunk(chunk_id, doc_id, text, score=0.5):
+    return RetrievedChunk(
+        chunk_id=chunk_id,
+        doc_id=doc_id,
+        text=text,
+        page_start=1,
+        page_end=1,
+        section="",
         score=score,
     )
 
@@ -222,3 +240,96 @@ def test_fetch_document_page_sorts_by_page_then_chunk_id():
     result = fetch_document_page("doc_a", page=1, collection=collection)
 
     assert [c.chunk_id for c in result] == ["a", "z"]
+
+
+def test_named_document_resolution_distinguishes_same_number_across_years():
+    manifest = [
+        {
+            "id": "d8_2023",
+            "title": "Directive 8/2023: Threshold Amounts",
+        },
+        {
+            "id": "d8_2025",
+            "title": "Directive 8/2025: Threshold Amounts",
+        },
+    ]
+
+    assert resolve_named_documents("What does Directive D8/2023 say?", manifest) == ["d8_2023"]
+    assert resolve_named_documents("Compare D8/2025", manifest) == ["d8_2025"]
+    assert resolve_named_documents("What does directive 8/2023 say?", manifest) == ["d8_2023"]
+
+
+def test_named_document_resolution_does_not_guess_from_bare_number():
+    manifest = [{"id": "d3_2020", "title": "Directive 3/2020: Example"}]
+
+    assert resolve_named_documents("What does 3/2020 require?", manifest) == []
+
+
+def test_named_document_resolution_supports_manifest_title_stems():
+    manifest = [
+        {
+            "id": "nca_brochure",
+            "title": "Notebook on the National Credit Act, 2005 (plain-language explainer)",
+        },
+        {
+            "id": "banks_press",
+            "title": "Press Release: Conduct Standard for Banks (8 July 2020)",
+        },
+    ]
+
+    assert resolve_named_documents(
+        "According to the Notebook on the National Credit Act", manifest
+    ) == ["nca_brochure"]
+    assert resolve_named_documents("What did the Conduct Standard for Banks say?", manifest) == [
+        "banks_press"
+    ]
+
+
+def test_named_balanced_reserves_one_chunk_per_resolved_source_and_reports_coverage(monkeypatch):
+    named = [
+        _doc_chunk("doc-a-1", "doc-a", "named a", score=0.2),
+        _doc_chunk("doc-b-1", "doc-b", "named b", score=0.1),
+    ]
+    global_candidates = named + [
+        _doc_chunk("doc-c-1", "doc-c", "global c", score=0.9),
+        _doc_chunk("doc-c-2", "doc-c", "global c2", score=0.8),
+    ]
+
+    monkeypatch.setattr(
+        retrieve_module, "resolve_named_documents", lambda q, manifest: ["doc-a", "doc-b"]
+    )
+
+    def fake_fetch(query, n, doc_ids, collection=None):
+        return named if doc_ids else global_candidates
+
+    monkeypatch.setattr(retrieve_module, "_fetch_candidates", fake_fetch)
+
+    results = retrieve("named question", k=3, strategy="named_balanced")
+
+    assert {chunk.doc_id for chunk in results} == {"doc-a", "doc-b", "doc-c"}
+    assert results.coverage == {
+        "requested": ["doc-a", "doc-b"],
+        "resolved": ["doc-a", "doc-b"],
+        "represented": ["doc-a", "doc-b", "doc-c"],
+        "incomplete": False,
+    }
+
+
+def test_named_balanced_records_incomplete_when_named_source_has_no_chunks(monkeypatch):
+    monkeypatch.setattr(
+        retrieve_module, "resolve_named_documents", lambda q, manifest: ["doc-a", "missing"]
+    )
+    monkeypatch.setattr(
+        retrieve_module,
+        "_fetch_candidates",
+        lambda query, n, doc_ids, collection=None: [_doc_chunk("a", "doc-a", "a")]
+        if doc_ids
+        else [_doc_chunk("a", "doc-a", "a")],
+    )
+
+    results = retrieve("named question", k=2, strategy="named_balanced")
+
+    assert results.coverage["requested"] == ["doc-a", "missing"]
+    assert results.coverage["resolved"] == ["doc-a"]
+    assert results.coverage["represented"] == ["doc-a"]
+    assert results.coverage["incomplete"] is True

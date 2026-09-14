@@ -140,6 +140,7 @@ class RAGResult:
     # Exact formatted context supplied to generation. Kept internal and optional so cached and
     # synthetic results remain compatible; schema-2 evaluation artifacts persist it when present.
     formatted_context: str | None = None
+    retrieval_coverage: dict = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -342,6 +343,9 @@ def answer_question(question: str, k: int = 5) -> RAGResult:
     flagged = contains_injection_attempt(question)
     # rerank=True: reports/archive/v1.0-audit/improvement_log.md measured this against the retrieval benchmark
     # (hit-rate@5 85% -> 95%, MRR 0.654 -> 0.808 at this chunk size) before it became the default.
+    # retrieve() applies the explicit production strategy from src.config.RETRIEVAL_STRATEGY;
+    # keeping the default call shape also preserves injectable retrieval fakes used by offline
+    # tests and review tooling.
     chunks = retrieve(question, k=k, rerank=True)
 
     if not chunks:
@@ -357,6 +361,7 @@ def answer_question(question: str, k: int = 5) -> RAGResult:
             ),
             refusal_reason=RefusalReason.NO_CONTEXT,
             formatted_context="",
+            retrieval_coverage=getattr(chunks, "coverage", {}),
         )
 
     formatted_context = _format_context(chunks)
@@ -377,4 +382,5 @@ def answer_question(question: str, k: int = 5) -> RAGResult:
         source_notices=notices,
         refusal_reason=validated.refusal_reason,
         formatted_context=formatted_context,
+        retrieval_coverage=getattr(chunks, "coverage", {}),
     )
