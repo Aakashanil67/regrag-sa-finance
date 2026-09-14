@@ -29,9 +29,13 @@ from src.config import (
     COLLECTION_NAME,
     CROSS_ENCODER_MODEL_NAME,
     EMBEDDING_MODEL_NAME,
+    EMBEDDING_TOKENIZER_NAME,
     MANIFEST_PATH,
     RERANK_CANDIDATE_POOL_SIZE,
     ROOT,
+    TOKENIZER_AWARE_CHUNK_OVERLAP_TOKENS,
+    TOKENIZER_AWARE_CHUNK_TARGET_TOKENS,
+    TOKENIZER_ENCODING,
 )
 
 
@@ -96,6 +100,13 @@ def index_fingerprint() -> str:
         ),
         "chunk_target": CHUNK_TARGET_TOKENS,
         "chunk_overlap": CHUNK_OVERLAP_TOKENS,
+        "tokenizer_encoding": TOKENIZER_ENCODING,
+        "embedding_tokenizer": EMBEDDING_TOKENIZER_NAME,
+        "tokenizer_aware_chunk_target": TOKENIZER_AWARE_CHUNK_TARGET_TOKENS,
+        "tokenizer_aware_chunk_overlap": TOKENIZER_AWARE_CHUNK_OVERLAP_TOKENS,
+        "embedding_tokenizer_revision": _model_revision(
+            "EMBEDDING_TOKENIZER_REVISION", EMBEDDING_TOKENIZER_NAME
+        ),
         "runtime_versions": _runtime_versions(),
     }
     return _canonical_fingerprint(payload)
@@ -109,6 +120,13 @@ def _retrieval_config(*, index_identity: str | None = None) -> dict[str, object]
         "collection": COLLECTION_NAME,
         "chunk_target": CHUNK_TARGET_TOKENS,
         "chunk_overlap": CHUNK_OVERLAP_TOKENS,
+        "tokenizer_encoding": TOKENIZER_ENCODING,
+        "embedding_tokenizer": EMBEDDING_TOKENIZER_NAME,
+        "tokenizer_aware_chunk_target": TOKENIZER_AWARE_CHUNK_TARGET_TOKENS,
+        "tokenizer_aware_chunk_overlap": TOKENIZER_AWARE_CHUNK_OVERLAP_TOKENS,
+        "embedding_tokenizer_revision": _model_revision(
+            "EMBEDDING_TOKENIZER_REVISION", EMBEDDING_TOKENIZER_NAME
+        ),
         "candidate_pool": RERANK_CANDIDATE_POOL_SIZE,
         "index_fingerprint": index_identity or index_fingerprint(),
     }

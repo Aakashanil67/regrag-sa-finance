@@ -1,0 +1,689 @@
+{
+  "answer_model_called": false,
+  "audited_at": "2026-09-14T18:14:45.615820+00:00",
+  "budget_configuration": {
+    "tokenizer_aware_overlap": 32,
+    "tokenizer_aware_target": 240
+  },
+  "embedding": {
+    "chunk_lengths": {
+      "count": 795,
+      "max": 934,
+      "p50": 436.0,
+      "p95": 794.5999999999999
+    },
+    "max_sequence_length": 256,
+    "model": "sentence-transformers/all-MiniLM-L6-v2",
+    "per_document": {
+      "fsca_conduct_standard_otc_derivatives_2018": {
+        "chunk_count": 8,
+        "lengths": {
+          "count": 8,
+          "max": 780,
+          "p50": 619.5,
+          "p95": 747.0999999999999
+        },
+        "truncated_chunks": 8
+      },
+      "fsca_press_conduct_standard_banks_2020": {
+        "chunk_count": 1,
+        "lengths": {
+          "count": 1,
+          "max": 294,
+          "p50": 294.0,
+          "p95": 294.0
+        },
+        "truncated_chunks": 1
+      },
+      "fsca_rdr_2014": {
+        "chunk_count": 191,
+        "lengths": {
+          "count": 191,
+          "max": 934,
+          "p50": 540.0,
+          "p95": 826.5
+        },
+        "truncated_chunks": 146
+      },
+      "fsca_rdr_intermediary_segmentation_2019": {
+        "chunk_count": 5,
+        "lengths": {
+          "count": 5,
+          "max": 683,
+          "p50": 565.0,
+          "p95": 661.0
+        },
+        "truncated_chunks": 5
+      },
+      "fsca_tcf_2011": {
+        "chunk_count": 2,
+        "lengths": {
+          "count": 2,
+          "max": 511,
+          "p50": 377.0,
+          "p95": 497.6
+        },
+        "truncated_chunks": 1
+      },
+      "ifrs9_issued_2021": {
+        "chunk_count": 172,
+        "lengths": {
+          "count": 172,
+          "max": 853,
+          "p50": 661.5,
+          "p95": 810.1499999999999
+        },
+        "truncated_chunks": 170
+      },
+      "ifrs9_project_summary_2014": {
+        "chunk_count": 17,
+        "lengths": {
+          "count": 17,
+          "max": 726,
+          "p50": 527.0,
+          "p95": 692.4
+        },
+        "truncated_chunks": 17
+      },
+      "nca_act_34_2005": {
+        "chunk_count": 333,
+        "lengths": {
+          "count": 333,
+          "max": 605,
+          "p50": 315.0,
+          "p95": 445.0
+        },
+        "truncated_chunks": 201
+      },
+      "nca_notebook_brochure": {
+        "chunk_count": 9,
+        "lengths": {
+          "count": 9,
+          "max": 789,
+          "p50": 639.0,
+          "p95": 748.5999999999999
+        },
+        "truncated_chunks": 9
+      },
+      "ncr_guideline_disputed_credit_complaints": {
+        "chunk_count": 3,
+        "lengths": {
+          "count": 3,
+          "max": 575,
+          "p50": 499.0,
+          "p95": 567.4
+        },
+        "truncated_chunks": 3
+      },
+      "ncr_guideline_feb_2026_clearance_certificates": {
+        "chunk_count": 3,
+        "lengths": {
+          "count": 3,
+          "max": 617,
+          "p50": 604.0,
+          "p95": 615.7
+        },
+        "truncated_chunks": 3
+      },
+      "ncr_guideline_june_2025_credit_info": {
+        "chunk_count": 2,
+        "lengths": {
+          "count": 2,
+          "max": 639,
+          "p50": 465.0,
+          "p95": 621.5999999999999
+        },
+        "truncated_chunks": 2
+      },
+      "ncr_guideline_sept_2025_debt_counsellors": {
+        "chunk_count": 2,
+        "lengths": {
+          "count": 2,
+          "max": 498,
+          "p50": 397.5,
+          "p95": 487.95
+        },
+        "truncated_chunks": 2
+      },
+      "sarb_c1_2026_status_of_circulars": {
+        "chunk_count": 5,
+        "lengths": {
+          "count": 5,
+          "max": 574,
+          "p50": 481.0,
+          "p95": 572.0
+        },
+        "truncated_chunks": 4
+      },
+      "sarb_circular_19_2004_capital_hybrid_instruments": {
+        "chunk_count": 14,
+        "lengths": {
+          "count": 14,
+          "max": 753,
+          "p50": 555.5,
+          "p95": 731.55
+        },
+        "truncated_chunks": 14
+      },
+      "sarb_circular_6_2004_basel_ii_update": {
+        "chunk_count": 1,
+        "lengths": {
+          "count": 1,
+          "max": 572,
+          "p50": 572.0,
+          "p95": 572.0
+        },
+        "truncated_chunks": 1
+      },
+      "sarb_d10_2021_operational_resilience": {
+        "chunk_count": 3,
+        "lengths": {
+          "count": 3,
+          "max": 537,
+          "p50": 444.0,
+          "p95": 527.7
+        },
+        "truncated_chunks": 3
+      },
+      "sarb_d3_2023_accounting_provisions_ifrs9": {
+        "chunk_count": 3,
+        "lengths": {
+          "count": 3,
+          "max": 605,
+          "p50": 425.0,
+          "p95": 587.0
+        },
+        "truncated_chunks": 3
+      },
+      "sarb_d4_2023_operational_resilience": {
+        "chunk_count": 2,
+        "lengths": {
+          "count": 2,
+          "max": 782,
+          "p50": 592.5,
+          "p95": 763.05
+        },
+        "truncated_chunks": 2
+      },
+      "sarb_d8_2023_threshold_amounts": {
+        "chunk_count": 6,
+        "lengths": {
+          "count": 6,
+          "max": 772,
+          "p50": 659.0,
+          "p95": 759.0
+        },
+        "truncated_chunks": 6
+      },
+      "sarb_d8_2025_threshold_amounts": {
+        "chunk_count": 6,
+        "lengths": {
+          "count": 6,
+          "max": 707,
+          "p50": 652.0,
+          "p95": 706.75
+        },
+        "truncated_chunks": 6
+      },
+      "sarb_g3_2025_climate_disclosures": {
+        "chunk_count": 7,
+        "lengths": {
+          "count": 7,
+          "max": 705,
+          "p50": 553.0,
+          "p95": 685.8
+        },
+        "truncated_chunks": 7
+      }
+    },
+    "query_lengths": {
+      "count": 21,
+      "max": 32,
+      "p50": 24.0,
+      "p95": 32.0
+    },
+    "tokenizer": "sentence-transformers/all-MiniLM-L6-v2",
+    "tokenizer_revision": "unresolved:sentence-transformers/all-MiniLM-L6-v2",
+    "truncated_chunk_percent": 0.7723270440251573,
+    "truncated_chunks": 614,
+    "truncated_queries": 0,
+    "truncated_query_percent": 0.0
+  },
+  "read_only": true,
+  "reranker": {
+    "max_sequence_length": 512,
+    "model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+    "pair_lengths": {
+      "count": 100,
+      "max": 807,
+      "p50": 502.5,
+      "p95": 730.4499999999999
+    },
+    "sample_pairs": [
+      {
+        "doc_id": "sarb_g3_2025_climate_disclosures",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "sarb_g3_2025_climate_disclosures",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "sarb_g3_2025_climate_disclosures",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "ifrs9_issued_2021",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "sarb_g3_2025_climate_disclosures",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "fsca_rdr_2014",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "fsca_rdr_2014",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "fsca_rdr_2014",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "ifrs9_issued_2021",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "fsca_conduct_standard_otc_derivatives_2018",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "sarb_g3_2025_climate_disclosures",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "sarb_g3_2025_climate_disclosures",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "ifrs9_issued_2021",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "ifrs9_issued_2021",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "ifrs9_issued_2021",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "fsca_rdr_2014",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "ifrs9_issued_2021",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "fsca_rdr_2014",
+        "question_id": "r01"
+      },
+      {
+        "doc_id": "ifrs9_issued_2021",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "fsca_rdr_2014",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "sarb_d8_2023_threshold_amounts",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "ifrs9_issued_2021",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "ifrs9_issued_2021",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "fsca_rdr_2014",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "ifrs9_issued_2021",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "ifrs9_issued_2021",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "ifrs9_issued_2021",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "sarb_d4_2023_operational_resilience",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "fsca_rdr_2014",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r02"
+      },
+      {
+        "doc_id": "sarb_d8_2023_threshold_amounts",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "sarb_d8_2023_threshold_amounts",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "sarb_d8_2025_threshold_amounts",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "sarb_d8_2025_threshold_amounts",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "sarb_c1_2026_status_of_circulars",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "sarb_circular_6_2004_basel_ii_update",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "sarb_c1_2026_status_of_circulars",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "ifrs9_issued_2021",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "sarb_c1_2026_status_of_circulars",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "ifrs9_issued_2021",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "sarb_d8_2023_threshold_amounts",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "fsca_rdr_2014",
+        "question_id": "r03"
+      },
+      {
+        "doc_id": "sarb_d4_2023_operational_resilience",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "sarb_d10_2021_operational_resilience",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "sarb_d4_2023_operational_resilience",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "sarb_d10_2021_operational_resilience",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "sarb_d10_2021_operational_resilience",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "sarb_d8_2023_threshold_amounts",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "sarb_d8_2025_threshold_amounts",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "sarb_d8_2023_threshold_amounts",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "sarb_d8_2025_threshold_amounts",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "fsca_rdr_2014",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "fsca_rdr_2014",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "fsca_tcf_2011",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "fsca_rdr_2014",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "fsca_tcf_2011",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "sarb_c1_2026_status_of_circulars",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "sarb_g3_2025_climate_disclosures",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "fsca_rdr_2014",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "sarb_g3_2025_climate_disclosures",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "sarb_g3_2025_climate_disclosures",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+        "question_id": "r04"
+      },
+      {
+        "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "sarb_c1_2026_status_of_circulars",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "fsca_rdr_2014",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "ifrs9_issued_2021",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "sarb_c1_2026_status_of_circulars",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "nca_act_34_2005",
+        "question_id": "r05"
+      },
+      {
+        "doc_id": "sarb_d8_2023_threshold_amounts",
+        "question_id": "r05"
+      }
+    ],
+    "sample_size": 100,
+    "tokenizer": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+    "tokenizer_revision": "unresolved:cross-encoder/ms-marco-MiniLM-L-6-v2",
+    "truncated_pair_percent": 0.47,
+    "truncated_pairs": 47
+  },
+  "schema": 1,
+  "split": "dev",
+  "store": {
+    "build_record": {
+      "built_at": "2026-09-09T07:26:10.477597+00:00",
+      "candidate_pool": 20,
+      "chunk_count": 795,
+      "chunk_overlap": 75,
+      "chunk_target": 800,
+      "collection": "regrag_chunks",
+      "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+      "hnsw_search_ef": 2000,
+      "manifest_sha256": "89a1c45e3b0a4606f03a89cd1d4fcfb079b5b09f44c66d4c1f512e514a857bbd",
+      "reranker_model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+      "schema": 1
+    },
+    "chunk_count": 795,
+    "collection_name": "regrag_chunks"
+  }
+}

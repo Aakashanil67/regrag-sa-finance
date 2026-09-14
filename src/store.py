@@ -94,6 +94,10 @@ def _chunk_metadata(chunk: Chunk) -> dict:
         "page_end": chunk.page_end,
         "section": chunk.section or "",
         "token_count": chunk.token_count,
+        "embedding_token_count": (
+            chunk.embedding_token_count if chunk.embedding_token_count is not None else "unmeasured"
+        ),
+        "embedding_tokenizer": chunk.embedding_tokenizer or "unmeasured",
     }
 
 

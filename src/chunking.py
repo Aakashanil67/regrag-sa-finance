@@ -25,8 +25,11 @@ from src.config import (
     CHUNK_OVERLAP_TOKENS,
     CHUNK_TARGET_TOKENS,
     CORPUS_DIR,
+    EMBEDDING_TOKENIZER_NAME,
     MANIFEST_PATH,
     MIN_CHUNK_TOKENS,
+    TOKENIZER_AWARE_CHUNK_OVERLAP_TOKENS,
+    TOKENIZER_AWARE_CHUNK_TARGET_TOKENS,
     TOKENIZER_ENCODING,
 )
 from src.ingest import Element, extract_elements
@@ -34,17 +37,60 @@ from src.ingest import Element, extract_elements
 _ENCODING = tiktoken.get_encoding(TOKENIZER_ENCODING)
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
 _HEADING_FLUSH_FRACTION = 0.6  # flush the current chunk at a heading only once it's this full
+_EMBEDDING_TOKENIZER = None
 
 
-def _token_count(text: str) -> int:
-    return len(_ENCODING.encode(text))
+def get_embedding_tokenizer():
+    """Load the embedding tokenizer only when a tokenizer-aware path requests it."""
+    global _EMBEDDING_TOKENIZER
+    if _EMBEDDING_TOKENIZER is None:
+        from transformers import AutoTokenizer
+
+        _EMBEDDING_TOKENIZER = AutoTokenizer.from_pretrained(EMBEDDING_TOKENIZER_NAME)
+    return _EMBEDDING_TOKENIZER
 
 
-def _overlap_tail(text: str, max_tokens: int) -> str:
-    tokens = _ENCODING.encode(text)
-    if len(tokens) <= max_tokens:
+def _encode_tokens(text: str, tokenizer=None, *, add_special_tokens: bool = False) -> list[int]:
+    if tokenizer is None:
+        return _ENCODING.encode(text)
+    return list(
+        tokenizer.encode(
+            text,
+            add_special_tokens=add_special_tokens,
+            truncation=False,
+        )
+    )
+
+
+def _special_token_count(tokenizer) -> int:
+    return len(_encode_tokens("", tokenizer, add_special_tokens=True))
+
+
+def _token_count(text: str, tokenizer=None) -> int:
+    """Return legacy tiktoken counts, or special-token-inclusive model counts."""
+    if tokenizer is None:
+        return len(_ENCODING.encode(text))
+    return len(_encode_tokens(text, tokenizer, add_special_tokens=True))
+
+
+def _packing_token_count(text: str, tokenizer=None) -> int:
+    """Count content tokens for packing; a tokenizer-aware chunk adds specials once at flush."""
+    return len(_encode_tokens(text, tokenizer, add_special_tokens=False))
+
+
+def _overlap_tail(text: str, max_tokens: int, tokenizer=None) -> str:
+    tokens = _encode_tokens(text, tokenizer, add_special_tokens=False)
+    if tokenizer is None:
+        if len(tokens) <= max_tokens:
+            return text
+        return _ENCODING.decode(tokens[-max_tokens:])
+
+    body_limit = max(max_tokens - _special_token_count(tokenizer), 0)
+    if len(tokens) <= body_limit:
         return text
-    return _ENCODING.decode(tokens[-max_tokens:])
+    if not body_limit:
+        return ""
+    return tokenizer.decode(tokens[-body_limit:], skip_special_tokens=True)
 
 
 @dataclass
@@ -57,6 +103,8 @@ class Chunk:
     section: str | None
     token_count: int = field(init=False)
     chunk_hash: str = field(init=False)
+    embedding_token_count: int | None = None
+    embedding_tokenizer: str | None = None
 
     def __post_init__(self):
         self.token_count = _token_count(self.text)
@@ -70,19 +118,27 @@ class Chunk:
         ).hexdigest()
 
 
-def _hard_split_by_tokens(text: str) -> list[str]:
+def _hard_split_by_tokens(
+    text: str, *, tokenizer=None, target_tokens: int, overlap_tokens: int
+) -> list[str]:
     """Last-resort token-window split for a single sentence that alone busts the chunk budget —
     legislative text (the NCA is the case that surfaced this) routinely runs a "provided that..."
     proviso for hundreds of words with no terminal punctuation, so sentence-level packing alone
     can't bound it. Not sentence-aware, so it can cut mid-clause; that's the accepted cost of
     keeping every chunk within roughly one embedding's worth of text."""
-    tokens = _ENCODING.encode(text)
-    step = max(CHUNK_TARGET_TOKENS - CHUNK_OVERLAP_TOKENS, 1)
+    tokens = _encode_tokens(text, tokenizer, add_special_tokens=False)
+    special_tokens = _special_token_count(tokenizer) if tokenizer is not None else 0
+    body_budget = target_tokens - special_tokens
+    body_overlap = max(overlap_tokens - special_tokens, 0)
+    step = max(body_budget - body_overlap, 1)
     pieces = []
     start = 0
     while start < len(tokens):
-        end = min(start + CHUNK_TARGET_TOKENS, len(tokens))
-        pieces.append(_ENCODING.decode(tokens[start:end]))
+        end = min(start + body_budget, len(tokens))
+        if tokenizer is None:
+            pieces.append(_ENCODING.decode(tokens[start:end]))
+        else:
+            pieces.append(tokenizer.decode(tokens[start:end], skip_special_tokens=True))
         if end == len(tokens):
             break
         start += step
@@ -90,7 +146,13 @@ def _hard_split_by_tokens(text: str) -> list[str]:
 
 
 def _split_oversized_paragraph(
-    text: str, page: int, section: str | None
+    text: str,
+    page: int,
+    section: str | None,
+    *,
+    tokenizer=None,
+    target_tokens: int,
+    overlap_tokens: int,
 ) -> list[tuple[str, int, str | None]]:
     """Sentence-pack a too-big paragraph into <=CHUNK_TARGET_TOKENS pieces, same page/section."""
     sentences = _SENTENCE_SPLIT.split(text)
@@ -99,20 +161,30 @@ def _split_oversized_paragraph(
     current_tokens = 0
 
     for sentence in sentences:
-        sentence_tokens = _token_count(sentence)
+        sentence_tokens = _packing_token_count(sentence, tokenizer)
 
-        if sentence_tokens > CHUNK_TARGET_TOKENS:
+        special_tokens = _special_token_count(tokenizer) if tokenizer is not None else 0
+        body_budget = target_tokens - special_tokens
+        if sentence_tokens > body_budget:
             if current:
                 pieces.append((" ".join(current), page, section))
                 current, current_tokens = [], 0
-            pieces.extend((piece, page, section) for piece in _hard_split_by_tokens(sentence))
+            pieces.extend(
+                (piece, page, section)
+                for piece in _hard_split_by_tokens(
+                    sentence,
+                    tokenizer=tokenizer,
+                    target_tokens=target_tokens,
+                    overlap_tokens=overlap_tokens,
+                )
+            )
             continue
 
-        if current and current_tokens + sentence_tokens > CHUNK_TARGET_TOKENS:
+        if current and current_tokens + sentence_tokens > body_budget:
             pieces.append((" ".join(current), page, section))
-            overlap_text = _overlap_tail(" ".join(current), CHUNK_OVERLAP_TOKENS)
+            overlap_text = _overlap_tail(" ".join(current), overlap_tokens, tokenizer)
             current = [overlap_text] if overlap_text else []
-            current_tokens = _token_count(overlap_text) if overlap_text else 0
+            current_tokens = _packing_token_count(overlap_text, tokenizer) if overlap_text else 0
         current.append(sentence)
         current_tokens += sentence_tokens
 
@@ -121,13 +193,57 @@ def _split_oversized_paragraph(
     return pieces
 
 
-def chunk_document(doc_id: str, elements: list[Element]) -> list[Chunk]:
+def chunk_document(
+    doc_id: str,
+    elements: list[Element],
+    *,
+    tokenizer=None,
+    target_tokens: int | None = None,
+    overlap_tokens: int | None = None,
+) -> list[Chunk]:
+    if tokenizer is None:
+        target_tokens = CHUNK_TARGET_TOKENS if target_tokens is None else target_tokens
+        overlap_tokens = CHUNK_OVERLAP_TOKENS if overlap_tokens is None else overlap_tokens
+    else:
+        target_tokens = (
+            TOKENIZER_AWARE_CHUNK_TARGET_TOKENS if target_tokens is None else target_tokens
+        )
+        overlap_tokens = (
+            TOKENIZER_AWARE_CHUNK_OVERLAP_TOKENS if overlap_tokens is None else overlap_tokens
+        )
+    if target_tokens <= 0:
+        raise ValueError("target token budget must be positive")
+    if overlap_tokens < 0 or overlap_tokens >= target_tokens:
+        raise ValueError("overlap token budget must be smaller than the chunk token budget")
+
+    special_tokens = _special_token_count(tokenizer) if tokenizer is not None else 0
+    body_budget = target_tokens - special_tokens
+    if tokenizer is not None and body_budget <= 0:
+        raise ValueError("chunk token budget must exceed tokenizer special-token overhead")
+
     chunks: list[Chunk] = []
     current_parts: list[str] = []
     current_tokens = 0
     current_page_start: int | None = None
     current_page_end: int | None = None
     current_section: str | None = None
+
+    def packed_count(text: str) -> int:
+        return _packing_token_count(text, tokenizer)
+
+    def make_chunk(text: str, page_start: int, page_end: int, section: str | None) -> Chunk:
+        return Chunk(
+            doc_id=doc_id,
+            index=len(chunks),
+            text=text,
+            page_start=page_start,
+            page_end=page_end,
+            section=section,
+            embedding_token_count=_token_count(text, tokenizer) if tokenizer is not None else None,
+            embedding_tokenizer=(
+                getattr(tokenizer, "name_or_path", None) if tokenizer is not None else None
+            ),
+        )
 
     def flush():
         nonlocal current_parts, current_tokens, current_page_start, current_page_end
@@ -141,30 +257,21 @@ def chunk_document(doc_id: str, elements: list[Element]) -> list[Chunk]:
             # flush, that seed would otherwise re-emit as a byte-identical duplicate chunk.
             current_parts, current_tokens = [], 0
             return
-        chunk = Chunk(
-            doc_id=doc_id,
-            index=len(chunks),
-            text=text,
-            page_start=current_page_start,
-            page_end=current_page_end,
-            section=current_section,
+        chunk = make_chunk(text, current_page_start, current_page_end, current_section)
+        merged_text = f"{chunks[-1].text} {text}" if chunks else text
+        can_merge_without_exceeding_budget = (
+            tokenizer is None or _token_count(merged_text, tokenizer) <= target_tokens
         )
-        if chunk.token_count < MIN_CHUNK_TOKENS and chunks:
+        if chunk.token_count < MIN_CHUNK_TOKENS and chunks and can_merge_without_exceeding_budget:
             previous = chunks[-1]
-            merged_text = f"{previous.text} {text}"
-            chunks[-1] = Chunk(
-                doc_id=doc_id,
-                index=previous.index,
-                text=merged_text,
-                page_start=previous.page_start,
-                page_end=current_page_end,
-                section=previous.section,
+            chunks[-1] = make_chunk(
+                merged_text, previous.page_start, current_page_end, previous.section
             )
         else:
             chunks.append(chunk)
-        overlap_text = _overlap_tail(text, CHUNK_OVERLAP_TOKENS)
+        overlap_text = _overlap_tail(text, overlap_tokens, tokenizer)
         current_parts = [overlap_text] if overlap_text else []
-        current_tokens = _token_count(overlap_text) if overlap_text else 0
+        current_tokens = packed_count(overlap_text) if overlap_text else 0
         current_page_start = current_page_end
 
     for element in elements:
@@ -174,9 +281,9 @@ def chunk_document(doc_id: str, elements: list[Element]) -> list[Chunk]:
             current_section = element.text
             continue
 
-        paragraph_tokens = _token_count(element.text)
+        paragraph_tokens = packed_count(element.text)
 
-        if paragraph_tokens > CHUNK_TARGET_TOKENS:
+        if paragraph_tokens > body_budget:
             flush()
             # flush() just reseeded current_parts with an overlap tail meant for normal
             # packing continuity — irrelevant here, since the oversized paragraph's pieces are
@@ -191,28 +298,24 @@ def chunk_document(doc_id: str, elements: list[Element]) -> list[Chunk]:
 
             last_piece_page = element.page
             for piece_text, piece_page, piece_section in _split_oversized_paragraph(
-                element.text, element.page, current_section
+                element.text,
+                element.page,
+                current_section,
+                tokenizer=tokenizer,
+                target_tokens=target_tokens,
+                overlap_tokens=overlap_tokens,
             ):
-                chunks.append(
-                    Chunk(
-                        doc_id=doc_id,
-                        index=len(chunks),
-                        text=piece_text,
-                        page_start=piece_page,
-                        page_end=piece_page,
-                        section=piece_section,
-                    )
-                )
+                chunks.append(make_chunk(piece_text, piece_page, piece_page, piece_section))
                 last_piece_page = piece_page
 
-            overlap_text = _overlap_tail(chunks[-1].text, CHUNK_OVERLAP_TOKENS)
+            overlap_text = _overlap_tail(chunks[-1].text, overlap_tokens, tokenizer)
             current_parts = [overlap_text] if overlap_text else []
-            current_tokens = _token_count(overlap_text) if overlap_text else 0
+            current_tokens = packed_count(overlap_text) if overlap_text else 0
             current_page_start = last_piece_page
             current_page_end = last_piece_page
             continue
 
-        if current_tokens + paragraph_tokens > CHUNK_TARGET_TOKENS and current_parts:
+        if current_tokens + paragraph_tokens > body_budget and current_parts:
             flush()
 
         if current_page_start is None:

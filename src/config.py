@@ -46,6 +46,12 @@ TOC_DOT_LEADER_FRACTION = 0.3
 CHROMA_DIR = ROOT / "chroma"
 COLLECTION_NAME = "regrag_chunks"
 EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+# The serving path remains the legacy tiktoken configuration until a retrieval variant is
+# selected. These explicit values are the tokenizer-aware experiment defaults; they are kept
+# separate so an audit or isolated store cannot silently change serving behaviour.
+EMBEDDING_TOKENIZER_NAME = EMBEDDING_MODEL_NAME
+TOKENIZER_AWARE_CHUNK_TARGET_TOKENS = 240
+TOKENIZER_AWARE_CHUNK_OVERLAP_TOKENS = 32
 # Chroma still owns document/metadata storage, but candidate search itself is exact cosine
 # similarity computed in retrieve.py, not Chroma's own approximate HNSW `.query()` — see
 # retrieve.py's module docstring for why (raising hnsw:search_ef was tried and did not fix it:

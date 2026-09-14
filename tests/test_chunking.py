@@ -109,3 +109,14 @@ def test_chunk_hash_changes_when_page_end_or_section_metadata_changes():
 
     assert base.chunk_hash != different_page.chunk_hash
     assert base.chunk_hash != different_section.chunk_hash
+
+
+def test_legacy_chunk_document_call_keeps_tiktoken_budget_defaults(monkeypatch):
+    monkeypatch.setattr(chunking, "CHUNK_TARGET_TOKENS", 30)
+    monkeypatch.setattr(chunking, "CHUNK_OVERLAP_TOKENS", 10)
+    monkeypatch.setattr(chunking, "MIN_CHUNK_TOKENS", 2)
+
+    chunks = chunk_document("doc1", [Element(kind="paragraph", text=_words(28), page=1)])
+
+    assert chunks[0].embedding_token_count is None
+    assert chunks[0].token_count == chunking._token_count(chunks[0].text)
