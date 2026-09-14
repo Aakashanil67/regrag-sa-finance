@@ -30,6 +30,7 @@
     "manifest_sha256": "REPLACE_WITH_SHA256",
     "model_revisions": {
       "embedding": "REPLACE_WITH_RESOLVED_REVISION",
+      "reranker": "REPLACE_WITH_RESOLVED_REVISION",
       "answer": "REPLACE_WITH_RESOLVED_REVISION",
       "judge": "REPLACE_WITH_RESOLVED_REVISION"
     },

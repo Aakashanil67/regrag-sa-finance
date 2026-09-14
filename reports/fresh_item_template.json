@@ -1,0 +1,15 @@
+{
+  "id": "fresh-001",
+  "type": "single-doc",
+  "question": "",
+  "reference_answer": "",
+  "source": [],
+  "scenario_tags": [],
+  "author": "",
+  "reference_review": {
+    "status": "pending",
+    "reviewer": null,
+    "date": null,
+    "notes": ""
+  }
+}

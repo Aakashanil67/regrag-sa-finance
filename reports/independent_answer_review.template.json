@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "status": "awaiting_external_review",
+  "reviewer": {
+    "name": null,
+    "experience": null,
+    "scope": null,
+    "date": null
+  },
+  "items": [],
+  "row_template": {
+    "id": "fresh-001",
+    "outcome_type": "answered_or_refused",
+    "correctness": null,
+    "completeness": null,
+    "citation_entailment": null,
+    "authority_status_handling": null,
+    "material_error_severity": null,
+    "refusal_disposition": null,
+    "source_evidence": [],
+    "rationale": ""
+  }
+}
