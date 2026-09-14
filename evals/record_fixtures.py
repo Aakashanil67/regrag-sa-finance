@@ -19,7 +19,7 @@ from pathlib import Path
 from ragas.metrics.collections import Faithfulness
 
 from evals._ragas_judge import build_judge
-from evals.sealed_run import CostBudget, estimate_cost_usd
+from evals.sealed_run import BudgetExceeded, CostBudget, estimate_cost_usd
 from evals.snapshot import CI_SUBSET_IDS, compute_snapshot_metadata
 from src.config import DEFAULT_ANTHROPIC_MODEL, EVALS_DIR, GOLDEN_DEV_PATH, RAG_MAX_ANSWER_TOKENS
 from src.rag import answer_question
@@ -98,6 +98,11 @@ async def run(*, output_path: Path, max_cost_usd: float | None) -> list[dict]:
     judge_estimate_usd = estimate_cost_usd(
         DEFAULT_ANTHROPIC_MODEL, JUDGE_INPUT_TOKENS, JUDGE_OUTPUT_TOKENS
     )
+    full_estimate = len(items) * (generation_estimate_usd + judge_estimate_usd)
+    if full_estimate > max_cost_usd + 1e-12:
+        raise BudgetExceeded(
+            f"snapshot estimate ${full_estimate:.6f} exceeds cap ${max_cost_usd:.6f}"
+        )
     budget = CostBudget(max_cost_usd)
     llm, _ = build_judge()
     faithfulness = Faithfulness(llm=llm)

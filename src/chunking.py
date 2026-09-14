@@ -16,6 +16,7 @@ enough to budget against.
 
 import hashlib
 import json
+import os
 import re
 from dataclasses import dataclass, field
 
@@ -48,7 +49,8 @@ def get_embedding_tokenizer():
         from transformers import AutoTokenizer
 
         _EMBEDDING_TOKENIZER = AutoTokenizer.from_pretrained(
-            EMBEDDING_TOKENIZER_NAME, revision=EMBEDDING_TOKENIZER_REVISION
+            EMBEDDING_TOKENIZER_NAME,
+            revision=os.environ.get("EMBEDDING_TOKENIZER_REVISION", EMBEDDING_TOKENIZER_REVISION),
         )
     return _EMBEDDING_TOKENIZER
 

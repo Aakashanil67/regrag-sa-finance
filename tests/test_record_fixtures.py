@@ -35,3 +35,26 @@ def test_recording_requires_a_positive_cap_before_provider_construction(monkeypa
         )
 
     assert called is False
+
+
+def test_recording_rejects_a_cap_below_the_full_estimate_before_provider_construction(
+    monkeypatch, tmp_path
+):
+    called = False
+
+    def fail_provider():
+        nonlocal called
+        called = True
+        raise AssertionError("provider construction must not happen")
+
+    monkeypatch.setattr(record_fixtures, "build_judge", fail_provider)
+
+    with pytest.raises(RuntimeError, match="estimate"):
+        asyncio.run(
+            record_fixtures.run(
+                output_path=tmp_path / "ci_subset_v2.json",
+                max_cost_usd=0.01,
+            )
+        )
+
+    assert called is False
