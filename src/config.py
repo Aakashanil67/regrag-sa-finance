@@ -46,10 +46,13 @@ TOC_DOT_LEADER_FRACTION = 0.3
 CHROMA_DIR = ROOT / "chroma"
 COLLECTION_NAME = "regrag_chunks"
 EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+# Actual Hugging Face snapshot commits loaded from the local cache on 2026-09-14.
+EMBEDDING_MODEL_REVISION = "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
 # The serving path remains the legacy tiktoken configuration until a retrieval variant is
 # selected. These explicit values are the tokenizer-aware experiment defaults; they are kept
 # separate so an audit or isolated store cannot silently change serving behaviour.
 EMBEDDING_TOKENIZER_NAME = EMBEDDING_MODEL_NAME
+EMBEDDING_TOKENIZER_REVISION = EMBEDDING_MODEL_REVISION
 TOKENIZER_AWARE_CHUNK_TARGET_TOKENS = 240
 TOKENIZER_AWARE_CHUNK_OVERLAP_TOKENS = 32
 # Chroma still owns document/metadata storage, but candidate search itself is exact cosine
@@ -60,6 +63,8 @@ TOKENIZER_AWARE_CHUNK_OVERLAP_TOKENS = 32
 
 # --- retrieval / reranking ---
 CROSS_ENCODER_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+RERANKER_MODEL_REVISION = "233902d25c440f23af6f7d6e94d2946bac0bee0a"
+CROSS_ENCODER_MODEL_REVISION = RERANKER_MODEL_REVISION
 RERANK_CANDIDATE_POOL_SIZE = 20  # how many embedding-search candidates the reranker sees
 RETRIEVAL_STRATEGY = "semantic"  # production default; named_balanced is an experiment variant
 

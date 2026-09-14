@@ -28,8 +28,11 @@ from src.config import (
     CHUNK_TARGET_TOKENS,
     COLLECTION_NAME,
     CROSS_ENCODER_MODEL_NAME,
+    CROSS_ENCODER_MODEL_REVISION,
     EMBEDDING_MODEL_NAME,
+    EMBEDDING_MODEL_REVISION,
     EMBEDDING_TOKENIZER_NAME,
+    EMBEDDING_TOKENIZER_REVISION,
     MANIFEST_PATH,
     RERANK_CANDIDATE_POOL_SIZE,
     RETRIEVAL_STRATEGY,
@@ -39,10 +42,16 @@ from src.config import (
     TOKENIZER_ENCODING,
 )
 
+RERANKER_MODEL_REVISION = CROSS_ENCODER_MODEL_REVISION
+
 
 class StoreProvenanceError(RuntimeError):
     """Raised when the vector store's recorded build provenance doesn't match the current
     manifest/retrieval config, or no build record exists at all."""
+
+
+class ModelProvenanceError(RuntimeError):
+    """Raised when a loaded local model does not expose the configured snapshot revision."""
 
 
 _INDEX_BEHAVIOR_FILES = (
@@ -79,8 +88,50 @@ def _runtime_versions() -> dict[str, str]:
     return versions
 
 
-def _model_revision(env_name: str, model_name: str) -> str:
-    return os.environ.get(env_name, f"unresolved:{model_name}")
+def _model_revision(env_name: str, default_revision: str) -> str:
+    return os.environ.get(env_name, default_revision)
+
+
+def pinned_model_revisions() -> dict[str, str]:
+    """Return the configured revisions used by local model loaders and fingerprints."""
+    return {
+        "embedding": _model_revision("EMBEDDING_MODEL_REVISION", EMBEDDING_MODEL_REVISION),
+        "embedding_tokenizer": _model_revision(
+            "EMBEDDING_TOKENIZER_REVISION", EMBEDDING_TOKENIZER_REVISION
+        ),
+        "reranker": _model_revision("RERANKER_MODEL_REVISION", CROSS_ENCODER_MODEL_REVISION),
+    }
+
+
+def _loaded_revision(model, role: str) -> str | None:
+    if role == "embedding":
+        for module in getattr(model, "_modules", {}).values():
+            config = getattr(getattr(module, "auto_model", None), "config", None)
+            revision = getattr(config, "_commit_hash", None)
+            if revision:
+                return revision
+    elif role == "reranker":
+        config = getattr(getattr(model, "model", None), "config", None)
+        revision = getattr(config, "_commit_hash", None)
+        if revision:
+            return revision
+    else:
+        raise ValueError(f"unknown local model role: {role!r}")
+    return None
+
+
+def assert_loaded_model_revision(model, role: str) -> dict[str, str]:
+    """Verify a loaded model exposes the exact configured snapshot revision."""
+    expected = pinned_model_revisions()[role]
+    actual = _loaded_revision(model, role)
+    if not actual:
+        raise ModelProvenanceError(f"{role} loaded model revision is unresolved")
+    if actual != expected:
+        raise ModelProvenanceError(
+            f"{role} loaded model revision {actual!r} does not match pinned {expected!r}"
+        )
+    names = {"embedding": EMBEDDING_MODEL_NAME, "reranker": CROSS_ENCODER_MODEL_NAME}
+    return {"model": names[role], "revision": actual}
 
 
 def _canonical_fingerprint(payload: dict[str, object]) -> str:
@@ -96,18 +147,14 @@ def index_fingerprint() -> str:
         "requirements": {path: _file_sha256(path) for path in _REQUIREMENTS_FILES},
         "manifest_sha256": manifest_digest(),
         "embedding_model": EMBEDDING_MODEL_NAME,
-        "embedding_model_revision": _model_revision(
-            "EMBEDDING_MODEL_REVISION", EMBEDDING_MODEL_NAME
-        ),
+        "embedding_model_revision": pinned_model_revisions()["embedding"],
         "chunk_target": CHUNK_TARGET_TOKENS,
         "chunk_overlap": CHUNK_OVERLAP_TOKENS,
         "tokenizer_encoding": TOKENIZER_ENCODING,
         "embedding_tokenizer": EMBEDDING_TOKENIZER_NAME,
         "tokenizer_aware_chunk_target": TOKENIZER_AWARE_CHUNK_TARGET_TOKENS,
         "tokenizer_aware_chunk_overlap": TOKENIZER_AWARE_CHUNK_OVERLAP_TOKENS,
-        "embedding_tokenizer_revision": _model_revision(
-            "EMBEDDING_TOKENIZER_REVISION", EMBEDDING_TOKENIZER_NAME
-        ),
+        "embedding_tokenizer_revision": pinned_model_revisions()["embedding_tokenizer"],
         "runtime_versions": _runtime_versions(),
     }
     return _canonical_fingerprint(payload)
@@ -117,7 +164,9 @@ def _retrieval_config(*, index_identity: str | None = None) -> dict[str, object]
     return {
         "manifest_sha256": manifest_digest(),
         "embedding_model": EMBEDDING_MODEL_NAME,
+        "embedding_model_revision": pinned_model_revisions()["embedding"],
         "reranker_model": CROSS_ENCODER_MODEL_NAME,
+        "reranker_model_revision": pinned_model_revisions()["reranker"],
         "collection": COLLECTION_NAME,
         "chunk_target": CHUNK_TARGET_TOKENS,
         "chunk_overlap": CHUNK_OVERLAP_TOKENS,
@@ -125,9 +174,7 @@ def _retrieval_config(*, index_identity: str | None = None) -> dict[str, object]
         "embedding_tokenizer": EMBEDDING_TOKENIZER_NAME,
         "tokenizer_aware_chunk_target": TOKENIZER_AWARE_CHUNK_TARGET_TOKENS,
         "tokenizer_aware_chunk_overlap": TOKENIZER_AWARE_CHUNK_OVERLAP_TOKENS,
-        "embedding_tokenizer_revision": _model_revision(
-            "EMBEDDING_TOKENIZER_REVISION", EMBEDDING_TOKENIZER_NAME
-        ),
+        "embedding_tokenizer_revision": pinned_model_revisions()["embedding_tokenizer"],
         "candidate_pool": RERANK_CANDIDATE_POOL_SIZE,
         "retrieval_strategy": RETRIEVAL_STRATEGY,
         "index_fingerprint": index_identity or index_fingerprint(),
@@ -162,6 +209,7 @@ def store_build_record(*, chunk_count: int, index_identity: str | None = None) -
         "schema": 2,
         "built_at": datetime.now(UTC).isoformat(),
         "chunk_count": chunk_count,
+        "model_revisions": pinned_model_revisions(),
         **_retrieval_config(index_identity=index_identity),
     }
 

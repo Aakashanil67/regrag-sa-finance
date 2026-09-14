@@ -5,6 +5,7 @@ individual input is actually wired in, one at a time, rather than trusting the p
 """
 
 import json
+from types import SimpleNamespace
 
 from src import provenance
 
@@ -141,7 +142,45 @@ def test_store_build_record_contains_the_retrieval_relevant_fields():
     assert record["chunk_count"] == 123
     assert record["manifest_sha256"] == provenance.manifest_digest()
     assert record["collection"] == provenance.COLLECTION_NAME
+    assert record["embedding_model_revision"] == provenance.EMBEDDING_MODEL_REVISION
+    assert record["reranker_model_revision"] == provenance.RERANKER_MODEL_REVISION
+    assert record["model_revisions"] == provenance.pinned_model_revisions()
     assert "built_at" in record
+
+
+def test_loaded_model_identity_accepts_the_actual_pinned_revisions():
+    embedding = SimpleNamespace(
+        _modules={
+            "0": SimpleNamespace(
+                auto_model=SimpleNamespace(
+                    config=SimpleNamespace(_commit_hash=provenance.EMBEDDING_MODEL_REVISION)
+                )
+            )
+        }
+    )
+    reranker = SimpleNamespace(
+        model=SimpleNamespace(
+            config=SimpleNamespace(_commit_hash=provenance.RERANKER_MODEL_REVISION)
+        )
+    )
+
+    assert provenance.assert_loaded_model_revision(embedding, "embedding")["revision"] == (
+        provenance.EMBEDDING_MODEL_REVISION
+    )
+    assert provenance.assert_loaded_model_revision(reranker, "reranker")["revision"] == (
+        provenance.RERANKER_MODEL_REVISION
+    )
+
+
+def test_loaded_model_identity_rejects_an_unresolved_or_different_revision():
+    embedding = SimpleNamespace(
+        _modules={"0": SimpleNamespace(auto_model=SimpleNamespace(config=SimpleNamespace()))}
+    )
+
+    import pytest
+
+    with pytest.raises(provenance.ModelProvenanceError, match="embedding"):
+        provenance.assert_loaded_model_revision(embedding, "embedding")
 
 
 def test_assert_store_compatible_raises_when_build_record_missing(tmp_path, monkeypatch):

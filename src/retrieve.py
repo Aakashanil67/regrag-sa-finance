@@ -37,6 +37,7 @@ import numpy as np
 
 from src.config import (
     CROSS_ENCODER_MODEL_NAME,
+    CROSS_ENCODER_MODEL_REVISION,
     MANIFEST_PATH,
     RERANK_CANDIDATE_POOL_SIZE,
     RETRIEVAL_STRATEGY,
@@ -49,9 +50,17 @@ _cross_encoder = None
 def _get_cross_encoder():
     global _cross_encoder
     if _cross_encoder is None:
+        import os
+
         from sentence_transformers import CrossEncoder
 
-        _cross_encoder = CrossEncoder(CROSS_ENCODER_MODEL_NAME)
+        _cross_encoder = CrossEncoder(
+            CROSS_ENCODER_MODEL_NAME,
+            revision=os.environ.get("RERANKER_MODEL_REVISION", CROSS_ENCODER_MODEL_REVISION),
+        )
+        from src.provenance import assert_loaded_model_revision
+
+        assert_loaded_model_revision(_cross_encoder, "reranker")
     return _cross_encoder
 
 

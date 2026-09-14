@@ -26,6 +26,7 @@ from src.config import (
     CHUNK_TARGET_TOKENS,
     CORPUS_DIR,
     EMBEDDING_TOKENIZER_NAME,
+    EMBEDDING_TOKENIZER_REVISION,
     MANIFEST_PATH,
     MIN_CHUNK_TOKENS,
     TOKENIZER_AWARE_CHUNK_OVERLAP_TOKENS,
@@ -46,7 +47,9 @@ def get_embedding_tokenizer():
     if _EMBEDDING_TOKENIZER is None:
         from transformers import AutoTokenizer
 
-        _EMBEDDING_TOKENIZER = AutoTokenizer.from_pretrained(EMBEDDING_TOKENIZER_NAME)
+        _EMBEDDING_TOKENIZER = AutoTokenizer.from_pretrained(
+            EMBEDDING_TOKENIZER_NAME, revision=EMBEDDING_TOKENIZER_REVISION
+        )
     return _EMBEDDING_TOKENIZER
 
 

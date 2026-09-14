@@ -26,7 +26,12 @@ import tempfile
 import time
 
 from src.chunking import Chunk, chunk_corpus
-from src.config import CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL_NAME
+from src.config import (
+    CHROMA_DIR,
+    COLLECTION_NAME,
+    EMBEDDING_MODEL_NAME,
+    EMBEDDING_MODEL_REVISION,
+)
 
 _model = None
 
@@ -38,7 +43,13 @@ def _get_model():
     if _model is None:
         from sentence_transformers import SentenceTransformer
 
-        _model = SentenceTransformer(EMBEDDING_MODEL_NAME)
+        _model = SentenceTransformer(
+            EMBEDDING_MODEL_NAME,
+            revision=os.environ.get("EMBEDDING_MODEL_REVISION", EMBEDDING_MODEL_REVISION),
+        )
+        from src.provenance import assert_loaded_model_revision
+
+        assert_loaded_model_revision(_model, "embedding")
     return _model
 
 
