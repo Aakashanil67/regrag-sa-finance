@@ -68,6 +68,14 @@ recognised legacy and v2 rows explicitly with `python -m src.cache --scrub-conte
 `python -m src.cache --scrub-content`. `python -m src.cache --purge-expired --dry-run` reports
 expired v2 rows without removing them. Raw model-output logging remains a separate opt-in.
 
+## Privacy: application failure logs
+
+The `/ask` failure boundary returns the same generic 502 to the caller and logs only a generated
+request ID and exception class with no traceback. User questions, provider exception messages,
+request bodies, keys, raw responses, and question-bearing URLs are intentionally excluded from this
+application event. Provider-side retention and SDK diagnostics remain outside this local storage
+control and should be governed separately by the selected provider.
+
 ## Deployment boundary
 
 - **No authentication** on the API — anyone who can reach it can call `/ask`. Out of scope for

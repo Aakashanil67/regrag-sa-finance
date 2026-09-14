@@ -8,6 +8,7 @@ there's no code path that answers a question without also recording it, which is
 import json
 import logging
 import os
+import uuid
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -134,11 +135,17 @@ def recent_queries_endpoint(limit: int = 100) -> list[RecentQueryOut]:
 def ask(request: Request, body: AskRequest) -> AskResponse | JSONResponse:
     try:
         timed = timed_answer(body.question)
-    except Exception:
+    except Exception as exc:
         # the HTTP boundary: anything from here down (Anthropic API error, chroma I/O, a bad
         # regex) becomes a clean 502 instead of a raw traceback reaching the client. Logged, not
         # swallowed — inner code still raises specific exceptions where it can act on them.
-        logger.exception("answer_question failed for question=%r", body.question)
+        request_id = uuid.uuid4().hex
+        logger.error(
+            "answer_question failed request_id=%s error_type=%s",
+            request_id,
+            type(exc).__name__,
+            exc_info=False,
+        )
         return JSONResponse(
             status_code=502,
             content={"detail": "The assistant is temporarily unavailable. Please try again."},

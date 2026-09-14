@@ -1,5 +1,7 @@
 """api/main.py against a mocked answer pipeline — TestClient, no real LLM or vector store."""
 
+import logging
+
 from fastapi.testclient import TestClient
 
 import api.main as main
@@ -200,6 +202,21 @@ def test_ask_returns_502_when_pipeline_raises(monkeypatch):
 
     assert response.status_code == 502
     assert "temporarily unavailable" in response.json()["detail"]
+
+
+def test_pipeline_failure_does_not_log_user_or_provider_text(monkeypatch, caplog):
+    def fail(question):
+        raise RuntimeError("PRIVATE_PROVIDER_ECHO")
+
+    monkeypatch.setattr(main, "timed_answer", fail)
+    caplog.set_level(logging.ERROR, logger="regrag.api")
+
+    response = client.post("/ask", json={"question": "PRIVATE_QUESTION"})
+
+    assert response.status_code == 502
+    assert "PRIVATE_QUESTION" not in caplog.text
+    assert "PRIVATE_PROVIDER_ECHO" not in caplog.text
+    assert "PRIVATE" not in response.text
 
 
 def test_stats_returns_summary(monkeypatch):
