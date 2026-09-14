@@ -55,6 +55,19 @@ long any row is kept; `python -m src.obslog --purge-expired` deletes rows past t
 without touching aggregate metrics or deleting the rows themselves. The ops dashboard shows
 whether raw logging is currently on or off rather than silently rendering a blank question column.
 
+## Privacy: response caching
+
+Persistent response caching is a separate opt-in (`CACHE_ENABLED=false` by default). Disabled cache
+reads and writes return before opening or creating a database, so turning the setting off prevents
+new persistence but does not erase legacy rows. When enabled, only the versioned
+`response_cache_v2` table is served; it stores a question hash, validated answer, citations,
+refusal metadata, model, and creation/expiry timestamps, with no original-question column. TTL is
+computed at write time and expired rows are not served. Enabling caching therefore permits local
+storage of answer text that may echo a question; it is not an anonymity feature. Inspect or remove
+recognised legacy and v2 rows explicitly with `python -m src.cache --scrub-content --dry-run` and
+`python -m src.cache --scrub-content`. `python -m src.cache --purge-expired --dry-run` reports
+expired v2 rows without removing them. Raw model-output logging remains a separate opt-in.
+
 ## Deployment boundary
 
 - **No authentication** on the API — anyone who can reach it can call `/ask`. Out of scope for

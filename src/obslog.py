@@ -35,6 +35,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 
 from src.config import ROOT
+from src.privacy import privacy_settings
 from src.rag import RAGResult
 
 DB_PATH = ROOT / "regrag_log.sqlite3"
@@ -132,8 +133,9 @@ def log_query(timed: TimedRAGResult) -> None:
     result = timed.result
     unverified = sum(1 for c in result.citations if not c.verified)
 
-    log_raw = os.environ.get("LOG_RAW_CONTENT", "false").strip().lower() == "true"
-    log_raw_output = os.environ.get("LOG_RAW_MODEL_OUTPUT", "false").strip().lower() == "true"
+    settings = privacy_settings()
+    log_raw = settings.log_raw_content
+    log_raw_output = settings.log_raw_model_output
     hash_key = os.environ.get("LOG_HASH_KEY") or None
 
     question = result.question if log_raw else None
@@ -270,7 +272,7 @@ def stats_summary() -> dict:
 
 
 def content_logging_enabled() -> bool:
-    return os.environ.get("LOG_RAW_CONTENT", "false").strip().lower() == "true"
+    return privacy_settings().log_raw_content
 
 
 def main() -> None:

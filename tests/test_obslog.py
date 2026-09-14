@@ -394,3 +394,39 @@ def test_timed_answer_threads_k_into_the_cache_lookup(tmp_path, monkeypatch):
 
     assert seen["get_k"] == 10
     assert seen["set_k"] == 10
+
+
+def test_timed_answer_with_disabled_cache_keeps_synthetic_content_out_of_storage(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "log.sqlite3")
+    monkeypatch.setattr(cache_module, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
+    monkeypatch.delenv("CACHE_ENABLED", raising=False)
+    monkeypatch.delenv("LOG_RAW_CONTENT", raising=False)
+    monkeypatch.delenv("LOG_RAW_MODEL_OUTPUT", raising=False)
+    result = _result(llm_text="PRIVATE_PROVIDER_ECHO")
+    result.question = "PRIVATE_QUESTION"
+    result.answer = "PRIVATE_ANSWER [sarb_d3_2023, p.3]"
+    monkeypatch.setattr(rag_module, "answer_question", lambda q, k=5: result)
+
+    timed_answer("PRIVATE_QUESTION")
+
+    row = recent_queries(limit=1)[0]
+    assert all("PRIVATE" not in str(value) for value in row.values())
+    assert not (tmp_path / "cache.sqlite3").exists()
+
+
+def test_timed_answer_with_enabled_cache_never_persists_the_original_question_column(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "log.sqlite3")
+    monkeypatch.setattr(cache_module, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
+    monkeypatch.setenv("CACHE_ENABLED", "true")
+    monkeypatch.delenv("LOG_RAW_CONTENT", raising=False)
+    monkeypatch.setattr(rag_module, "answer_question", lambda q, k=5: _result())
+
+    timed_answer("PRIVATE_QUESTION")
+
+    with sqlite3.connect(tmp_path / "cache.sqlite3") as conn:
+        columns = {row[1] for row in conn.execute("PRAGMA table_info(response_cache_v2)")}
+        assert "question" not in columns

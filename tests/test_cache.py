@@ -3,9 +3,18 @@ provenance fingerprint that must change whenever the effective pipeline changes 
 owns that computation; cache.py must not keep a second, drifting copy of it — see src/cache.py's
 own docstring for the incident that made this the rule)."""
 
+import sqlite3
+
+import pytest
+
 from src import cache
 from src.llm import LLMResponse
 from src.rag import Citation, RAGResult, RefusalReason
+
+
+@pytest.fixture(autouse=True)
+def _enable_cache_for_existing_cache_contracts(monkeypatch):
+    monkeypatch.setenv("CACHE_ENABLED", "true")
 
 
 def _result(question="What must banks do?", refusal_reason=None) -> RAGResult:
@@ -27,6 +36,17 @@ def test_miss_on_an_unseen_question(tmp_path, monkeypatch):
     monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
 
     assert cache.get_cached("A question never asked before", k=5) is None
+
+
+def test_disabled_cache_never_opens_database(tmp_path, monkeypatch):
+    path = tmp_path / "cache.sqlite3"
+    monkeypatch.setattr(cache, "CACHE_DB_PATH", path)
+    monkeypatch.delenv("CACHE_ENABLED", raising=False)
+
+    cache.set_cached("PRIVATE_MARKER", _result("PRIVATE_MARKER"), k=5)
+
+    assert cache.get_cached("PRIVATE_MARKER", k=5) is None
+    assert not path.exists()
 
 
 def test_set_then_get_returns_the_cached_answer(tmp_path, monkeypatch):
@@ -187,3 +207,97 @@ def test_an_accepted_answer_has_no_refusal_reason_in_the_cache(tmp_path, monkeyp
     cached = cache.get_cached("What must banks do?", k=5)
 
     assert cached.refusal_reason is None
+
+
+def test_v2_cache_has_no_question_column_and_does_not_serve_legacy_rows(tmp_path, monkeypatch):
+    path = tmp_path / "cache.sqlite3"
+    monkeypatch.setattr(cache, "CACHE_DB_PATH", path)
+    with sqlite3.connect(path) as conn:
+        conn.execute(
+            "CREATE TABLE response_cache (question_hash TEXT PRIMARY KEY, question TEXT, answer TEXT)"
+        )
+        conn.execute(
+            "INSERT INTO response_cache VALUES ('legacy-key', 'PRIVATE_QUESTION', 'legacy answer')"
+        )
+
+    assert cache.get_cached("PRIVATE_QUESTION", k=5) is None
+    cache.set_cached("Current question", _result(), k=5)
+
+    with sqlite3.connect(path) as conn:
+        columns = {row[1] for row in conn.execute("PRAGMA table_info(response_cache_v2)")}
+        assert "question" not in columns
+        assert conn.execute("SELECT COUNT(*) FROM response_cache").fetchone()[0] == 1
+        assert conn.execute("SELECT COUNT(*) FROM response_cache_v2").fetchone()[0] == 1
+
+
+def test_expired_cache_entry_is_not_served_at_the_exact_boundary(tmp_path, monkeypatch):
+    path = tmp_path / "cache.sqlite3"
+    monkeypatch.setattr(cache, "CACHE_DB_PATH", path)
+    monkeypatch.setenv("CACHE_TTL_SECONDS", "10")
+    clock = [100.0]
+    monkeypatch.setattr(cache.time, "time", lambda: clock[0])
+
+    cache.set_cached("What must banks do?", _result(), k=5)
+    clock[0] = 110.0
+
+    assert cache.get_cached("What must banks do?", k=5) is None
+
+
+def test_refusal_result_round_trips_with_expiry(tmp_path, monkeypatch):
+    path = tmp_path / "cache.sqlite3"
+    monkeypatch.setattr(cache, "CACHE_DB_PATH", path)
+    refusal = RAGResult(
+        question="Unknown",
+        answer="I don't have a source for that.",
+        citations=[],
+        retrieved_chunks=[],
+        refused=True,
+        flagged_injection=False,
+        llm_response=LLMResponse(
+            text="INSUFFICIENT", model="fake", input_tokens=1, output_tokens=1, cost_usd=0.0
+        ),
+        refusal_reason=RefusalReason.NO_CONTEXT,
+    )
+
+    cache.set_cached("Unknown", refusal, k=5)
+    cached = cache.get_cached("Unknown", k=5)
+
+    assert cached is not None
+    assert cached.refused is True
+    assert cached.refusal_reason is RefusalReason.NO_CONTEXT
+
+
+def test_cache_purge_expired_supports_dry_run_and_removes_only_expired_rows(tmp_path, monkeypatch):
+    path = tmp_path / "cache.sqlite3"
+    monkeypatch.setattr(cache, "CACHE_DB_PATH", path)
+    monkeypatch.setenv("CACHE_TTL_SECONDS", "10")
+    clock = [100.0]
+    monkeypatch.setattr(cache.time, "time", lambda: clock[0])
+    cache.set_cached("old", _result("old"), k=5)
+    clock[0] = 105.0
+    cache.set_cached("new", _result("new"), k=5)
+    clock[0] = 110.0
+
+    assert cache.purge_expired(now=110.0, dry_run=True) == 1
+    with sqlite3.connect(path) as conn:
+        assert conn.execute("SELECT COUNT(*) FROM response_cache_v2").fetchone()[0] == 2
+    assert cache.purge_expired(now=110.0) == 1
+    assert cache.get_cached("old", k=5) is None
+    assert cache.get_cached("new", k=5) is not None
+    assert cache.purge_expired(now=110.0) == 0
+
+
+def test_scrub_cache_removes_legacy_and_v2_rows_even_when_disabled(tmp_path, monkeypatch):
+    path = tmp_path / "cache.sqlite3"
+    monkeypatch.setattr(cache, "CACHE_DB_PATH", path)
+    cache.set_cached("new", _result("new"), k=5)
+    with sqlite3.connect(path) as conn:
+        conn.execute(
+            "CREATE TABLE response_cache (question_hash TEXT PRIMARY KEY, question TEXT, answer TEXT)"
+        )
+        conn.execute("INSERT INTO response_cache VALUES ('old', 'old question', 'old answer')")
+    monkeypatch.delenv("CACHE_ENABLED", raising=False)
+
+    assert cache.scrub_cache(dry_run=True) == {"response_cache": 1, "response_cache_v2": 1}
+    assert cache.scrub_cache() == {"response_cache": 1, "response_cache_v2": 1}
+    assert cache.scrub_cache() == {"response_cache": 0, "response_cache_v2": 0}
