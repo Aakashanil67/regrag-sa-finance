@@ -7,11 +7,8 @@ retrieved chunks cover and flags the rest as unverified.
 
 The corpus mixes legislation, binding directives and non-binding guidance, so `_format_context`
 prints each block's source type and year, and `_source_notices` adds a fixed sentence when a
-third-party source or a Circular was cited. Nothing claims a successor document exists.
-
-`RAGResult.source_notices` is separate from `answer` on purpose: the faithfulness metric checks
-`answer` claims against retrieved text, and a generated disclaimer would score as unsupported.
-api/main.py and app/chat.py render the notices alongside the answer.
+third-party source or a Circular was cited. `RAGResult.source_notices` stays separate from `answer`
+because the faithfulness metric would score a generated disclaimer as unsupported.
 """
 
 import json

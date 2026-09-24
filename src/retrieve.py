@@ -2,12 +2,12 @@
 
 Candidate search is exact in-process cosine similarity, not ChromaDB's HNSW `.query()`. HNSW
 rebuilds its graph on each fresh process with threaded insertion, so identical data gave different
-top-k results across launches. At a few thousand chunks brute force costs milliseconds. Past tens
-of thousands of chunks this needs revisiting. `RetrievedChunk.score` is cosine similarity, or the
+top-k results across launches. Brute force costs milliseconds at a few thousand chunks; past tens
+of thousands it needs revisiting. `RetrievedChunk.score` is cosine similarity, or the
 cross-encoder's score when reranking is on; higher is more relevant either way.
 
-Reranking is two-stage: the bi-encoder searches everything, then the slower but more accurate
-cross-encoder reranks only the top `RERANK_CANDIDATE_POOL_SIZE` candidates.
+Reranking is two-stage: the bi-encoder searches everything, then the slower cross-encoder reranks
+only the top `RERANK_CANDIDATE_POOL_SIZE` candidates.
 
 The `bm25` and `hybrid` strategies add a lexical ranking so identifiers such as "Directive 8/2025"
 match exactly; `hybrid` fuses it with the dense ranking by reciprocal rank fusion.
