@@ -1,7 +1,7 @@
 """The property src/retrieve.py's exact-cosine rewrite exists to guarantee: the same query, run in
 two separate interpreters, returns the same top-k chunk ids. Nothing is mocked on purpose — a fake
 collection cannot reproduce the original bug (ChromaDB's HNSW segment rebuilding its graph with a
-CPU-count thread pool on each fresh process launch; see DECISIONS.md's "Release hardening pass"
+CPU-count thread pool on each fresh process launch; see DECISIONS.md's "The v1.1 fixes"
 section). Skipped, not failed, when the real vector store hasn't been built — it's gitignored and
 neither CI nor a fresh clone has it before `python -m src.store --rebuild` runs.
 """

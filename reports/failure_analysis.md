@@ -1,7 +1,7 @@
 # Failure analysis
 
 Source: `reports/runs/holdout-0cf5e0821ec7.json` — the historical/reused sealed holdout run
-(`python -m evals.run_release --split holdout --label v1.1.0-rc2`), Task 12 of the hardening pass.
+(`python -m evals.run_release --split holdout --label v1.1.0-rc2`).
 30 holdout items, never used for tuning before that run, retrieval `k=5`, reranking on. This
 artifact remains an observation of its recorded pipeline, not current release evidence.
 
@@ -12,7 +12,7 @@ fabricated page reference slipped through — but 7 of 24 answerable items refus
 answering.
 
 This is the second candidate. **v1.1.0-rc1** ran first and completed, but diagnosing its failures
-found a real citation-parsing defect (below), which by the release plan's own rule means that
+found a real citation-parsing defect (below), which by the release rule means that
 holdout was opened — rc1's numbers are not usable as release evidence, only rc2's are.
 
 ## Two defects this run surfaced, both fixed before rc2

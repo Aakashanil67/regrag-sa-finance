@@ -9,7 +9,7 @@ and the one refusal that changed direction (g45) isn't a capability loss introdu
 cross-encoder reranker demotes the National Credit Act's own text below four NCR guideline chunks
 for that specific query (checked directly against src.retrieve.retrieve — the Act's stated-purpose
 chunk ranks 2nd by bi-encoder score but 6th after reranking, outside the k=5 the pipeline uses), a
-pre-existing weakness this session's retrieval code doesn't touch. Before this fix, the model
+pre-existing weakness the retrieval code doesn't touch. Before this fix, the model
 answered anyway from a DTIC brochure describing the Act, treating its summary as equivalent to "the
 Act states X." After, told explicitly that source is a "Regulator explainer brochure," it correctly
 declines to attribute a claim to the Act's own text when that text was never retrieved. The fix
@@ -133,7 +133,7 @@ def write_report(r: dict) -> None:
         "a top-5. The cross-encoder reranker demotes it to 6th, below four NCR guideline chunks it "
         "judges more relevant to this comparison question, pushing it out of the k=5 the "
         "production pipeline uses. That's a reranker misjudgment on this specific query, not a "
-        "bi-encoder retrieval miss, and it predates this session's metadata fix — the retrieval "
+        "bi-encoder retrieval miss, and it predates the metadata fix — the retrieval "
         "code hasn't changed. What changed is what the model does about it: before, given only the "
         "brochure, it answered anyway, treating its summary as equivalent to the Act's own words. "
         'After, told explicitly the source is a "Regulator explainer brochure," it correctly '

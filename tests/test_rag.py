@@ -206,7 +206,7 @@ def test_format_context_omits_source_line_for_an_unknown_doc_id(monkeypatch):
 
 def test_citing_a_third_party_document_produces_a_source_notice(monkeypatch):
     # a synthetic manifest entry, not a real corpus doc_id: the only third-party source the
-    # corpus used to carry (pwc_practical_guide_ifrs9) was removed as stale in Task 5, but the
+    # corpus used to carry (pwc_practical_guide_ifrs9) was removed as stale, but the
     # notice-generation logic keyed on is_third_party still needs its own coverage
     monkeypatch.setattr(
         rag,

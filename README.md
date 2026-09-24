@@ -186,7 +186,7 @@ that's subtly different from the one actually asked — wrong for a tool whose w
 citation accuracy. The cache key folds in provider, model, temperature, k, corpus fingerprint,
 chunking/reranking config, and the citation-contract version, so a pipeline change invalidates old
 entries instead of silently serving stale answers under a matching key — a real incident during
-this hardening pass (see `DECISIONS.md`).
+the v1.1 fixes (see `DECISIONS.md`).
 
 **Split API/UI dependencies, not one requirements file baked into every image.** Neither Streamlit
 process touches the vector store or an LLM SDK directly; both call the API over HTTP. Splitting
@@ -291,7 +291,7 @@ Full reasoning in `reports/security_notes.md`.
 - **Claude isn't called at temperature 0 in the sense of guaranteeing bit-identical output** —
   even with `LLM_TEMPERATURE=0`, one holdout item's pass/fail outcome was confirmed, by direct
   reproduction, to depend on sampling variance rather than a code defect. Retrieval is now fully
-  deterministic after this hardening pass; answer generation is not, and the 71% answerable rate
+  deterministic after the v1.1 fixes; answer generation is not, and the 71% answerable rate
   should be read as a point estimate with that caveat, not an exactly reproducible count.
 - **RAGAS scores Claude's output using Claude as judge.** Same-family judge bias is a known,
   unresolved limitation; `reports/failure_analysis.md` documents specific cases where the judge

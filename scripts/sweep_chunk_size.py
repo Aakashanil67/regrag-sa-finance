@@ -43,7 +43,7 @@ def _build_isolated_collection(
 ):
     """Build one isolated corpus collection for a bounded retrieval experiment.
 
-    This is the shared construction path for the historical chunk-size sweep and the Stage B
+    This is the shared construction path for the historical chunk-size sweep and the
     three-variant comparison. The production Chroma directory is never touched.
     """
     start = time.perf_counter()

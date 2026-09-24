@@ -213,7 +213,7 @@ data used to build it. 0.5 leaves room for that outlier and for ordinary run-to-
 between answering and refusing across separate live runs of the same question) without the gate
 firing on noise, while still catching an actual collapse in grounding.
 
-## Eval-driven improvement (Phase 8)
+## Eval-driven improvement
 
 **Chunk size and reranking were swept together, not tuned one at a time.** `scripts/sweep_chunk_size.py`
 re-chunks and re-embeds the whole corpus at 300/500/800 tokens into a throwaway Chroma collection
@@ -260,7 +260,7 @@ answer — see `reports/failure_analysis.md`.)
 
 **The same heading-misclassification bug bit twice, in two different date formats, six documents
 apart.** The first instance (a bare `"08 July 2020"` press-release dateline, no punctuation)
-was caught during Phase 2 chunk-quality review and fixed by excluding date-shaped lines from
+was caught during chunk-quality review and fixed by excluding date-shaped lines from
 `_is_heading` before the numbering check runs. `failure_analysis.md`'s investigation of golden
 item `g08` found the same failure mode in `sarb_circular_19_2004`: a sentence-ending date with its
 own full stop still attached (`"28 February 2005."`) didn't match the first fix's regex, which
@@ -298,7 +298,7 @@ higher for the query as written.** `g37` and `g44` both ask "which body do X and
 a single embedding of that sentence pulls hard toward whichever document's vocabulary the query
 text happens to resemble more, and a 3-chunk document has fewer chances to be that closest match.
 Query decomposition (retrieve once per named document, then merge context) would fix this
-directly; not built this session, since Phase 8's scope was the chunk-size/reranking sweep, not a
+directly; not built, since the scope was the chunk-size/reranking sweep, not a
 retrieval-architecture change — tracked here as the concrete next improvement rather than folded
 silently into "retrieval sometimes misses."
 
@@ -329,7 +329,7 @@ resolves `chroma-hnswlib` and the rest of the compiled-extension dependency chai
 Windows Build Tools on the host (`python:3.12-slim`'s manylinux wheels cover it; no extra apt
 packages were needed in the Dockerfile).
 
-## Agent extension (Phase 12, stretch)
+## Agent extension (an experiment that failed)
 
 **Built to test one specific, already-diagnosed failure, not "agents are generally better."**
 `reports/failure_analysis.md` found that two golden items (`g37`, `g44`) refuse because a
@@ -353,7 +353,7 @@ the same live non-determinism already documented in the RAGAS section (Claude is
 temperature 0 here), just landing on a different part of the pipeline — the agent moves the
 failure point from "can't find the right chunks" to "won't always commit to an answer once it has
 them," which is progress on the diagnosed retrieval problem but not yet a clean fix, and isn't
-being reported as one. Not pursued further this session (recalibrating for run-to-run variance
+being reported as one. Not pursued further (recalibrating for run-to-run variance
 would mean re-running the batch until the numbers looked good, which is the opposite of an honest
 measurement) — the negative-leaning result is reported as measured, per the plan's own instruction
 that a measured non-improvement is worth more than a silently dropped feature.
@@ -381,7 +381,7 @@ arrows. Same correction applies to the retrieval benchmark: 85%→95% is 17/20 v
 questions, Wilson intervals 64–95% and 76–99%, and I should not have printed it as a clean 10-point
 gain without saying so.
 
-**The response cache was keyed on question text alone, so the Phase 8 config change never
+**The response cache was keyed on question text alone, so the config change never
 invalidated it.** Adopting chunk_size=800 + reranking rebuilt the vector store and changed what
 retrieval returns, but every already-cached answer kept its key and kept being served. The eval
 reports would have described the new configuration while the running API returned pre-improvement
@@ -477,7 +477,7 @@ refusing. Checked directly against `src.retrieve.retrieve` at both stages rather
 Act's own stated-purpose chunk (`nca_act_34_2005` p.1-2) ranks 2nd by bi-encoder similarity for this
 query — comfortably inside a top-5 — but the cross-encoder reranker demotes it to 6th, below four
 NCR guideline chunks it judges more relevant, pushing it out of the k=5 the production pipeline
-uses. That's a reranker misjudgment on this specific query, and it predates this session's
+uses. That's a reranker misjudgment on this specific query, and it predates the
 metadata fix entirely — the retrieval code didn't change. What changed is what the model does with
 only the brochure in front of it: before, it answered anyway, treating the brochure's summary as
 equivalent to the Act's own words; told explicitly that the source is a "Regulator explainer
@@ -551,7 +551,7 @@ crash (caught internally, harmless) happened either way. Pinning `posthog==3.7.0
 requirements.txt is the actual fix; `anonymized_telemetry=False` stayed in `store.py` anyway,
 since a local research tool has no reason to phone home even with a compatible posthog version.
 
-## Release hardening pass (v1.1.0)
+## The v1.1 fixes (v1.1.0)
 
 The tagged v1.0.0 audit above found real defects but the release rules it operated under were
 still loose: no dev/holdout separation, an evaluation harness that could publish a partial run as
@@ -660,7 +660,7 @@ image), not assumed from the requirements file split alone. The API image itself
 2.73GB after the same CPU-only-torch fix the v1.0 audit applied, re-verified on this split's
 rebuild rather than assumed still true.
 
-## Expert-readiness evidence lifecycle (2026-09-14)
+## Evidence lifecycle (2026-09-14)
 
 The old holdout protocol, question files, CI fixture, and three holdout run artifacts are now
 registered as `historical_reused` evidence with their original SHA-256 values. The completed rc2

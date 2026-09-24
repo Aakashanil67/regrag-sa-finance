@@ -1,6 +1,6 @@
 """Streamlit chat UI. Talks to the FastAPI backend over HTTP — it never imports src.rag directly
 — so the UI and the API stay two genuinely separate deployable pieces, matching the
-docker-compose split (Phase 11) rather than a UI that happens to also contain the RAG logic.
+docker-compose split rather than a UI that happens to also contain the RAG logic.
 
     streamlit run app/chat.py
 """

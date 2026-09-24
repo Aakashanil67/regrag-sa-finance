@@ -1,4 +1,4 @@
-# Smoke test transcript (Task 13, final local release gate)
+# Smoke test transcript
 
 ## current binding source: What three risk frameworks does Directive 8/2025 set threshold amounts for?
 

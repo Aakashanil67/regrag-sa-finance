@@ -1,6 +1,6 @@
 # Corpus authority and currency review — 2026-09-14
 
-This is a source-audit record for Stage B Task 9. It is a reproducibility and retrieval-safety
+This is a source-audit record for the corpus review. It is a reproducibility and retrieval-safety
 review, not a legal opinion. Official landing pages, normative PDFs, and current-status notices
 were checked on 2026-09-14 where the relevant public pages were available. Local PDF quality is
 reported from the byte-pinned files already present in `corpus/`; no corpus PDF was downloaded,
