@@ -5,7 +5,6 @@ rebuilds its graph on each fresh process with threaded insertion, so identical d
 top-k results across launches. Brute force costs milliseconds at a few thousand chunks; past tens
 of thousands it needs revisiting. `RetrievedChunk.score` is cosine similarity, or the
 cross-encoder's score when reranking is on; higher is more relevant either way.
-
 Reranking is two-stage: the bi-encoder searches everything, then the slower cross-encoder reranks
 only the top `RERANK_CANDIDATE_POOL_SIZE` candidates.
 
