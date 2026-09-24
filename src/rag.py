@@ -43,7 +43,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from functools import lru_cache
 
-from src.config import MANIFEST_PATH, RERANK, RETRIEVAL_K
+from src.config import CITATION_REPAIR, MANIFEST_PATH, RERANK, RETRIEVAL_K
 from src.guardrails import contains_injection_attempt
 from src.llm import LLMResponse, complete
 from src.retrieve import RetrievedChunk, retrieve
@@ -52,7 +52,8 @@ INSUFFICIENT_CONTEXT_PHRASE = "I don't have a source for that."
 
 # Bump when validate_generated_answer's rules change in a way that would make an old cached or
 # recorded answer's pass/fail outcome no longer reproducible under the current contract.
-CITATION_CONTRACT_VERSION = 2
+# Version 3: a format-only failure may be retried once before the answer is refused.
+CITATION_CONTRACT_VERSION = 3
 
 
 class RefusalReason(StrEnum):
@@ -156,6 +157,8 @@ class RAGResult:
     # synthetic results remain compatible; schema-2 evaluation artifacts persist it when present.
     formatted_context: str | None = None
     retrieval_coverage: dict = field(default_factory=dict)
+    repair_attempted: bool = False
+    first_raw_output: str | None = None
 
 
 @dataclass(frozen=True)
@@ -370,6 +373,19 @@ def validate_generated_answer(answer: str, chunks: list[RetrievedChunk]) -> Answ
     )
 
 
+_REPAIRABLE = {
+    RefusalReason.MALFORMED_CITATION: "a citation was not in the exact [doc_id, p.X] form",
+    RefusalReason.UNCITED_LINE: "a line had no citation",
+    RefusalReason.MISSING_CITATION: "it had no citations",
+}
+_REPAIR_TEMPLATE = (
+    "Your previous answer was rejected because {problem}. Rewrite it so every non-empty line is "
+    "one factual sentence ending in citations of the exact form [doc_id, p.X] copied from the "
+    "context headers. Do not add facts that are not in the context. If the context does not "
+    'support an answer, reply with exactly: "{refusal}"\n\nPrevious answer:\n{previous}'
+)
+
+
 def answer_question(question: str, k: int = RETRIEVAL_K) -> RAGResult:
     flagged = contains_injection_attempt(question)
     # rerank=True: reports/archive/v1.0-audit/improvement_log.md measured this against the retrieval benchmark
@@ -400,6 +416,29 @@ def answer_question(question: str, k: int = RETRIEVAL_K) -> RAGResult:
     llm_response = complete(system=_SYSTEM_PROMPT, user=user_message)
 
     validated = validate_generated_answer(llm_response.text, chunks)
+    repair_attempted = False
+    first_raw_output = None
+    if CITATION_REPAIR and validated.refused and validated.refusal_reason in _REPAIRABLE:
+        repair_attempted = True
+        first_raw_output = llm_response.text
+        retry = complete(
+            system=_SYSTEM_PROMPT,
+            user=user_message
+            + "\n\n"
+            + _REPAIR_TEMPLATE.format(
+                problem=_REPAIRABLE[validated.refusal_reason],
+                refusal=INSUFFICIENT_CONTEXT_PHRASE,
+                previous=llm_response.text,
+            ),
+        )
+        llm_response = LLMResponse(
+            text=retry.text,
+            model=retry.model,
+            input_tokens=llm_response.input_tokens + retry.input_tokens,
+            output_tokens=llm_response.output_tokens + retry.output_tokens,
+            cost_usd=llm_response.cost_usd + retry.cost_usd,
+        )
+        validated = validate_generated_answer(retry.text, chunks)
     notices = [] if validated.refused else _source_notices(validated.citations)
 
     return RAGResult(
@@ -414,4 +453,6 @@ def answer_question(question: str, k: int = RETRIEVAL_K) -> RAGResult:
         refusal_reason=validated.refusal_reason,
         formatted_context=formatted_context,
         retrieval_coverage=getattr(chunks, "coverage", {}),
+        repair_attempted=repair_attempted,
+        first_raw_output=first_raw_output,
     )
