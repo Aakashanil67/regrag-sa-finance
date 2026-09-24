@@ -30,18 +30,16 @@ st.set_page_config(page_title="RegRAG — Ops", page_icon="📊", layout="wide")
 st.title("RegRAG Ops Dashboard")
 
 st.header("Eval score history")
-eval_history_path = REPORTS_DIR / "eval_history_v2.csv"
-if not eval_history_path.exists():
-    eval_history_path = REPORTS_DIR / "eval_history.csv"
+eval_history_path = REPORTS_DIR / "eval_runs.csv"
 if eval_history_path.exists():
     eval_df = pd.read_csv(eval_history_path, parse_dates=["timestamp"])
     eval_df, metric_cols = prepare_eval_history(eval_df)
     if "evidence_scope" in eval_df:
-        st.caption("Development and release/holdout observations are labelled separately.")
+        st.caption("Development and test observations are labelled separately.")
     st.line_chart(eval_df.set_index("timestamp")[metric_cols])
     st.dataframe(eval_df.tail(10), use_container_width=True)
 else:
-    st.info("No eval runs yet — run `python -m evals.run_release --split dev --label ...`.")
+    st.info("No eval runs yet — run `python -m evals.run_eval --split dev --label ...`.")
 
 st.header("Usage")
 try:
@@ -88,4 +86,4 @@ bench_path = REPORTS_DIR / "retrieval_bench.md"
 if bench_path.exists():
     st.markdown(bench_path.read_text(encoding="utf-8"))
 else:
-    st.info("No retrieval benchmark yet — run `python -m evals.retrieval_bench`.")
+    st.info("No retrieval benchmark report yet.")

@@ -1,7 +1,6 @@
 """Pure statistics helpers, stdlib-only — no project imports. Kept separate from
-evals/retrieval_bench.py deliberately: that module imports src.retrieve at module scope, which
-pulls in chromadb and sentence-transformers, and evals/render_summary.py needs to compute
-confidence intervals from a saved run artifact without a vector store anywhere in reach.
+the modules that import src.retrieve: those pull in chromadb and sentence-transformers, and
+callers here compute confidence intervals from a saved run artifact without a vector store.
 """
 
 import math

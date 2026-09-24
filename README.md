@@ -17,7 +17,7 @@ wrong answer, stated as if it were current law, costs more than that.
 ## Historical holdout observation (reused evidence)
 
 The following is the completed `v1.1.0-rc2` observation from 30 questions, originally held out
-and cryptographically sealed (`evals/protocol.json`) before tuning against them. Its raw protocol,
+and cryptographically sealed (`reports/archive/v1.1/evals/protocol.json`) before tuning against them. Its raw protocol,
 questions, and run artifact are preserved unchanged. It remains valid evidence about the pipeline
 recorded at that time, but it is historical/reused evidence rather than a current release test:
 later behaviour changes require a new current snapshot. The registry therefore keeps this project
@@ -225,25 +225,25 @@ mis-dated third-party IFRS 9 guide replaced with the official 2021 text) are in
 
 Three tiers, deliberately kept apart:
 
-- **`evals/golden_dev.jsonl`** (57 items) and **`evals/retrieval_dev.json`** — the development
+- **`reports/archive/v1.1/evals/golden_dev.jsonl`** (57 items) and **`reports/archive/v1.1/evals/retrieval_dev.json`** — the development
   set, freely re-run and inspected while tuning. Numbers from this set guide decisions; they are
   never release evidence on their own.
-- **`evals/fixtures/ci_subset.json`** (10 items, `python -m evals.record_fixtures`) — a frozen
+- **`reports/archive/v1.1/evals/ci_subset.json`** (10 items, `python -m evals.record_fixtures`) — a frozen
   snapshot of real model output, re-recorded only when tracked inputs change. CI
   (`evals/test_snapshot_integrity.py`) checks that the fixture still matches current code, and
   flags every tracked input the fixture is stale against — it proves reproducibility against a
   past recording, not that a hosted model behaves identically today.
-- **`evals/golden_holdout.jsonl`** (30 items) — sealed via `evals/protocol.json`
+- **`reports/archive/v1.1/evals/golden_holdout.jsonl`** (30 items) — sealed via `reports/archive/v1.1/evals/protocol.json`
   (SHA-256 over the file, a pipeline fingerprint recorded at seal time, and an explicit "do not
   edit to make a result pass" clause) before any tuning touched it. `python -m evals.run_release
   --split holdout` is meant to run exactly once per release candidate; a partial run (a generation
   or judge failure) blocks promotion outright rather than producing a partial number.
-  `python -m evals.render_summary <artifact>` re-renders `reports/eval_summary.md` from an
+  `python -m evals.render_summary <artifact>` re-renders `reports/archive/v1.1/reports/eval_summary.md` from an
   already-saved run with no LLM call, so a formatting fix (like the CI column above) doesn't need
   a new paid run — it refuses to render unless the artifact's own items still recompute to its
   stored metrics. `python -m scripts.build_review_packet <artifact>` exports every item —
   question, generated answer, the actual chunk text of every cited page, what retrieval returned,
-  the reference answer — into `reports/holdout_review_packet.md`, so entailment can be checked by
+  the reference answer — into `reports/archive/v1.1/reports/holdout_review_packet.md`, so entailment can be checked by
   someone who knows this domain without reading any code.
 
 ## Security, privacy, and deployment boundary
@@ -298,7 +298,7 @@ Full reasoning in `reports/security_notes.md`.
   and a manual read disagreed.
 - **The golden and holdout sets were authored by one person (me) and are not independently
   reviewed.** A subtly wrong reference answer produces a confidently wrong score, and nothing in
-  the harness would catch it on its own. `reports/holdout_review_packet.md` now exists so a domain
+  the harness would catch it on its own. `reports/archive/v1.1/reports/holdout_review_packet.md` now exists so a domain
   expert could check entailment on every sealed item without reading code — but no one has actually
   done that review yet. The gap is still open; only the cost of closing it has gone down.
 

@@ -240,7 +240,7 @@ rebuilt *production* store confirmed the same 95%/0.808 the throwaway sweep pred
 collection wasn't measuring something the real store then failed to reproduce.
 
 **A live RAGAS re-run mid-flight is what caught that `evals/run_ragas.py` appends to
-`reports/eval_history.csv`, not overwrites it** — I'd deleted the file before the "after" run to
+`reports/archive/v1.1/reports/eval_history.csv`, not overwrites it** — I'd deleted the file before the "after" run to
 get a clean single row, which also erased the pre-improvement baseline row that made "before vs.
 after" a comparison instead of one number. Recovered the baseline via `git show HEAD:reports/eval_history.csv`
 (it was already committed) before re-running, rather than losing the one thing the improvement
@@ -601,10 +601,10 @@ this was found outside the audit's original checklist.
 because reusing it as release evidence would make every future number partly a measurement of
 which questions had already been tuned against.** `evals/golden.jsonl` and `retrieval_set.json`
 split into `_dev` (kept, freely re-run) and `_holdout` (30 items each, never touched during
-tuning) files, sealed by `evals/protocol.json` — a SHA-256 of the holdout files plus the pipeline
+tuning) files, sealed by `reports/archive/v1.1/evals/protocol.json` — a SHA-256 of the holdout files plus the pipeline
 fingerprint at seal time, with an explicit clause that a genuine reference error found later
 requires a documented protocol version bump and new user sign-off, not a quiet edit. CI's own
-snapshot fixture (`evals/fixtures/ci_subset.json`) is a third, distinct tier: a frozen recording of
+snapshot fixture (`reports/archive/v1.1/evals/ci_subset.json`) is a third, distinct tier: a frozen recording of
 real model output, re-recorded only when `evals/test_snapshot_integrity.py`'s own stale-input check
 says a tracked file changed — it exists to catch code regressions against a fixed point, not to
 measure current quality, and conflating it with either dev or holdout numbers would misrepresent

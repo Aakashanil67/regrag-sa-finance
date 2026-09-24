@@ -8,9 +8,9 @@ on:
 
 jobs:
   # Offline contracts only — linting, formatting, manifest validation, and tests against frozen
-  # fixtures/mocks. No API key, no live LLM call, no paid RAGAS judge run on every push. That
-  # means this job proves the citation contract, corpus schema, and recorded-snapshot invariants
-  # still hold; it does not measure current hosted-model quality — that's `evals/run_release.py`,
+  # fixtures/mocks. No API key, no live LLM call, no paid eval run on every push. That
+  # means this job proves the citation contract, corpus schema, and sealed-test-set hash
+  # still hold; it does not measure current hosted-model quality — that's `evals/run_eval.py`,
   # an explicit, paid, local/manual command (see DECISIONS.md).
   offline-contracts:
     runs-on: ubuntu-latest
@@ -30,12 +30,12 @@ jobs:
 
       # A fresh clone on a machine with core.autocrlf=true (a common Windows default) checked
       # eval/text files out as CRLF even though the committed blob is LF, silently breaking
-      # evals/protocol.json's pinned SHA-256 of the sealed holdout files. .gitattributes
+      # evals/protocol_test.json's pinned SHA-256 of the sealed test file. .gitattributes
       # (`* text=auto eol=lf`) fixes it by pinning line endings regardless of the cloning
       # machine's setting. This step proves it on Linux, in about two seconds, by forcing the
       # exact checkout behaviour that exposed the bug and running the real hash-matching test
       # against the result — delete .gitattributes and this goes red.
-      - name: A CRLF-defaulting checkout must still reproduce the sealed holdout hash
+      - name: A CRLF-defaulting checkout must still reproduce the sealed test hash
         run: |
           git -c core.autocrlf=true checkout-index -a -f --prefix="$RUNNER_TEMP/crlf-check/"
           cd "$RUNNER_TEMP/crlf-check"

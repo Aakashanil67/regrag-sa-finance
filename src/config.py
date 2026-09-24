@@ -12,15 +12,9 @@ REPORTS_DIR = ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
 
 EVALS_DIR = ROOT / "evals"
-GOLDEN_DEV_PATH = EVALS_DIR / "golden_dev.jsonl"
-GOLDEN_HOLDOUT_PATH = EVALS_DIR / "golden_holdout.jsonl"
-RETRIEVAL_DEV_PATH = EVALS_DIR / "retrieval_dev.json"
-RETRIEVAL_HOLDOUT_PATH = EVALS_DIR / "retrieval_holdout.json"
-EVAL_PROTOCOL_PATH = EVALS_DIR / "protocol.json"
 QUESTIONS_DEV_PATH = EVALS_DIR / "questions_dev.jsonl"
 QUESTIONS_TEST_PATH = EVALS_DIR / "questions_test.jsonl"
 PROTOCOL_TEST_PATH = EVALS_DIR / "protocol_test.json"
-EVAL_HISTORY_CSV = REPORTS_DIR / "eval_history.csv"
 
 CACHE_DB_PATH = ROOT / "regrag_cache.sqlite3"
 
