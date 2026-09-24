@@ -137,7 +137,11 @@ def _complete_ollama(settings: LLMSettings, system: str, user: str, max_tokens: 
                 {"role": "user", "content": user},
             ],
             "stream": False,
-            "options": {"num_predict": max_tokens, "temperature": settings.temperature},
+            "options": {
+                "num_predict": max_tokens,
+                "temperature": settings.temperature,
+                "num_ctx": 8192,
+            },
         },
         timeout=120.0,
     )
@@ -159,8 +163,15 @@ _PROVIDERS = {
 }
 
 
-def complete(system: str, user: str, max_tokens: int | None = None) -> LLMResponse:
-    settings = effective_llm_settings()
+def settings_for(provider: str, model: str, max_tokens: int = 300) -> LLMSettings:
+    host = os.environ.get("OLLAMA_HOST", DEFAULT_OLLAMA_HOST) if provider == "ollama" else None
+    return LLMSettings(provider=provider, model=model, temperature=0.0, max_tokens=max_tokens, host=host)
+
+
+def complete(
+    system: str, user: str, max_tokens: int | None = None, settings: LLMSettings | None = None
+) -> LLMResponse:
+    settings = settings or effective_llm_settings()
     return _PROVIDERS[settings.provider](
         settings, system, user, max_tokens if max_tokens is not None else settings.max_tokens
     )
