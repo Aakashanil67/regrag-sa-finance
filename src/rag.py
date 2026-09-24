@@ -43,7 +43,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from functools import lru_cache
 
-from src.config import MANIFEST_PATH
+from src.config import MANIFEST_PATH, RERANK, RETRIEVAL_K
 from src.guardrails import contains_injection_attempt
 from src.llm import LLMResponse, complete
 from src.retrieve import RetrievedChunk, retrieve
@@ -370,14 +370,14 @@ def validate_generated_answer(answer: str, chunks: list[RetrievedChunk]) -> Answ
     )
 
 
-def answer_question(question: str, k: int = 5) -> RAGResult:
+def answer_question(question: str, k: int = RETRIEVAL_K) -> RAGResult:
     flagged = contains_injection_attempt(question)
     # rerank=True: reports/archive/v1.0-audit/improvement_log.md measured this against the retrieval benchmark
     # (hit-rate@5 85% -> 95%, MRR 0.654 -> 0.808 at this chunk size) before it became the default.
     # retrieve() applies the explicit production strategy from src.config.RETRIEVAL_STRATEGY;
     # keeping the default call shape also preserves injectable retrieval fakes used by offline
     # tests and review tooling.
-    chunks = retrieve(question, k=k, rerank=True)
+    chunks = retrieve(question, k=k, rerank=RERANK)
 
     if not chunks:
         return RAGResult(

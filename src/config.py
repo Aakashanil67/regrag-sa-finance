@@ -1,5 +1,6 @@
 """Single source of truth for paths, seeds and pipeline constants."""
 
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -20,19 +21,50 @@ EVAL_HISTORY_CSV = REPORTS_DIR / "eval_history.csv"
 
 CACHE_DB_PATH = ROOT / "regrag_cache.sqlite3"
 
+
 # --- ingestion / chunking ---
+def _env(name: str, default: str) -> str:
+    return os.environ.get(f"REGRAG_{name}", default)
+
+
 # tiktoken's cl100k_base isn't the tokenizer either Claude or the embedding model actually uses —
 # there's no free, dependency-light tokenizer for either — but it's a stable, fast proxy for
 # "roughly how big is this chunk", which is all the chunk-size budget needs.
 TOKENIZER_ENCODING = "cl100k_base"
-# 800, not the originally-planned 500: reports/archive/v1.0-audit/improvement_log.md swept 300/500/800 tokens x
-# reranking on/off against the retrieval benchmark. 800+rerank won on every measure (hit-rate@5
-# 95% vs 500's 85%, MRR 0.808 vs 0.654) and reranking improved every chunk size it was paired
-# with — larger chunks give the cross-encoder more context to judge relevance against, at the
-# cost of a coarser citation (a chunk's page range covers more ground). 500 was the more common
-# default for a first implementation; 800 is what the eval actually rewarded.
-CHUNK_TARGET_TOKENS = 800
-CHUNK_OVERLAP_TOKENS = 75
+# 800 tokens plus reranking won the v1.0 chunk-size sweep (reports/archive/v1.0-audit/improvement_log.md)
+CHUNK_MODE = _env("CHUNK_MODE", "tiktoken")  # tiktoken | wordpiece
+CHUNK_TARGET_TOKENS = int(_env("CHUNK_TARGET", "800"))
+CHUNK_OVERLAP_TOKENS = int(_env("CHUNK_OVERLAP", "75"))
+EMBEDDING_MODEL_NAME = _env("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+EMBEDDING_MODEL_REVISION = _env("EMBEDDING_REVISION", "1110a243fdf4706b3f48f1d95db1a4f5529b4d41")
+RETRIEVAL_STRATEGY = _env("RETRIEVAL_STRATEGY", "semantic")
+RERANK = _env("RERANK", "1") == "1"
+CITATION_REPAIR = _env("CITATION_REPAIR", "0") == "1"
+RETRIEVAL_K = int(_env("K", "5"))
+_chroma = Path(_env("CHROMA_DIR", "chroma"))
+CHROMA_DIR = _chroma if _chroma.is_absolute() else ROOT / _chroma
+
+
+def effective_settings() -> dict:
+    """The knobs a named config can change, as this process sees them."""
+    return {
+        "chunk_mode": CHUNK_MODE,
+        "chunk_target": CHUNK_TARGET_TOKENS,
+        "chunk_overlap": CHUNK_OVERLAP_TOKENS,
+        "embedding_model": EMBEDDING_MODEL_NAME,
+        "embedding_revision": EMBEDDING_MODEL_REVISION,
+        "retrieval_strategy": RETRIEVAL_STRATEGY,
+        "rerank": RERANK,
+        "citation_repair": CITATION_REPAIR,
+        "chroma_dir": (
+            CHROMA_DIR.relative_to(ROOT).as_posix()
+            if CHROMA_DIR.is_relative_to(ROOT)
+            else str(CHROMA_DIR)
+        ),
+        "k": RETRIEVAL_K,
+    }
+
+
 MIN_CHUNK_TOKENS = 40  # trailing fragments below this get merged into the previous chunk
 
 # a line repeated across at least this fraction of a document's pages is running header/footer
@@ -43,11 +75,7 @@ HEADER_FOOTER_REPEAT_FRACTION = 0.4
 TOC_DOT_LEADER_FRACTION = 0.3
 
 # --- vector store ---
-CHROMA_DIR = ROOT / "chroma"
 COLLECTION_NAME = "regrag_chunks"
-EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
-# Actual Hugging Face snapshot commits loaded from the local cache on 2026-09-14.
-EMBEDDING_MODEL_REVISION = "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
 # The serving path remains the legacy tiktoken configuration until a retrieval variant is
 # selected. These explicit values are the tokenizer-aware experiment defaults; they are kept
 # separate so an audit or isolated store cannot silently change serving behaviour.
@@ -66,7 +94,6 @@ CROSS_ENCODER_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 RERANKER_MODEL_REVISION = "233902d25c440f23af6f7d6e94d2946bac0bee0a"
 CROSS_ENCODER_MODEL_REVISION = RERANKER_MODEL_REVISION
 RERANK_CANDIDATE_POOL_SIZE = 20  # how many embedding-search candidates the reranker sees
-RETRIEVAL_STRATEGY = "semantic"  # production default; named_balanced is an experiment variant
 
 # --- LLM ---
 DEFAULT_ANTHROPIC_MODEL = "claude-haiku-4-5"

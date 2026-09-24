@@ -37,3 +37,4 @@ Thumbs.db
 # are enough for anyone to rebuild the corpus from source
 *.pdf
 Project 4 - AUTOPILOT - RegRAG (RAG + Evals).md
+chroma_variants/

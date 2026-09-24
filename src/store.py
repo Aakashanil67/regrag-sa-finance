@@ -149,12 +149,15 @@ def rebuild() -> dict:
         embeddings = embed_texts([c.text for c in chunks_to_add])
         embed_seconds = time.perf_counter() - start
 
-        collection.add(
-            ids=to_add_ids,
-            embeddings=embeddings,
-            documents=[c.text for c in chunks_to_add],
-            metadatas=[_chunk_metadata(c) for c in chunks_to_add],
-        )
+        # chroma rejects a single add() above its max batch size (5461 here)
+        for i in range(0, len(to_add_ids), 5000):
+            batch = chunks_to_add[i : i + 5000]
+            collection.add(
+                ids=to_add_ids[i : i + 5000],
+                embeddings=embeddings[i : i + 5000],
+                documents=[c.text for c in batch],
+                metadatas=[_chunk_metadata(c) for c in batch],
+            )
 
     stats = {
         "added": len(to_add_ids),

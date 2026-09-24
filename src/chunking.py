@@ -23,6 +23,7 @@ from dataclasses import dataclass, field
 import tiktoken
 
 from src.config import (
+    CHUNK_MODE,
     CHUNK_OVERLAP_TOKENS,
     CHUNK_TARGET_TOKENS,
     CORPUS_DIR,
@@ -365,12 +366,19 @@ def chunk_corpus() -> dict[str, list[Chunk]]:
     """Ingest + chunk every document in the manifest. Keyed by doc_id for src/store.py."""
     manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
     result = {}
+    tokenizer = get_embedding_tokenizer() if CHUNK_MODE == "wordpiece" else None
     for entry in manifest:
         pdf_path = CORPUS_DIR / entry["filename"]
         if not pdf_path.exists():
             continue
         elements = extract_elements(pdf_path)
-        result[entry["id"]] = chunk_document(entry["id"], elements)
+        result[entry["id"]] = chunk_document(
+            entry["id"],
+            elements,
+            tokenizer=tokenizer,
+            target_tokens=CHUNK_TARGET_TOKENS,
+            overlap_tokens=CHUNK_OVERLAP_TOKENS,
+        )
     return result
 
 
