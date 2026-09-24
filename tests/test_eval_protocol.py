@@ -18,7 +18,6 @@ from src.config import (
     RETRIEVAL_HOLDOUT_PATH,
 )
 
-
 # documents added to the corpus after the v1.1 question sets were frozen; those sets can't cover them
 _ADDED_AFTER_FREEZE = {
     "fsr_act_9_2017",
