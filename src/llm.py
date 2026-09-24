@@ -1,4 +1,4 @@
-"""Provider-agnostic chat completion: anthropic (default), openai, or a local ollama, picked by
+"""Provider-agnostic chat completion: openai (default), anthropic, or a local ollama, picked by
 the LLM_PROVIDER env var so the same rag.py code runs on a paid API key or entirely offline.
 
 Cost is an estimate, not a bill: `PRICING_PER_MILLION_TOKENS` in config.py is a snapshot of public
@@ -47,20 +47,20 @@ def effective_llm_settings() -> LLMSettings:
     """The one place provider/model/temperature are resolved from the environment — both the
     generation call and provenance.pipeline_fingerprint() call this, so a fingerprint can never
     silently disagree with what a request actually sent."""
-    provider = os.environ.get("LLM_PROVIDER", "anthropic").lower()
+    provider = (os.environ.get("LLM_PROVIDER") or "openai").lower()
     temperature = float(os.environ.get("LLM_TEMPERATURE", "0"))
     if not 0 <= temperature <= 1:
         raise ValueError("LLM_TEMPERATURE must be between 0 and 1")
 
     if provider == "anthropic":
-        model = os.environ.get("ANTHROPIC_MODEL", DEFAULT_ANTHROPIC_MODEL)
+        model = os.environ.get("ANTHROPIC_MODEL") or DEFAULT_ANTHROPIC_MODEL
         host = None
     elif provider == "openai":
-        model = os.environ.get("OPENAI_MODEL", DEFAULT_OPENAI_MODEL)
+        model = os.environ.get("OPENAI_MODEL") or DEFAULT_OPENAI_MODEL
         host = None
     elif provider == "ollama":
-        model = os.environ.get("OLLAMA_MODEL", DEFAULT_OLLAMA_MODEL)
-        host = os.environ.get("OLLAMA_HOST", DEFAULT_OLLAMA_HOST)
+        model = os.environ.get("OLLAMA_MODEL") or DEFAULT_OLLAMA_MODEL
+        host = os.environ.get("OLLAMA_HOST") or DEFAULT_OLLAMA_HOST
     else:
         raise ValueError(
             f"LLM_PROVIDER={provider!r} not supported — use one of anthropic/openai/ollama"
@@ -105,15 +105,24 @@ def _complete_anthropic(
     )
 
 
+# Newer models reject max_tokens ("Use 'max_completion_tokens' instead") and fixed temperatures.
+_FIXED_TEMPERATURE_PREFIXES = ("gpt-6", "gpt-5", "o")
+
+
 def _complete_openai(settings: LLMSettings, system: str, user: str, max_tokens: int) -> LLMResponse:
     import openai
 
     client = openai.OpenAI()
+    params: dict = {}
+    if settings.model.startswith(_FIXED_TEMPERATURE_PREFIXES):
+        params["max_completion_tokens"] = max_tokens
+    else:
+        params["max_tokens"] = max_tokens
+        params["temperature"] = settings.temperature
     response = client.chat.completions.create(
         model=settings.model,
-        max_tokens=max_tokens,
-        temperature=settings.temperature,
         messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+        **params,
     )
     usage = response.usage
     return LLMResponse(
@@ -164,7 +173,7 @@ _PROVIDERS = {
 
 
 def settings_for(provider: str, model: str, max_tokens: int = 300) -> LLMSettings:
-    host = os.environ.get("OLLAMA_HOST", DEFAULT_OLLAMA_HOST) if provider == "ollama" else None
+    host = os.environ.get("OLLAMA_HOST") or DEFAULT_OLLAMA_HOST if provider == "ollama" else None
     return LLMSettings(
         provider=provider, model=model, temperature=0.0, max_tokens=max_tokens, host=host
     )

@@ -94,7 +94,7 @@ RERANK_CANDIDATE_POOL_SIZE = 20  # how many embedding-search candidates the rera
 
 # --- LLM ---
 DEFAULT_ANTHROPIC_MODEL = "claude-haiku-4-5"
-DEFAULT_OPENAI_MODEL = "gpt-4o-mini"
+DEFAULT_OPENAI_MODEL = "gpt-6-luna"
 DEFAULT_OLLAMA_MODEL = "llama3.1:8b"
 DEFAULT_OLLAMA_HOST = "http://localhost:11434"
 RAG_MAX_ANSWER_TOKENS = 1024
@@ -107,4 +107,5 @@ PRICING_PER_MILLION_TOKENS = {
     "claude-sonnet-5": (3.00, 15.00),
     "gpt-4o-mini": (0.15, 0.60),
     "gpt-4o": (2.50, 10.00),
+    "gpt-6-luna": (0.10, 0.50),  # OpenAI list price, September 2026
 }
