@@ -218,6 +218,9 @@ def test_dry_run_preflight_counts_budget_without_provider_construction(tmp_path,
     monkeypatch.setattr(sealed_run, "manifest_digest", lambda: sha256_file(manifest))
     monkeypatch.setattr(sealed_run, "index_fingerprint", lambda: "index-a")
     monkeypatch.setattr(sealed_run, "CHROMA_DIR", tmp_path)
+    # the budget check needs a priced model, whatever provider the shell environment selects
+    monkeypatch.setenv("LLM_PROVIDER", "anthropic")
+    monkeypatch.setenv("ANTHROPIC_MODEL", "claude-sonnet-5")
 
     summary = run_release.dry_run_preflight(path, max_cost_usd=1.0)
 
