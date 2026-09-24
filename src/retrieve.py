@@ -26,6 +26,9 @@ directly against each other. The cross-encoder reads the query and one candidate
 in a single forward pass, which is far more accurate but too slow to run against the whole
 collection — so it only reranks the bi-encoder's top `RERANK_CANDIDATE_POOL_SIZE` candidates, not
 everything.
+
+The `bm25` and `hybrid` strategies add a lexical ranking so identifiers such as "Directive 8/2025"
+are matched exactly; `hybrid` fuses it with the dense ranking by reciprocal rank fusion.
 """
 
 import json
@@ -259,6 +262,77 @@ def _named_balanced(
     )
 
 
+_BM25_TOKEN = re.compile(r"[a-z0-9]+(?:[/.][a-z0-9]+)*")
+RRF_K = 60  # the usual constant from Cormack et al. (2009); not tuned here
+HYBRID_POOL = 50
+_bm25_cache: dict[tuple[str, int], tuple] = {}
+
+
+def _bm25_tokens(text: str) -> list[str]:
+    return _BM25_TOKEN.findall(text.lower())
+
+
+def _bm25_index(collection):
+    key = (collection.name, collection.count())
+    if key not in _bm25_cache:
+        from rank_bm25 import BM25Okapi
+
+        data = collection.get(include=["documents", "metadatas"])
+        order = sorted(range(len(data["ids"])), key=lambda i: data["ids"][i])
+        ids = [data["ids"][i] for i in order]
+        docs = [data["documents"][i] for i in order]
+        metas = [data["metadatas"][i] for i in order]
+        tokens = [_bm25_tokens(d) for d in docs]
+        _bm25_cache[key] = (BM25Okapi(tokens), ids, docs, metas, [set(t) for t in tokens])
+    return _bm25_cache[key]
+
+
+def _bm25_candidates(
+    query: str, n: int, collection=None, doc_ids: list[str] | None = None
+) -> list[RetrievedChunk]:
+    if collection is None:
+        collection = get_collection()
+    bm25, ids, docs, metas, token_sets = _bm25_index(collection)
+    query_tokens = _bm25_tokens(query)
+    scores = bm25.get_scores(query_tokens)
+    out = []
+    for i in np.argsort(-scores, kind="stable"):
+        if len(out) == n:
+            break
+        # a term in over half the chunks gets a negative idf, so "matched" is judged by token
+        # overlap rather than by the sign of the score
+        if token_sets[i].isdisjoint(query_tokens):
+            continue
+        if doc_ids and metas[i]["doc_id"] not in doc_ids:
+            continue
+        out.append(
+            RetrievedChunk(
+                chunk_id=ids[i],
+                doc_id=metas[i]["doc_id"],
+                text=docs[i],
+                page_start=metas[i]["page_start"],
+                page_end=metas[i]["page_end"],
+                section=metas[i]["section"],
+                score=float(scores[i]),
+            )
+        )
+    return out
+
+
+def _rrf(ranked_lists: list[list[RetrievedChunk]], n: int) -> list[RetrievedChunk]:
+    fused: dict[str, float] = {}
+    first: dict[str, RetrievedChunk] = {}
+    for ranked in ranked_lists:
+        for rank, chunk in enumerate(ranked, start=1):
+            fused[chunk.chunk_id] = fused.get(chunk.chunk_id, 0.0) + 1.0 / (RRF_K + rank)
+            first.setdefault(chunk.chunk_id, chunk)
+    out = []
+    for chunk_id in sorted(fused, key=lambda cid: (-fused[cid], cid))[:n]:
+        first[chunk_id].score = fused[chunk_id]
+        out.append(first[chunk_id])
+    return out
+
+
 def retrieve(
     query: str,
     k: int = 5,
@@ -267,13 +341,20 @@ def retrieve(
     collection=None,
     strategy: str = RETRIEVAL_STRATEGY,
 ) -> RetrievedChunks:
-    if strategy not in {"semantic", "named_balanced"}:
+    if strategy not in {"semantic", "named_balanced", "bm25", "hybrid"}:
         raise ValueError(f"unknown retrieval strategy: {strategy}")
     if strategy == "named_balanced":
         return _named_balanced(query, k=k, rerank=rerank, collection=collection)
 
     pool_size = max(k, RERANK_CANDIDATE_POOL_SIZE) if rerank else k
-    candidates = _fetch_candidates(query, pool_size, doc_ids, collection=collection)
+    if strategy == "bm25":
+        candidates = _bm25_candidates(query, pool_size, collection, doc_ids)
+    elif strategy == "hybrid":
+        dense = _fetch_candidates(query, HYBRID_POOL, doc_ids, collection=collection)
+        sparse = _bm25_candidates(query, HYBRID_POOL, collection, doc_ids)
+        candidates = _rrf([dense, sparse], pool_size)
+    else:
+        candidates = _fetch_candidates(query, pool_size, doc_ids, collection=collection)
 
     if not rerank or not candidates:
         return RetrievedChunks(candidates[:k])

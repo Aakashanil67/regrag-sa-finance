@@ -9,6 +9,7 @@ tiktoken==0.8.0
 # --- vector store + embeddings ---
 chromadb==0.5.23
 sentence-transformers==3.3.1
+rank-bm25==0.2.2
 # numpy IS imported directly now (src/retrieve.py's exact cosine-similarity search) — still left
 # unpinned, matching whatever chromadb/sentence-transformers already resolve to rather than adding
 # a second constraint on the same transitive dependency
