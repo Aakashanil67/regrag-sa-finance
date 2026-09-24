@@ -1,6 +1,6 @@
 # Corpus
 
-22 public regulatory and standards documents covering South African banking supervision, consumer
+27 public regulatory and standards documents covering South African banking supervision, consumer
 credit law, and IFRS 9. The PDFs themselves aren't committed (see the repo `.gitignore`) — run:
 
 ```bash
@@ -59,6 +59,20 @@ A 2026 audit corrected several sources that had drifted from their stated author
 
 ## Documents
 
+### Primary legislation and regulations (5)
+
+| Document | Status |
+|---|---|
+| [Financial Sector Regulation Act 9 of 2017](https://www.treasury.gov.za/legislation/acts/2017/Act%209%20of%202017%20FinanSectorRegulation.pdf) | as assented, 22 August 2017 (historical snapshot; later amended) |
+| [Banks Act 94 of 1990](https://www.gov.za/sites/default/files/gcis_document/201503/act-94-1990s.pdf) | as first published, 11 July 1990, under its original title (historical snapshot; heavily amended since) |
+| [Regulations relating to Banks (GN R1029, 12 December 2012)](https://www.gov.za/sites/default/files/gcis_document/201409/35950rg9872gon10291.pdf) | as published (historical snapshot; amended in 2015, 2016, 2020, 2022) |
+| [National Credit Regulations, 2006 (GN R489, 31 May 2006)](https://www.gov.za/sites/default/files/gcis_document/201409/28864.pdf) | as published (historical snapshot) |
+| [National Credit Regulations including Affordability Assessment Regulations (GN R202, 13 March 2015)](https://www.gov.za/sites/default/files/gcis_document/201503/38557rg10382gon202.pdf) | current |
+
+The Banks Act copy is a scanned gazette with OCR text, so its text quality is uneven. I could not
+find a consolidated, text-native copy on an official site: the SARB page links only to Sabinet,
+a paid third-party database.
+
 ### SARB Prudential Authority (9)
 
 | Document | Status |
@@ -115,6 +129,14 @@ The full current IFRS 9 standard text itself isn't included — the IFRS Foundat
 separately and doesn't distribute it freely; the 2021 issued edition is a freely-available, dated
 snapshot, accurate as of its own publication but not a substitute for checking the current
 standard for later amendments.
+
+## Not in the corpus
+
+- Consolidated Banks Act 94 of 1990 with all amendments. Tried
+  `https://www.resbank.co.za/en/home/publications/prudential-authority/legislation/banks-act-1990-act-no-94-of-1990`,
+  which links only to a Sabinet page; the gov.za copy above is the 1990 original.
+- Final FMA Conduct Standard 2 of 2018 and FSCA Conduct Standard 3 of 2020 (see the known gap
+  under FSCA).
 
 ## Manual fallback
 
