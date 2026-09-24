@@ -34,7 +34,7 @@ from src.config import (
     TOKENIZER_AWARE_CHUNK_TARGET_TOKENS,
     TOKENIZER_ENCODING,
 )
-from src.ingest import Element, extract_elements, extract_ocr_elements
+from src.ingest import Element, extract_elements
 
 _ENCODING = tiktoken.get_encoding(TOKENIZER_ENCODING)
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
@@ -369,10 +369,7 @@ def chunk_corpus() -> dict[str, list[Chunk]]:
         pdf_path = CORPUS_DIR / entry["filename"]
         if not pdf_path.exists():
             continue
-        if entry.get("text_layer") == "ocr":
-            elements = extract_ocr_elements(pdf_path, entry["id"])
-        else:
-            elements = extract_elements(pdf_path)
+        elements = extract_elements(pdf_path)
         result[entry["id"]] = chunk_document(entry["id"], elements)
     return result
 

@@ -18,6 +18,7 @@ PyMuPDF output would silently poison retrieval:
   3. de-hyphenated line wraps within a paragraph, so "hybrid-\ninstruments" reads as one word.
 """
 
+import json
 import os
 import re
 from dataclasses import dataclass
@@ -25,7 +26,7 @@ from pathlib import Path
 
 import fitz  # PyMuPDF
 
-from src.config import HEADER_FOOTER_REPEAT_FRACTION, TOC_DOT_LEADER_FRACTION
+from src.config import HEADER_FOOTER_REPEAT_FRACTION, MANIFEST_PATH, TOC_DOT_LEADER_FRACTION
 
 _HEADING_NUMBERING = re.compile(r"^(\d{1,2}(\.\d{1,2}){0,3})[\.\)]?\s+\S")
 # a bare "08 July 2020" satisfies _HEADING_NUMBERING too (a number, whitespace, a word) — this
@@ -117,9 +118,17 @@ def _dehyphenate_join(paragraph_lines: list[str]) -> str:
     return joined
 
 
+def _manifest_entry(pdf_path) -> dict | None:
+    entries = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    return next((e for e in entries if e["filename"] == Path(pdf_path).name), None)
+
+
 def extract_elements(pdf_path) -> list[Element]:
     """Full pipeline: parse -> strip boilerplate -> drop ToC pages -> detect headings -> merge
     wrapped lines into paragraphs, de-hyphenated. Returns reading-order elements."""
+    entry = _manifest_entry(pdf_path)
+    if entry is not None and entry.get("text_layer") == "ocr":
+        return extract_ocr_elements(pdf_path, entry["id"])
     doc = fitz.open(pdf_path)
     try:
         lines = _extract_lines(doc)
