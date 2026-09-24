@@ -5,6 +5,7 @@ venv/
 # vector store + local eval judge cache
 chroma/
 chroma_sweep/
+corpus/.ocr_cache/
 .cache/
 
 # secrets

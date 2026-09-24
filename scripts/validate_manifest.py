@@ -47,6 +47,8 @@ _AUTHORITY_LEVELS = {
     "third_party_commentary",
 }
 
+_TEXT_LAYERS = {"text", "ocr"}
+
 _PUBLICATION_STAGES = {"final", "consultation", "draft"}
 
 _CURRENT_STATUSES = {"current", "withdrawn", "superseded", "historical_snapshot", "unknown"}
@@ -118,6 +120,9 @@ def _validate_entry(entry: dict, errors: list[str]) -> None:
 
     if "status_source_page" in entry and "status_source_id" not in entry:
         errors.append(f"{doc_id}: status_source_page given without status_source_id")
+
+    if "text_layer" in entry and entry["text_layer"] not in _TEXT_LAYERS:
+        errors.append(f"{doc_id}: text_layer {entry['text_layer']!r} must be 'text' or 'ocr'")
 
     if "year" in entry:
         errors.append(f"{doc_id}: legacy 'year' field present — use published_date instead")

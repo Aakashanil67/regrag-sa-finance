@@ -18,8 +18,10 @@ PyMuPDF output would silently poison retrieval:
   3. de-hyphenated line wraps within a paragraph, so "hybrid-\ninstruments" reads as one word.
 """
 
+import os
 import re
 from dataclasses import dataclass
+from pathlib import Path
 
 import fitz  # PyMuPDF
 
@@ -169,3 +171,51 @@ def _median_font_size(lines: list[tuple[int, str, float]]) -> float:
     if not sizes:
         return 10.0
     return sizes[len(sizes) // 2]
+
+
+_TESSDATA_CANDIDATES = (
+    os.environ.get("TESSDATA_PREFIX", ""),
+    r"C:\Program Files\Tesseract-OCR\tessdata",
+    "/usr/share/tesseract-ocr/5/tessdata",
+)
+OCR_CACHE_DIR = Path(__file__).resolve().parent.parent / "corpus" / ".ocr_cache"
+
+
+def _tessdata() -> str | None:
+    return next((p for p in _TESSDATA_CANDIDATES if p and Path(p).exists()), None)
+
+
+def ocr_page_text(doc: fitz.Document, page_index: int, doc_id: str) -> str:
+    # OCR at 300 dpi takes seconds per page, so every page is cached on disk once.
+    cache = OCR_CACHE_DIR / doc_id / f"{page_index + 1}.txt"
+    if cache.exists():
+        return cache.read_text(encoding="utf-8")
+    page = doc[page_index]  # held so the textpage's weak parent reference stays alive
+    textpage = page.get_textpage_ocr(language="eng", dpi=300, full=True, tessdata=_tessdata())
+    text = page.get_text(textpage=textpage)
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text(text, encoding="utf-8")
+    return text
+
+
+def extract_ocr_elements(pdf_path, doc_id: str) -> list[Element]:
+    """Elements for a scanned PDF: OCR each page, split paragraphs on blank lines, and treat
+    short numbered lines as headings (font sizes from OCR are not reliable)."""
+    doc = fitz.open(pdf_path)
+    try:
+        pages = [ocr_page_text(doc, i, doc_id) for i in range(doc.page_count)]
+    finally:
+        doc.close()
+    elements: list[Element] = []
+    for page_number, text in enumerate(pages, start=1):
+        for block in re.split(r"\n\s*\n", text):
+            lines = [line.strip() for line in block.splitlines() if line.strip()]
+            if not lines:
+                continue
+            if len(lines) == 1 and len(lines[0]) < 100 and _HEADING_NUMBERING.match(lines[0]):
+                elements.append(Element(kind="heading", text=lines[0], page=page_number))
+            else:
+                elements.append(
+                    Element(kind="paragraph", text=_dehyphenate_join(lines), page=page_number)
+                )
+    return elements

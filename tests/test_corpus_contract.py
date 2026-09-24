@@ -209,3 +209,13 @@ def test_every_status_that_is_not_current_or_unknown_names_evidence(manifest):
 def test_ifrs9_issued_text_is_classed_as_an_accounting_standard():
     entries = {e["id"]: e for e in json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))}
     assert entries["ifrs9_issued_2021"]["authority_level"] == "accounting_standard"
+
+
+def test_text_layer_accepts_text_and_ocr():
+    validate_manifest([_valid_entry(text_layer="ocr")])
+    validate_manifest([_valid_entry(text_layer="text")])
+
+
+def test_invalid_text_layer_is_rejected():
+    with pytest.raises(ManifestValidationError, match="text_layer"):
+        validate_manifest([_valid_entry(text_layer="scan")])

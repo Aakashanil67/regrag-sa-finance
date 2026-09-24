@@ -299,6 +299,26 @@
     "is_third_party": false
   },
   {
+    "id": "fsca_cs3_2020_banks",
+    "title": "Conduct Standard 3 of 2020 (BA): Conduct Standard for Banks",
+    "filename": "fsca_cs3_2020_banks.pdf",
+    "download_url": "https://www.banking.org.za/wp-content/uploads/2020/07/Conduct-Standard-3-of-2020-BANKS-Annexure-A.pdf",
+    "landing_page_url": "https://www.fsca.co.za/Publications-and-Resources/",
+    "referer": "https://www.banking.org.za/",
+    "sha256": "0af51862e1dbc415ec23209996df3b2a9688ab2997c7096675fa9ca176d10ef1",
+    "publisher": "Financial Sector Conduct Authority",
+    "issuing_authority": "Financial Sector Conduct Authority",
+    "document_type": "Conduct Standard",
+    "authority_level": "binding_regulatory_instrument",
+    "publication_stage": "final",
+    "published_date": "2020-07-03",
+    "current_status": "current",
+    "status_as_of": "2026-09-24",
+    "status_source_url": "https://www.fsca.co.za/Notices/FSCA%20Conduct%20Standard%203%20of%202020%20(BANKS)-Banks.zip",
+    "is_third_party": false,
+    "text_layer": "ocr"
+  },
+  {
     "id": "fsca_conduct_standard_otc_derivatives_2018",
     "title": "Conduct Standard for Authorised Over-the-Counter Derivative Providers (April 2018)",
     "filename": "fsca_conduct_standard_otc_derivatives_2018.pdf",

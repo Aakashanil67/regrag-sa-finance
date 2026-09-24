@@ -102,21 +102,20 @@ law — any answer that cites one carries a withdrawn-source notice.
 | [NCR Guideline (February 2026): Clearance Certificates (Form 19)](https://www.ncr.org.za/documents/Guidelines/Guideline%20February%202026.pdf) | current |
 | [NCR Guidelines: Submission of Disputed Consumer Credit Information Complaints](https://www.ncr.org.za/phocadownload/GUIDELINES%20FOR%20THE%20SUBMISSION%20OF%20COMPLAINTS%20RELATING%20TO%20DISPUTED%20CONSUMER%20CREDIT%20INFORMATION1.pdf) | current |
 
-### FSCA (5)
+### FSCA (6)
 
 | Document | Status |
 |---|---|
-| [Press Release: Conduct Standard for Banks (8 July 2020)](https://www2.fsca.co.za/News%20Documents/FSCA%20Press%20Release%20-%20Conduct%20Standard%20for%20Banks%208%20July%202020.pdf) | current (as a press release; not a substitute for Conduct Standard 3 of 2020 itself, which this corpus does not carry — see below) |
+| [Press Release: Conduct Standard for Banks (8 July 2020)](https://www2.fsca.co.za/News%20Documents/FSCA%20Press%20Release%20-%20Conduct%20Standard%20for%20Banks%208%20July%202020.pdf) | current (as a press release; the standard itself is the next row) |
+| [Conduct Standard 3 of 2020 (BA): Conduct Standard for Banks](https://www.fsca.co.za/Notices/FSCA%20Conduct%20Standard%203%20of%202020%20(BANKS)-Banks.zip) | current; OCR'd, see reports/ocr_check.md |
 | [Conduct Standard for Authorised OTC Derivative Providers (April 2018, consultation draft)](https://www2.fsca.co.za/Regulatory%20Frameworks/Documents%20for%20Consultation/Conduct%20Standard%20for%20authorised%20over-the-counter%20derivative%20providers%20April%202018.pdf) | consultation draft — final standard not resolved this release |
 | [Retail Distribution Review: Intermediary Activity Segmentation (December 2019)](https://www2.fsca.co.za/Regulatory%20Frameworks/Regulatory%20Frameworks%20Documents/Retail%20Distribution%20Review%20Intermediary%20Activity%20Segmentation%20and%20Related%20Matters%20December%202019.pdf) | unknown |
 | [Retail Distribution Review (2014, discussion paper)](https://www2.fsca.co.za/Regulatory%20Frameworks/Documents%20for%20Consultation/FSB%20Retail%20Distribution%20Review%202014.pdf) | historical snapshot |
 | [Treating Customers Fairly (TCF) (2011)](https://www2.fsca.co.za/Regulatory%20Frameworks/Archived%20Documents/2011%20-%20Treating%20Customers%20Fairly%20(TCF).pdf) | historical snapshot |
 
-**Known gap:** neither the final FMA Conduct Standard 2 of 2018 nor FSCA Conduct Standard 3 of
-2020 (Banks) is in this corpus. The only obtainable copy of the latter (a Banking Association of
-South Africa mirror) is a scanned image PDF with no extractable text layer — ingesting it would
-have silently produced zero retrievable chunks, so it was rejected rather than added. Both remain
-follow-up work.
+**Known gap:** the final FMA Conduct Standard 2 of 2018 is not in this corpus. Conduct Standard 3 of
+2020 (Banks) is a scanned image PDF, so it is read with OCR and its manifest entry is marked
+`"text_layer": "ocr"`.
 
 ### IFRS 9 (2)
 
@@ -135,8 +134,7 @@ standard for later amendments.
 - Consolidated Banks Act 94 of 1990 with all amendments. Tried
   `https://www.resbank.co.za/en/home/publications/prudential-authority/legislation/banks-act-1990-act-no-94-of-1990`,
   which links only to a Sabinet page; the gov.za copy above is the 1990 original.
-- Final FMA Conduct Standard 2 of 2018 and FSCA Conduct Standard 3 of 2020 (see the known gap
-  under FSCA).
+- Final FMA Conduct Standard 2 of 2018 (see the known gap under FSCA).
 
 ## Manual fallback
 
