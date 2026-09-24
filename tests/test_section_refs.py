@@ -5,8 +5,13 @@ from src.retrieve import RetrievedChunk
 
 def _chunk(doc_id, page, section):
     return RetrievedChunk(
-        chunk_id=f"{doc_id}-{page}", doc_id=doc_id, text="text", page_start=page,
-        page_end=page, section=section, score=1.0,
+        chunk_id=f"{doc_id}-{page}",
+        doc_id=doc_id,
+        text="text",
+        page_start=page,
+        page_end=page,
+        section=section,
+        score=1.0,
     )
 
 
@@ -23,13 +28,21 @@ def test_no_section_ref_for_unnumbered_or_year_headings():
 
 def test_verified_citation_carries_section_ref(monkeypatch):
     monkeypatch.setattr(
-        rag, "retrieve", lambda q, k=5, rerank=False: [_chunk("nca_act_34_2005", 47, "81. Prevention of reckless credit")]
+        rag,
+        "retrieve",
+        lambda q, k=5, rerank=False: [
+            _chunk("nca_act_34_2005", 47, "81. Prevention of reckless credit")
+        ],
     )
     monkeypatch.setattr(
-        rag, "complete",
+        rag,
+        "complete",
         lambda system, user, max_tokens=1024: LLMResponse(
             text="A credit provider must assess affordability. [nca_act_34_2005, p.47]",
-            model="fake", input_tokens=1, output_tokens=1, cost_usd=0.0,
+            model="fake",
+            input_tokens=1,
+            output_tokens=1,
+            cost_usd=0.0,
         ),
     )
     result = rag.answer_question("What must a credit provider assess?")
