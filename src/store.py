@@ -1,19 +1,10 @@
 """Chunks -> a persistent ChromaDB collection, embedded with sentence-transformers.
 
-An embedding is a fixed-length vector such that texts with similar meaning end up close together
-in that vector space — "the bank must hold capital against expected losses" and "provisioning
-requirements for anticipated defaults" land near each other even though they share almost no
-words. That's what lets retrieval work on meaning instead of exact keyword overlap.
-`all-MiniLM-L6-v2` is a small (~80MB) model that runs fast on CPU; it trades some accuracy against
-a larger model for a corpus this size (~1,000 chunks) where that accuracy gap doesn't show up in
-the retrieval benchmark (see reports/retrieval_bench.md).
+`all-MiniLM-L6-v2` is small (~80MB) and fast on CPU; for a corpus of ~1,000 chunks the accuracy
+gap to larger models did not show in the retrieval benchmark (reports/retrieval_bench.md).
 
-Rebuilding is idempotent and incremental: each chunk's own content hash (`Chunk.chunk_hash`, from
-chunking.py) is its Chroma document ID, so re-running after editing one document only embeds the
-chunks that actually changed — everything else is already sitting in the collection under the same
-ID and gets left alone. Chunks whose hash disappeared (the source document changed or dropped
-them) are deleted, so the store never silently accumulates stale vectors from a previous version
-of a document.
+Rebuilding is idempotent and incremental: each chunk's content hash (`Chunk.chunk_hash`) is its
+Chroma ID, so only changed chunks are embedded and chunks whose hash disappeared are deleted.
 
     python -m src.store              # report current collection stats, no changes
     python -m src.store --rebuild    # ingest anything new/changed, drop anything stale

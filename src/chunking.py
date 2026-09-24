@@ -1,17 +1,11 @@
 """Elements -> retrieval chunks.
 
-Packs headings and paragraphs into ~800-token chunks (`CHUNK_TARGET_TOKENS`), preferring to break
-at a section heading once a chunk already holds a reasonable amount of content, rather than
-force-splitting on every heading — a document with fifty short numbered clauses would otherwise
-produce fifty near-empty chunks. Consecutive chunks share a token-level overlap
-(`CHUNK_OVERLAP_TOKENS`) so a sentence sitting right on a chunk boundary is still retrievable in
-full from at least one of the two chunks. A paragraph bigger than the whole chunk budget on its
-own (rare, but the NCA and some SARB directives have one) is split on sentence boundaries instead
-of being force-fit or dropped.
+Packs headings and paragraphs into ~800-token chunks (`CHUNK_TARGET_TOKENS`), breaking at a heading
+only once a chunk already holds a reasonable amount, so short numbered clauses don't become
+near-empty chunks. Consecutive chunks share `CHUNK_OVERLAP_TOKENS` of overlap. A paragraph larger
+than the whole budget is split on sentence boundaries.
 
-Token counts use tiktoken's cl100k_base encoding as a fast, dependency-light proxy for chunk size
-— not the tokenizer either Claude or the embedding model actually uses, but consistent and good
-enough to budget against.
+Token counts use tiktoken's cl100k_base as a cheap proxy; it is not the embedding model's tokenizer.
 """
 
 import hashlib

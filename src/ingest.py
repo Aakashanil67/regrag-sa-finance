@@ -1,21 +1,14 @@
 """PDF -> cleaned text elements.
 
-PyMuPDF gives us each line's text plus its font size. That's enough to tell headings from body
-text without an ML layout model: SARB/NCR/FSCA documents number their headings ("4.2 Definitions")
-or set them in a larger font than the surrounding paragraph, almost always both. Neither signal
-alone is reliable (numbered list items aren't headings; some documents use one font size
-throughout), so `_is_heading` requires the numbering pattern OR a font size comfortably above the
-document's own body-text size, never guesses from formatting alone, and accepts that a handful of
-either false positive or false negative headings per document is the cost of not building a real
-layout model for 22 PDFs.
+PyMuPDF gives each line's text and font size, enough to tell headings from body text without a
+layout model. `_is_heading` requires a numbering pattern OR a font size well above the document's
+body size; neither signal alone is reliable, and a few misclassified headings per document is the
+accepted cost.
 
-Three cleanup passes run before chunking ever sees the text, because feeding chunking.py raw
-PyMuPDF output would silently poison retrieval:
-  1. repeated header/footer lines (address blocks, "Page X of Y") stripped by frequency across
-     pages — real content doesn't repeat verbatim on 40%+ of a document's pages, boilerplate does.
-  2. table-of-contents pages dropped by dot-leader density — a ToC entry retrieves as a false
-     positive for whatever topic it's naming, without answering anything about it.
-  3. de-hyphenated line wraps within a paragraph, so "hybrid-\ninstruments" reads as one word.
+Three cleanups run before chunking:
+  1. repeated header/footer lines are stripped by frequency across pages.
+  2. table-of-contents pages are dropped by dot-leader density.
+  3. hyphenated line wraps within a paragraph are joined.
 """
 
 import json

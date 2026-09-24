@@ -1,30 +1,13 @@
-"""Bounded retrieve-decide-requery loop, built to test one specific, already-diagnosed failure
-class rather than "agents are generally better."
+"""Bounded retrieve-decide-requery loop, built to test one diagnosed failure class.
 
-NOT A SERVING PATH. Nothing in api/, app/, or src/rag.py imports this module — the API answers
-every request through rag.answer_question directly. This is a recorded negative result, kept for
-what it proved, not for what it does: measured against plain single-shot RAG on the exact failure
-class it targeted, it fixed zero of two target cases while tripling cost and adding real latency,
-and a same-question rerun afterward flipped one case from refusal to correct with identical code —
-pointing at LLM non-determinism moving the failure point, not a clean fix (see reports/agent_eval.md
-and DECISIONS.md's Agent extension section). It still exists, still has tests, because
-tests/test_pipeline_contract.py uses it as the second real caller of validate_generated_answer,
-pinning that both callers of the fail-closed gate behave identically — that guarantee is worth
-keeping even though the agent loop itself isn't.
+Not a serving path: nothing in api/, app/ or src/rag.py imports it. Two-document comparison
+questions embed as one query and under-retrieve the smaller document (reports/failure_analysis.md);
+this loop looks at what came back and issues one targeted second search. It is kept as a recorded
+negative result (reports/agent_eval.md) and because tests/test_pipeline_contract.py uses it as the
+second caller of validate_generated_answer.
 
-reports/failure_analysis.md found that a two-document comparison question ("what do X and Y have
-in common") embeds as a single query, which under-retrieves whichever named document has fewer
-chunks — the larger document's vocabulary dominates the top-k regardless of relevance (g37, g44).
-An agent that looks at what it retrieved, notices a named document is missing, and issues a
-second, targeted retrieval call before answering should fix that directly. This module measures
-whether it actually does, against plain single-shot RAG on the same questions
-(scripts/agent_eval.py), rather than assuming an agentic loop is an improvement by construction —
-extra LLM calls are extra latency and cost that need to earn their place.
-
-Deliberately not built on the Anthropic SDK's tool-use API: the decision step needs exactly one
-choice (answer now, or search once more for something specific), which a one-line structured
-text response answers as reliably as a tool-call schema would, without pulling in a second calling
-convention alongside rag.py's plain completions.
+The decision step is a one-line structured text reply rather than SDK tool use, to keep a single
+calling convention alongside rag.py's plain completions.
 """
 
 from dataclasses import dataclass, field

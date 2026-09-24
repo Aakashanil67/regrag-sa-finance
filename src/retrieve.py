@@ -1,34 +1,16 @@
-"""Top-k semantic retrieval over the chunk store, with optional metadata filters and an optional
-cross-encoder reranking pass.
+"""Top-k semantic retrieval over the chunk store, with metadata filters and optional reranking.
 
-Candidate search is exact cosine similarity computed in-process, not ChromaDB's approximate HNSW
-`.query()`. ChromaDB's local HNSW segment rebuilds its graph by re-inserting every embedding on
-each fresh process (no persisted index file), using a thread pool sized to the machine's CPU count
-by default — parallel insertion order isn't fixed, so the same on-disk data produced a
-structurally different graph, and therefore different top-k results, across separate process
-launches of this same, unchanged pipeline. That's incompatible with a sealed, run-once release
-protocol, which requires identical input to produce identical output. At this corpus's size
-(low thousands of chunks), brute-force cosine similarity over every chunk costs low milliseconds —
-cheap enough that the "approximate" in approximate nearest neighbour buys nothing here and only
-costs reproducibility. This is a scale trade-off, not a free win: past roughly tens of thousands of
-chunks, exact search stops being cheap and an ANN index becomes necessary again — which brings this
-exact non-determinism back and needs its own answer at that point (a persisted, deterministically
-rebuilt index; a different store; a real seeded index build), not an assumption that this fix still
-applies unchanged. `RetrievedChunk.score` is that cosine similarity (-1 to 1, higher is more
-relevant) except when reranking is on, where `score` is the cross-encoder's own relevance score
-instead (unbounded); "higher is more relevant" still holds either way, which is the property
-callers actually depend on.
+Candidate search is exact in-process cosine similarity, not ChromaDB's HNSW `.query()`. HNSW
+rebuilds its graph on each fresh process with threaded insertion, so identical data gave different
+top-k results across launches. At a few thousand chunks brute force costs milliseconds. Past tens
+of thousands of chunks this needs revisiting. `RetrievedChunk.score` is cosine similarity, or the
+cross-encoder's score when reranking is on; higher is more relevant either way.
 
-Reranking works in two stages because the two models are good at different things: the bi-encoder
-(sentence-transformers, used for the initial candidate search) embeds the query and every chunk
-independently, which is fast enough to search the whole collection but can't compare them
-directly against each other. The cross-encoder reads the query and one candidate chunk together
-in a single forward pass, which is far more accurate but too slow to run against the whole
-collection — so it only reranks the bi-encoder's top `RERANK_CANDIDATE_POOL_SIZE` candidates, not
-everything.
+Reranking is two-stage: the bi-encoder searches everything, then the slower but more accurate
+cross-encoder reranks only the top `RERANK_CANDIDATE_POOL_SIZE` candidates.
 
 The `bm25` and `hybrid` strategies add a lexical ranking so identifiers such as "Directive 8/2025"
-are matched exactly; `hybrid` fuses it with the dense ranking by reciprocal rank fusion.
+match exactly; `hybrid` fuses it with the dense ranking by reciprocal rank fusion.
 """
 
 import json

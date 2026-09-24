@@ -1,40 +1,17 @@
 """Retrieve -> prompt -> cited answer, with a refusal path when the context can't support one.
 
-The system prompt does two things a generic "answer the question" prompt doesn't: it forces every
-factual claim to carry an inline `[doc_id, p.X]` citation tied to the numbered context blocks
-Claude actually saw, and it gives refusal an exact, greppable phrase
-(`INSUFFICIENT_CONTEXT_PHRASE`) rather than trusting the model to phrase "I don't know" consistently
-enough for downstream code — and the eval harness — to detect it.
+The system prompt requires an inline `[doc_id, p.X]` citation on every factual claim and gives
+refusal an exact phrase (`INSUFFICIENT_CONTEXT_PHRASE`) that downstream code and the eval harness
+can detect. `_extract_citations` checks each citation against the (doc_id, page) pairs the
+retrieved chunks cover and flags the rest as unverified.
 
-Citations aren't trusted just because the model wrote them: `_extract_citations` checks each one
-against the (doc_id, page) pairs the retrieved chunks actually cover, and flags anything else as
-unverified. An LLM citing a page it wasn't shown is a hallucination even if the surrounding prose
-is accurate, and that's a distinct failure mode from "the answer is wrong" — one that faithfulness
-metrics alone won't catch.
+The corpus mixes legislation, binding directives and non-binding guidance, so `_format_context`
+prints each block's source type and year, and `_source_notices` adds a fixed sentence when a
+third-party source or a Circular was cited. Nothing claims a successor document exists.
 
-The corpus mixes primary legislation, binding directives, non-binding guidance, and third-party
-commentary (PwC's IFRS 9 guide) with no authority signal anywhere before this: `corpus/manifest.json`
-recorded issuer, document_type and year but none of it reached retrieval, the prompt, or the
-citation, so the model had no way to distinguish "the Act requires" from "PwC reads it as." Two
-fixes, both deliberately outside the LLM's discretion rather than left to a prompt instruction it
-might not follow every time: `_format_context` now prints each block's source type and year so the
-model can *answer* a question about document type (it needs real text to synthesise an answer from,
-not just a disclaimer); `_source_notices` then generates a fixed sentence whenever a third-party
-source or a Circular was actually cited, whether or not the model's own prose mentioned it. The
-circular note is scoped to that one document type on purpose — the Act is also decades old and
-still the current governing statute, amended rather than replaced by age, so a blanket year cutoff
-would misrepresent it as dated. Nothing here claims a specific successor document exists; that
-would be a fabrication risk for a fact this corpus doesn't contain.
-
-`RAGResult.source_notices` is a separate field from `answer`, not text appended onto it. The
-faithfulness metric in the eval harness decomposes `answer` into claims and checks each against
-the retrieved context text — exactly the mechanism that once scored a correct refusal as 0.0
-faithfulness (see the Evaluation harness section below) because the text it was given didn't match
-what the metric expected to grade. A disclaimer sentence this codebase generated, not the model,
-would fail that same check for the same reason: it isn't *in* the retrieved chunks, so RAGAS would
-score it as an unsupported claim. Keeping it out of `answer` keeps every existing consumer of
-`RAGResult.answer` — the cache key, citation extraction, the refusal check, RAGAS scoring — reading
-exactly what the model generated; api/main.py and app/chat.py render `source_notices` alongside it.
+`RAGResult.source_notices` is separate from `answer` on purpose: the faithfulness metric checks
+`answer` claims against retrieved text, and a generated disclaimer would score as unsupported.
+api/main.py and app/chat.py render the notices alongside the answer.
 """
 
 import json

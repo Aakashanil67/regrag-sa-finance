@@ -1,18 +1,12 @@
-"""Canonical fingerprints tying a cached, logged, or reported result to the exact pipeline that
-produced it.
+"""Canonical fingerprints tying a cached, logged or reported result to the pipeline that made it.
 
-`pipeline_fingerprint` exists because cache.py's own docstring records a real incident: adopting
-chunk_size=800 + reranking rebuilt the vector store and changed retrieval behaviour, but every
-previously cached answer kept its old key and kept being served, so the running product silently
-disagreed with what the eval reports described. A fingerprint has to include everything that
-changes what an answer would be — provider, model, temperature, k, corpus bytes, prompt bytes,
-chunking/reranking config, and the citation-contract version — or a change to any of those aliases
-under one cache/store identity instead of correctly missing.
+`pipeline_fingerprint` covers everything that changes an answer: provider, model, temperature, k,
+corpus bytes, prompt bytes, chunking and reranking config, and the citation-contract version. If any
+of these is left out, a change aliases under one cache identity instead of missing.
 
-`store_build_record`/`assert_store_compatible` apply the same idea to the vector store itself:
-`chroma/build.json` records what the store was built from, so readiness and release tooling can
-detect "the manifest or retrieval config changed since the last rebuild" without loading either
-model.
+`store_build_record` and `assert_store_compatible` do the same for the vector store:
+`chroma/build.json` records what it was built from, so a stale store is detectable without loading
+a model.
 """
 
 import hashlib

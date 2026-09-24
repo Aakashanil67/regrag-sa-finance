@@ -1,28 +1,14 @@
-"""SQLite log of every query: metrics, refusal reason, retrieved chunk ids, latency, tokens, cost
-— and, only on explicit local opt-in, the question/answer text itself.
+"""SQLite log of every query: metrics, refusal reason, retrieved chunk ids, latency, tokens, cost.
 
-This is the raw material api/main.py's /stats endpoint and app/ops.py's usage charts read from —
-one row per question, not aggregated, so both can compute whatever slice they need (latency
-percentiles, cost per day, refusal rate) without re-running the RAG pipeline.
+One row per question, unaggregated, so api/main.py's /stats and app/ops.py can slice it freely.
+Privacy: `LOG_RAW_CONTENT` (default false) gates whether question/answer text is stored at all,
+because people paste real account details into compliance tools. With `LOG_HASH_KEY` set,
+`question_hmac` stores an HMAC-SHA256 of the normalised question to spot repeats. That is
+pseudonymous, not anonymous: anyone with the key can test guesses.
 
-Privacy default: `LOG_RAW_CONTENT` (default false) gates whether `question`/`answer` are stored at
-all. Off by default because a compliance-research tool is exactly the kind of thing someone pastes
-a real account number or case detail into without thinking about it — the safe default is to keep
-metrics (which don't need the text) and drop the text, not to log everything and hope operators
-remember to scrub later. When a local user supplies `LOG_HASH_KEY`, `question_hmac` stores an
-HMAC-SHA256 of the normalised question instead of nothing — enough to notice "this exact question
-keeps recurring" without recovering what it said. Called pseudonymous, not anonymous, deliberately:
-an HMAC is reversible by anyone who also holds the key or can brute-force a small question space,
-which a plain hash would be trivially reversible to anyone, key or not.
-
-`LOG_RAW_MODEL_OUTPUT` (default false, independent of `LOG_RAW_CONTENT`) additionally captures the
-model's raw pre-validation text — what it actually generated before `validate_generated_answer`
-replaced a refusal with the canned phrase and discarded the parsed citations. That's a superset of
-`question`/`answer`: it can contain text that was never shown to anyone, including a hallucinated
-citation or the hedge that tripped `malformed_refusal`, which is exactly what makes diagnosing a
-refusal expensive without it (re-running the live API is the only other way to see it, and it may
-not even reproduce). A cache hit never calls the model, so there is nothing to capture — that case
-is a logged, deliberate "off" rather than an empty string, via `raw_output_logged`.
+`LOG_RAW_MODEL_OUTPUT` (default false) also keeps the model's pre-validation text, which can hold
+a hallucinated citation that was never shown. A cache hit calls no model, so `raw_output_logged`
+records that case as off.
 """
 
 import hashlib
