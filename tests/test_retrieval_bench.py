@@ -17,9 +17,19 @@ def test_first_hit_rank_none_when_absent():
 
 def test_render_has_one_row_per_strategy_and_rerank():
     rows = [
-        {"strategy": s, "rerank": r, "n": 10, "any_hit": 9, "all_hit": 8, "multi_all_hit": 2,
-         "multi_n": 3, "mrr": 0.5, "p50_ms": 12}
-        for s in ("semantic", "bm25") for r in (False, True)
+        {
+            "strategy": s,
+            "rerank": r,
+            "n": 10,
+            "any_hit": 9,
+            "all_hit": 8,
+            "multi_all_hit": 2,
+            "multi_n": 3,
+            "mrr": 0.5,
+            "p50_ms": 12,
+        }
+        for s in ("semantic", "bm25")
+        for r in (False, True)
     ]
     out = render([{"config": "x", "chunks": 100, "truncated_chunks": 1, "rows": rows}], "dev")
     assert sum(1 for line in out.splitlines() if line.startswith("| x |")) == 4
