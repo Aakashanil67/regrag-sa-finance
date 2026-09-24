@@ -1,12 +1,12 @@
 # regrag-sa-finance
 
 A retrieval-augmented assistant that answers questions about South African financial regulation
-(SARB prudential directives, the National Credit Act, FSCA conduct standards, IFRS 9) for someone
+(Prudential Authority directives, the National Credit Act, FSCA conduct standards, IFRS 9) for someone
 who needs a fast, citation-checked pointer into a fixed local corpus — not a substitute for reading
 the source or for legal advice.
 
 Regulatory text carries different weight depending on who issued it and whether it's still in
-force: a binding SARB directive, a non-binding guidance note, and a withdrawn circular can describe
+force: a binding Prudential Authority directive, a non-binding guidance note, and a withdrawn circular can describe
 the same subject in similar language, and citing them interchangeably would misrepresent what the
 law actually requires. This system tracks `authority_level`, `publication_stage` and
 `current_status` per source, attaches a fixed disclosure whenever an answer cites a withdrawn

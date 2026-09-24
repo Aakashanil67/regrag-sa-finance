@@ -109,7 +109,7 @@ follow-up work.
 | Document | Status |
 |---|---|
 | [IFRS 9 Financial Instruments: Project Summary](https://www.ifrs.org/-/media/project/fi-impairment/ifrs-standard/published-documents/project-summary-july-2014.pdf) | historical snapshot |
-| [IFRS 9 Financial Instruments (issued text, 2021 edition)](https://www.ifrs.org/content/dam/ifrs/publications/pdf-standards/english/2021/issued/part-a/ifrs-9-financial-instruments.pdf) | historical snapshot — IFRS.org's current standard page records later amendments this text doesn't reflect |
+| [IFRS 9 Financial Instruments (issued text, 2021 edition)](https://www.ifrs.org/content/dam/ifrs/publications/pdf-standards/english/2021/issued/part-a/ifrs-9-financial-instruments.pdf) | Accounting standard (binding on reporting entities through financial reporting law, not a PA instrument); historical snapshot — IFRS.org's current standard page records later amendments this text doesn't reflect |
 
 The full current IFRS 9 standard text itself isn't included — the IFRS Foundation licenses that
 separately and doesn't distribute it freely; the 2021 issued edition is a freely-available, dated

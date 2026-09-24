@@ -188,7 +188,7 @@ def test_stale_directives_superseded_per_c1_2026_are_flagged(manifest):
 def test_the_2021_ifrs9_issued_text_is_active(manifest):
     entry = manifest["ifrs9_issued_2021"]
 
-    assert entry["authority_level"] == "binding_regulatory_instrument"
+    assert entry["authority_level"] == "accounting_standard"
     assert (
         entry["current_status"] == "historical_snapshot"
     )  # dated snapshot; IFRS.org tracks later amendments
@@ -204,3 +204,8 @@ def test_every_status_that_is_not_current_or_unknown_names_evidence(manifest):
             assert entry[
                 "status_source_url"
             ], f"{doc_id} has status {entry['current_status']} with no evidence URL"
+
+
+def test_ifrs9_issued_text_is_classed_as_an_accounting_standard():
+    entries = {e["id"]: e for e in json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))}
+    assert entries["ifrs9_issued_2021"]["authority_level"] == "accounting_standard"

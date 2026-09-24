@@ -66,7 +66,7 @@ class RefusalReason(StrEnum):
 
 
 _SYSTEM_PROMPT = f"""You are a compliance research assistant answering questions about South \
-African financial regulation (SARB, IFRS 9, the National Credit Act, FSCA) from the numbered \
+African financial regulation (Prudential Authority directives and SARB circulars, IFRS 9, the National Credit Act, FSCA) from the numbered \
 context blocks below. Follow these rules exactly:
 
 1. Answer ONLY using information present in the context blocks. Never use outside knowledge.

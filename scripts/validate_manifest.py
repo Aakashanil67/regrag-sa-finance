@@ -40,6 +40,7 @@ _REQUIRED_FIELDS = [
 _AUTHORITY_LEVELS = {
     "primary_legislation",
     "binding_regulatory_instrument",
+    "accounting_standard",
     "official_non_binding_guidance",
     "official_explanatory_material",
     "consultation_or_discussion",
