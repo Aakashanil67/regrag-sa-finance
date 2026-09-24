@@ -24,7 +24,10 @@ from evals.metrics import ci_text, compute, ratio_text
 ROOT = Path(__file__).resolve().parent.parent
 RUNS_DIR = ROOT / "reports" / "runs"
 HISTORY_CSV = ROOT / "reports" / "eval_runs.csv"
-SPLITS = {"dev": ROOT / "evals" / "questions_dev.jsonl", "test": ROOT / "evals" / "questions_test.jsonl"}
+SPLITS = {
+    "dev": ROOT / "evals" / "questions_dev.jsonl",
+    "test": ROOT / "evals" / "questions_test.jsonl",
+}
 PROTOCOL = ROOT / "evals" / "protocol_test.json"
 # (input, output) tokens per question: ~4.5k of context for RAG; closed-book sends the question only.
 TOKENS_PER_ITEM = {"rag": (4500, 350), "closed_book": (150, 350)}
@@ -33,9 +36,20 @@ CLOSED_BOOK_SYSTEM = (
     'Answer in at most three sentences. If you are not sure, reply with exactly: "{refusal}"'
 )
 HISTORY_FIELDS = [
-    "timestamp", "run_id", "split", "label", "config", "closed_book", "n", "answer_rate",
-    "refusal_recall", "task_outcome", "raw_citation_precision", "retrieval_any_hit",
-    "retrieval_all_hit", "cost_usd",
+    "timestamp",
+    "run_id",
+    "split",
+    "label",
+    "config",
+    "closed_book",
+    "n",
+    "answer_rate",
+    "refusal_recall",
+    "task_outcome",
+    "raw_citation_precision",
+    "retrieval_any_hit",
+    "retrieval_all_hit",
+    "cost_usd",
 ]
 
 
@@ -89,12 +103,23 @@ def rag_record(item: dict) -> dict:
         "refused": res.refused,
         "refusal_reason": res.refusal_reason.value if res.refusal_reason else None,
         "citations": [
-            {"doc_id": c.doc_id, "page": c.page, "verified": c.verified, "section_ref": c.section_ref}
+            {
+                "doc_id": c.doc_id,
+                "page": c.page,
+                "verified": c.verified,
+                "section_ref": c.section_ref,
+            }
             for c in res.citations
         ],
         "contexts": [
-            {"chunk_id": c.chunk_id, "doc_id": c.doc_id, "page_start": c.page_start,
-             "page_end": c.page_end, "section": c.section, "text": c.text}
+            {
+                "chunk_id": c.chunk_id,
+                "doc_id": c.doc_id,
+                "page_start": c.page_start,
+                "page_end": c.page_end,
+                "section": c.section,
+                "text": c.text,
+            }
             for c in res.retrieved_chunks
         ],
         "formatted_context": res.formatted_context,
@@ -111,7 +136,9 @@ def closed_book_record(item: dict) -> dict:
     from src.llm import complete
     from src.rag import INSUFFICIENT_CONTEXT_PHRASE
 
-    res = complete(system=CLOSED_BOOK_SYSTEM.format(refusal=INSUFFICIENT_CONTEXT_PHRASE), user=item["question"])
+    res = complete(
+        system=CLOSED_BOOK_SYSTEM.format(refusal=INSUFFICIENT_CONTEXT_PHRASE), user=item["question"]
+    )
     refused = INSUFFICIENT_CONTEXT_PHRASE.lower() in res.text.lower()
     return {
         "answer": res.text.strip(),
@@ -121,14 +148,22 @@ def closed_book_record(item: dict) -> dict:
         "refusal_reason": "model_refusal" if refused else None,
         "citations": [],
         "contexts": [],
-        "usage": {"input_tokens": res.input_tokens, "output_tokens": res.output_tokens, "cost_usd": res.cost_usd},
+        "usage": {
+            "input_tokens": res.input_tokens,
+            "output_tokens": res.output_tokens,
+            "cost_usd": res.cost_usd,
+        },
     }
 
 
 def failed_record(exc: Exception) -> dict:
     return {
-        "error": f"{type(exc).__name__}: {exc}", "refused": True, "refusal_reason": "error",
-        "citations": [], "contexts": [], "raw_model_output": None,
+        "error": f"{type(exc).__name__}: {exc}",
+        "refused": True,
+        "refusal_reason": "error",
+        "citations": [],
+        "contexts": [],
+        "raw_model_output": None,
         "usage": {"input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0},
     }
 
@@ -163,11 +198,25 @@ def render_markdown(artifact: dict) -> str:
 def append_history(artifact: dict) -> None:
     m = artifact["metrics"]
     row = {
-        "timestamp": artifact["created_at"], "run_id": artifact["run_id"], "split": artifact["split"],
-        "label": artifact["label"], "config": artifact["config"], "closed_book": artifact["closed_book"],
-        "n": m["n"], "cost_usd": m["cost_usd"],
-        **{k: m[k]["rate"] for k in ("answer_rate", "refusal_recall", "task_outcome",
-                                      "raw_citation_precision", "retrieval_any_hit", "retrieval_all_hit")},
+        "timestamp": artifact["created_at"],
+        "run_id": artifact["run_id"],
+        "split": artifact["split"],
+        "label": artifact["label"],
+        "config": artifact["config"],
+        "closed_book": artifact["closed_book"],
+        "n": m["n"],
+        "cost_usd": m["cost_usd"],
+        **{
+            k: m[k]["rate"]
+            for k in (
+                "answer_rate",
+                "refusal_recall",
+                "task_outcome",
+                "raw_citation_precision",
+                "retrieval_any_hit",
+                "retrieval_all_hit",
+            )
+        },
     }
     new = not HISTORY_CSV.exists()
     with HISTORY_CSV.open("a", encoding="utf-8", newline="") as fh:
@@ -215,9 +264,14 @@ def main(argv: list[str] | None = None) -> None:
         except Exception as exc:  # noqa: BLE001 - a failed item is kept and counted, never dropped
             record = failed_record(exc)
         base = {k: item.get(k) for k in ("id", "type", "question", "reference_answer", "evidence")}
-        records.append({**base, **record, "latency_ms": round((time.perf_counter() - start) * 1000)})
+        records.append(
+            {**base, **record, "latency_ms": round((time.perf_counter() - start) * 1000)}
+        )
         spent += record["usage"]["cost_usd"]
-        print(f"[{n}/{len(items)}] {item['id']} {'refused' if record['refused'] else 'answered'} ${spent:.4f}", flush=True)
+        print(
+            f"[{n}/{len(items)}] {item['id']} {'refused' if record['refused'] else 'answered'} ${spent:.4f}",
+            flush=True,
+        )
         if spent > args.max_usd:
             print(f"stopping: spent ${spent:.4f}, over --max-usd {args.max_usd}")
             break

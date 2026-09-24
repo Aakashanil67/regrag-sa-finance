@@ -71,7 +71,9 @@ def compute(items: list[dict]) -> dict:
         "raw_citation_precision": ratio(raw_ok, raw_total),
         "served_citations": len(served_citations),
         "served_unverified_citations": sum(1 for c in served_citations if not c["verified"]),
-        "section_ref_rate": ratio(sum(1 for c in served_citations if c.get("section_ref")), len(served_citations)),
+        "section_ref_rate": ratio(
+            sum(1 for c in served_citations if c.get("section_ref")), len(served_citations)
+        ),
         "retrieval_any_hit": ratio(sum(a for a, _ in hits), len(answerable)),
         "retrieval_all_hit": ratio(sum(b for _, b in hits), len(answerable)),
         "repairs": sum(1 for i in items if i.get("repair_attempted")),

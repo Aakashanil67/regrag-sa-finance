@@ -3,7 +3,10 @@ from evals.judge import CORRECTNESS, judge_items, parse_label, summarise
 
 def test_parse_label_variants():
     assert parse_label('{"label": "correct", "reason": "ok"}', CORRECTNESS) == ("correct", "ok")
-    assert parse_label('Sure! {"label": "partial", "reason": "half"} done', CORRECTNESS)[0] == "partial"
+    assert (
+        parse_label('Sure! {"label": "partial", "reason": "half"} done', CORRECTNESS)[0]
+        == "partial"
+    )
     assert parse_label("no json here", CORRECTNESS) == ("unparsed", "")
     assert parse_label('{"label": "great"}', CORRECTNESS)[0] == "unparsed"
 
@@ -11,13 +14,22 @@ def test_parse_label_variants():
 def _run(closed_book):
     def item(i, kind, refused):
         return {
-            "id": i, "type": kind, "refused": refused, "question": "q", "reference_answer": "r",
-            "served_answer": None if refused else "a", "formatted_context": "ctx",
+            "id": i,
+            "type": kind,
+            "refused": refused,
+            "question": "q",
+            "reference_answer": "r",
+            "served_answer": None if refused else "a",
+            "formatted_context": "ctx",
         }
 
     return {
         "closed_book": closed_book,
-        "items": [item("1", "single", True), item("2", "single", False), item("3", "unanswerable", False)],
+        "items": [
+            item("1", "single", True),
+            item("2", "single", False),
+            item("3", "unanswerable", False),
+        ],
     }
 
 

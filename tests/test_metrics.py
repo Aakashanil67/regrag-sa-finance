@@ -3,9 +3,14 @@ from evals.metrics import compute, evidence_hit, raw_citations
 
 def _item(item_id, kind, refused, raw="", citations=(), contexts=(), evidence=(), cost=0.01):
     return {
-        "id": item_id, "type": kind, "refused": refused, "raw_model_output": raw,
+        "id": item_id,
+        "type": kind,
+        "refused": refused,
+        "raw_model_output": raw,
         "refusal_reason": "model_refusal" if refused else None,
-        "citations": list(citations), "contexts": list(contexts), "evidence": list(evidence),
+        "citations": list(citations),
+        "contexts": list(contexts),
+        "evidence": list(evidence),
         "usage": {"cost_usd": cost},
     }
 
@@ -24,7 +29,15 @@ def test_evidence_hit_any_and_all():
 
 def test_compute_uses_separate_denominators():
     items = [
-        _item("1", "single", False, "[a, p.3]", [{"verified": True, "section_ref": "s 1"}], CTX, [{"doc_id": "a", "page": 3}]),
+        _item(
+            "1",
+            "single",
+            False,
+            "[a, p.3]",
+            [{"verified": True, "section_ref": "s 1"}],
+            CTX,
+            [{"doc_id": "a", "page": 3}],
+        ),
         _item("2", "multi", True, contexts=CTX, evidence=[{"doc_id": "a", "page": 9}]),
         _item("3", "unanswerable", True),
         _item("4", "unanswerable", False, "[a, p.3]", [{"verified": True}], CTX),

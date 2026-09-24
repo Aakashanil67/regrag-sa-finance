@@ -165,7 +165,9 @@ _PROVIDERS = {
 
 def settings_for(provider: str, model: str, max_tokens: int = 300) -> LLMSettings:
     host = os.environ.get("OLLAMA_HOST", DEFAULT_OLLAMA_HOST) if provider == "ollama" else None
-    return LLMSettings(provider=provider, model=model, temperature=0.0, max_tokens=max_tokens, host=host)
+    return LLMSettings(
+        provider=provider, model=model, temperature=0.0, max_tokens=max_tokens, host=host
+    )
 
 
 def complete(

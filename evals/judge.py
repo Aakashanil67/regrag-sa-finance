@@ -58,10 +58,20 @@ def judge_items(run: dict, ask) -> list[dict]:
         elif item["refused"]:
             row["correctness"] = "refused"
         else:
-            text = ask(PROMPT_CORRECTNESS.format(question=item["question"], reference=item["reference_answer"], answer=item["served_answer"]))
+            text = ask(
+                PROMPT_CORRECTNESS.format(
+                    question=item["question"],
+                    reference=item["reference_answer"],
+                    answer=item["served_answer"],
+                )
+            )
             row["correctness"], row["correctness_reason"] = parse_label(text, CORRECTNESS)
             if not run["closed_book"]:
-                text = ask(PROMPT_SUPPORT.format(context=item["formatted_context"], answer=item["served_answer"]))
+                text = ask(
+                    PROMPT_SUPPORT.format(
+                        context=item["formatted_context"], answer=item["served_answer"]
+                    )
+                )
                 row["support"], row["support_reason"] = parse_label(text, SUPPORT)
         out.append(row)
     return out
@@ -74,7 +84,9 @@ def summarise(rows: list[dict]) -> dict:
         "answerable": len(answerable),
         **{label: count("correctness", label) for label in (*CORRECTNESS, "refused", "unparsed")},
         "support": {label: count("support", label) for label in (*SUPPORT, "unparsed")},
-        "answered_unanswerable": sum(1 for r in rows if r.get("correctness") == "answered_unanswerable"),
+        "answered_unanswerable": sum(
+            1 for r in rows if r.get("correctness") == "answered_unanswerable"
+        ),
     }
 
 
@@ -95,8 +107,11 @@ def main(argv: list[str] | None = None) -> None:
 
     rows = judge_items(run, ask)
     result = {
-        "run": run_path.name, "judge": args.judge, "model": JUDGE_MODELS[args.judge],
-        "summary": summarise(rows), "items": rows,
+        "run": run_path.name,
+        "judge": args.judge,
+        "model": JUDGE_MODELS[args.judge],
+        "summary": summarise(rows),
+        "items": rows,
     }
     out = run_path.with_name(f"{run_path.stem}.judge-{args.judge}.json")
     out.write_text(json.dumps(result, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")

@@ -6,10 +6,24 @@ import pytest
 from evals import run_eval
 
 RECORD = {
-    "answer": "a", "served_answer": "a", "raw_model_output": "a [d, p.1]", "refused": False,
-    "refusal_reason": None, "citations": [{"doc_id": "d", "page": 1, "verified": True, "section_ref": None}],
-    "contexts": [{"chunk_id": "c", "doc_id": "d", "page_start": 1, "page_end": 1, "section": None, "text": "t"}],
-    "formatted_context": "t", "source_notices": [],
+    "answer": "a",
+    "served_answer": "a",
+    "raw_model_output": "a [d, p.1]",
+    "refused": False,
+    "refusal_reason": None,
+    "citations": [{"doc_id": "d", "page": 1, "verified": True, "section_ref": None}],
+    "contexts": [
+        {
+            "chunk_id": "c",
+            "doc_id": "d",
+            "page_start": 1,
+            "page_end": 1,
+            "section": None,
+            "text": "t",
+        }
+    ],
+    "formatted_context": "t",
+    "source_notices": [],
     "usage": {"input_tokens": 1, "output_tokens": 1, "cost_usd": 0.001},
 }
 
@@ -17,8 +31,13 @@ RECORD = {
 def _setup(monkeypatch, tmp_path):
     dev = tmp_path / "dev.jsonl"
     items = [
-        {"id": str(i), "type": "single", "question": "q", "reference_answer": "r",
-         "evidence": [{"doc_id": "d", "page": 1}]}
+        {
+            "id": str(i),
+            "type": "single",
+            "question": "q",
+            "reference_answer": "r",
+            "evidence": [{"doc_id": "d", "page": 1}],
+        }
         for i in range(3)
     ]
     dev.write_text("\n".join(json.dumps(i) for i in items), encoding="utf-8")
