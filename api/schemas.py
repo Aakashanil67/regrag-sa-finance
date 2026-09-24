@@ -15,6 +15,7 @@ class CitationOut(BaseModel):
     verified: bool
     title: str | None = None
     source_url: str | None = None
+    section_ref: str | None = None
 
 
 class RetrievedChunkOut(BaseModel):

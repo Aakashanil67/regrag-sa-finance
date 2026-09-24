@@ -65,6 +65,7 @@ def _citation_out(citation) -> CitationOut:
         verified=citation.verified,
         title=record.get("title"),
         source_url=_citation_source_url(record, citation.page),
+        section_ref=citation.section_ref,
     )
 
 

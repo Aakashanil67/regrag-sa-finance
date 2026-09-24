@@ -111,6 +111,21 @@ class Citation:
     doc_id: str
     page: int
     verified: bool
+    section_ref: str | None = None
+
+
+_SECTION_NUMBER = re.compile(
+    r"^\s*(?:section\s+|regulation\s+|reg\.\s*|paragraph\s+|para\.?\s*)?(\d{1,3}[A-Z]?(?:\.\d{1,3}){0,3})\b",
+    re.IGNORECASE,
+)
+
+
+def _section_ref(section: str | None, authority_level: str | None) -> str | None:
+    match = _SECTION_NUMBER.match(section or "")
+    if not match:
+        return None
+    prefix = "s" if authority_level == "primary_legislation" else "para"
+    return f"{prefix} {match.group(1)}"
 
 
 @dataclass(frozen=True)
@@ -291,12 +306,28 @@ def _extract_citations(answer: str, chunks: list[RetrievedChunk]) -> list[Citati
             range(chunk.page_start, chunk.page_end + 1)
         )
 
+    first_section: dict[tuple[str, int], str | None] = {}
+    for chunk in sorted(chunks, key=lambda c: (c.page_start, c.chunk_id)):
+        for page in range(chunk.page_start, chunk.page_end + 1):
+            first_section.setdefault((chunk.doc_id, page), chunk.section)
+
+    metadata = _doc_metadata()
     citations = []
     for doc_id, page_start, page_end in _CITATION_PATTERN.findall(answer):
         end = int(page_end) if page_end else int(page_start)
         for page in range(int(page_start), end + 1):
             verified = page in covered_pages.get(doc_id, set())
-            citations.append(Citation(doc_id=doc_id, page=page, verified=verified))
+            section_ref = (
+                _section_ref(
+                    first_section.get((doc_id, page)),
+                    metadata.get(doc_id, {}).get("authority_level"),
+                )
+                if verified
+                else None
+            )
+            citations.append(
+                Citation(doc_id=doc_id, page=page, verified=verified, section_ref=section_ref)
+            )
     return citations
 
 

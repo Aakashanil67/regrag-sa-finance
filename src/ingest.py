@@ -28,7 +28,7 @@ import fitz  # PyMuPDF
 
 from src.config import HEADER_FOOTER_REPEAT_FRACTION, MANIFEST_PATH, TOC_DOT_LEADER_FRACTION
 
-_HEADING_NUMBERING = re.compile(r"^(\d{1,2}(\.\d{1,2}){0,3})[\.\)]?\s+\S")
+_HEADING_NUMBERING = re.compile(r"^(\d{1,3}[A-Z]?(\.\d{1,3}){0,3})[\.\)]?\s+\S")
 # a bare "08 July 2020" satisfies _HEADING_NUMBERING too (a number, whitespace, a word) — this
 # excludes it before the numbering check runs. Caught live: this exact date, on a press release
 # with no other body text to anchor the fact, got dropped from its chunk entirely (headings carry

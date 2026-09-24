@@ -66,7 +66,10 @@ def render_sources(citations: list[dict], chunks: list[dict]) -> None:
         labels = []
         for citation in citations:
             title = citation.get("title") or citation["doc_id"]
-            label = f"{title}, p.{citation['page']}"
+            if citation.get("section_ref"):
+                label = f"{title}, {citation['section_ref']}, p.{citation['page']}"
+            else:
+                label = f"{title}, p.{citation['page']}"
             if citation.get("source_url"):
                 label = f"[{label}]({citation['source_url']})"
             else:

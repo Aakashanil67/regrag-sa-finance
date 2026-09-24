@@ -144,6 +144,7 @@ def test_ask_returns_answer_with_citations(monkeypatch):
                 "pa-deposit-takers/banks-directives/2023/D3-2023-Regulatory%20treatment%20of%20"
                 "accounting%20provisions.pdf#page=3"
             ),
+            "section_ref": None,
         }
     ]
     assert body["retrieved_chunks"][0]["doc_id"] == "sarb_d3_2023"
