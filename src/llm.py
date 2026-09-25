@@ -112,7 +112,8 @@ _FIXED_TEMPERATURE_PREFIXES = ("gpt-6", "gpt-5", "o")
 def _complete_openai(settings: LLMSettings, system: str, user: str, max_tokens: int) -> LLMResponse:
     import openai
 
-    client = openai.OpenAI()
+    # Retry short per-minute rate limits with backoff instead of failing the item.
+    client = openai.OpenAI(max_retries=6)
     params: dict = {}
     if settings.model.startswith(_FIXED_TEMPERATURE_PREFIXES):
         params["max_completion_tokens"] = max_tokens
