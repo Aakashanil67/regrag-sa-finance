@@ -1,0 +1,318 @@
+{
+ "run": "dev-wordpiece.json",
+ "judge": "qwen",
+ "model": "qwen2.5:7b",
+ "summary": {
+  "answerable": 34,
+  "correct": 16,
+  "partial": 14,
+  "incorrect": 2,
+  "refused": 2,
+  "unparsed": 0,
+  "support": {
+   "supported": 32,
+   "partial": 0,
+   "unsupported": 0,
+   "unparsed": 0
+  },
+  "answered_unanswerable": 0
+ },
+ "items": [
+  {
+   "id": "d01",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "The candidate answer does not fully state the key facts of when a credit agreement is treated as reckless under the National Credit Act.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the provided context."
+  },
+  {
+   "id": "d02",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "Missing the part about reporting to the Magistrate's Court where a court order is recommended.",
+   "support": "supported",
+   "support_reason": "The context directly states the actions a debt counsellor must take if a credit agreement is suspected to be reckless."
+  },
+  {
+   "id": "d03",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer fully covers the key points mentioned in the reference answer without any contradictions.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the provided context."
+  },
+  {
+   "id": "d04",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "The candidate answer includes additional information not present in the reference answer.",
+   "support": "supported",
+   "support_reason": "Both sentences are directly supported by the provided context."
+  },
+  {
+   "id": "d05",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the reference answer's key facts.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that banks should disclose whether and how they use climate-related scenario analysis to inform their strategic decision-making, targets and transition plans, including climate-related transition risks and physical risks."
+  },
+  {
+   "id": "d06",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the reference answer, emphasizing the submission of payment profile information to credit bureaus.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that credit providers must report payment profile information to credit bureaus as per the National Credit Act and related guidelines."
+  },
+  {
+   "id": "d07",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "While the candidate mentions the immediate notification to the NCR, it provides additional details not asked in the reference answer.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the provided context."
+  },
+  {
+   "id": "d08",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the reference answer.",
+   "support": "supported",
+   "support_reason": "The statement is fully supported by the context provided."
+  },
+  {
+   "id": "d09",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the reference answer without any contradictions.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that IFRS 9 does not require a loss event to occur before a provision is raised."
+  },
+  {
+   "id": "d10",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "Accurately states the main idea but includes an unnecessary addition about duties under financial sector laws.",
+   "support": "supported",
+   "support_reason": "The definition of financial stability provided in the answer is directly stated in the context."
+  },
+  {
+   "id": "d11",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the statutory objective as provided in the reference answer.",
+   "support": "supported",
+   "support_reason": "The statutory objective of the Prudential Authority is explicitly stated in the Financial Sector Regulation Act 9 of 2017."
+  },
+  {
+   "id": "d12",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "While the candidate answer includes the key standard of conduct, it provides additional information not requested in the question.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the context provided."
+  },
+  {
+   "id": "d13",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key fact about the time frame and the form used by debt counsellors.",
+   "support": "supported",
+   "support_reason": "The context directly states that within five business days after receiving an application for debt review, a debt counsellor must deliver a completed Form 17.1 to all credit providers listed in the application."
+  },
+  {
+   "id": "d14",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key fact provided in the reference answer.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that a credit provider must give the consumer at least 20 business days' notice before submitting adverse information to a credit bureau."
+  },
+  {
+   "id": "d15",
+   "type": "threshold",
+   "correctness": "partial",
+   "correctness_reason": "Extraneous information about credit agreements is provided, which is not in the reference answer.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that a debt counsellor must issue a clearance certificate within seven days after the consumer has satisfied the obligations under every credit agreement subject to the debt-rearrangement order or agreement."
+  },
+  {
+   "id": "d16",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts provided in the reference answer.",
+   "support": "supported",
+   "support_reason": "The context directly states the conditions for the firm-size adjustment for corporate SME exposures."
+  },
+  {
+   "id": "d17",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately states the key fact without contradiction.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that the aggregate exposure amount for qualifying retail revolving exposures must be less than or equal to R1.5 million."
+  },
+  {
+   "id": "d18",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the minimum capital requirement as R5 million, which matches the reference answer.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that a payment distribution-agent must have a minimum capital amount of five million (R5m) for investment in the establishment and operation of the payment distribution agency."
+  },
+  {
+   "id": "d19",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately summarizes the reference's key fact without contradiction.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that Directive 8/2025 replaces and withdraws Directive 8/2023, making the 2023 directive no longer in force."
+  },
+  {
+   "id": "d20",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately states that Directive 4 of 2023 replaces Directive 10 of 2021, aligning with the reference answer.",
+   "support": "supported",
+   "support_reason": "The context explicitly states in Directive 4/2023 that it replaces Directive 10/2021."
+  },
+  {
+   "id": "d21",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the key fact stated in the reference answer.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that all previously issued Banks Act circulars are deemed withdrawn or replaced unless confirmed as remaining effective in the annual status circular."
+  },
+  {
+   "id": "d22",
+   "type": "status",
+   "correctness": "refused"
+  },
+  {
+   "id": "d23",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately reflects the key fact that the February 2026 guideline rescinds previous guidelines and outlines a new process.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that the new guideline rescinds previous guidelines and introduces a new process for filing clearance certificates via the CBA platform."
+  },
+  {
+   "id": "d24",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "The candidate answer does not mention the recentness of the affordability information at approval, which is a key detail.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the provided context."
+  },
+  {
+   "id": "d25",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "The candidate does not mention the seven-day issuance period after the consumer meets obligations.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the information provided in the context regarding the issuance and filing deadlines for clearance certificates."
+  },
+  {
+   "id": "d26",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately captures the key points from the reference answer without any contradictions.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the context provided."
+  },
+  {
+   "id": "d27",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "While the candidate mentions the Financial Sector Regulation Act, it does not specify the exact section (6(6) of the Banks Act) and misses mentioning the operational resilience directive specifically.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the provided context."
+  },
+  {
+   "id": "d28",
+   "type": "multi",
+   "correctness": "refused"
+  },
+  {
+   "id": "d29",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "The candidate provides additional information about banks that is not asked in the question and does not fully address the credit provider's complaint-handling duties.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the provided context."
+  },
+  {
+   "id": "d30",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "The candidate provides the correct timing for recognizing lifetime expected credit losses but incorrectly cites the directive as Directive 3/2023 instead of the correct reference to the banking regulator.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the provided context."
+  },
+  {
+   "id": "d31",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "Missing the specific percentage for listing and the upper ceiling of 17.5% in the original statute.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the provided context."
+  },
+  {
+   "id": "d32",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "d33",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "d34",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "d35",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "d36",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "d37",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "d38",
+   "type": "false_premise",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate refers to Directive 8/2023, which is no longer in force according to the reference.",
+   "support": "supported",
+   "support_reason": "The context directly states the threshold amount for classification in the retail asset class as R12.5 million."
+  },
+  {
+   "id": "d39",
+   "type": "false_premise",
+   "correctness": "partial",
+   "correctness_reason": "The candidate mentions the extension but incorrectly states the new deadline.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that the PA extended the compliance date from 30 June 2023 due to regulatory developments and the need for alignment with other jurisdictions."
+  },
+  {
+   "id": "d40",
+   "type": "false_premise",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating the 10 per cent ratio is still in effect, while the reference indicates the circular is withdrawn.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that the minimum required capital-adequacy ratio is 10 per cent."
+  }
+ ]
+}

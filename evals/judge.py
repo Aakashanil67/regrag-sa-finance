@@ -98,12 +98,37 @@ def main(argv: list[str] | None = None) -> None:
     run_path = Path(args.run)
     run = json.loads(run_path.read_text(encoding="utf-8"))
 
-    from src.llm import complete, settings_for
+    import os
 
-    settings = settings_for("ollama", JUDGE_MODELS[args.judge], max_tokens=200)
+    import httpx
+
+    host = os.environ.get("OLLAMA_HOST") or "http://localhost:11434"
 
     def ask(prompt: str) -> str:
-        return complete(system=SYSTEM, user=prompt, settings=settings).text
+        # Called directly rather than through src.llm: an 8B model on a 4 GB card can exceed
+        # that client's 120 s timeout on long contexts, and format=json keeps labels parseable.
+        for attempt in range(3):
+            try:
+                r = httpx.post(
+                    f"{host}/api/chat",
+                    json={
+                        "model": JUDGE_MODELS[args.judge],
+                        "messages": [
+                            {"role": "system", "content": SYSTEM},
+                            {"role": "user", "content": prompt},
+                        ],
+                        "stream": False,
+                        "format": "json",
+                        "options": {"num_predict": 200, "temperature": 0, "num_ctx": 8192},
+                    },
+                    timeout=900.0,
+                )
+                r.raise_for_status()
+                return r.json()["message"]["content"]
+            except httpx.TransportError:
+                if attempt == 2:
+                    return ""
+        return ""
 
     rows = judge_items(run, ask)
     result = {
