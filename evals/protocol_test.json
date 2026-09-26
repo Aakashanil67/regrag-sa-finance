@@ -12,5 +12,5 @@
   },
   "sealed_at": "2026-09-24T15:56:40+00:00",
   "rule": "Written before any tuning. Run once per label, after the pipeline is frozen, with python -m evals.run_eval --split test. Never edited after sealing.",
-  "frozen_pipeline": null
+  "frozen_pipeline": "bd7f2aee18f763ac9dd7b8367eeea2a80265405ff36519b54647a920ec4c2612"
 }
