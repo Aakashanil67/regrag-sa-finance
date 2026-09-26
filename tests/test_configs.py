@@ -5,8 +5,8 @@ import sys
 from evals import configs
 
 
-def test_load_has_the_four_names():
-    assert set(configs.load()) == {"default", "baseline", "wordpiece", "bge"}
+def test_load_has_every_named_config():
+    assert set(configs.load()) == {"default", "baseline", "wordpiece", "bge", "hybrid"}
 
 
 def test_non_default_configs_use_their_own_store():
