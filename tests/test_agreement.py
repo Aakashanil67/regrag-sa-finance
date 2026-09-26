@@ -10,7 +10,7 @@ def test_perfect_agreement():
 def test_textbook_example():
     a = ["y", "y", "n", "n"]
     b = ["y", "n", "n", "n"]
-    assert cohen_kappa(list(zip(a, b))) == 0.5
+    assert cohen_kappa(list(zip(a, b, strict=True))) == 0.5
 
 
 def test_disjoint_ids_ignored():

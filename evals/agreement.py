@@ -23,7 +23,9 @@ def load_labels(path: str | Path, field: str) -> dict[str, str]:
         rows = json.loads(path.read_text(encoding="utf-8"))["items"]
     labels = {}
     for row in rows:
-        value = (row.get(field) or "").strip() if isinstance(row.get(field), str) else row.get(field)
+        value = (
+            (row.get(field) or "").strip() if isinstance(row.get(field), str) else row.get(field)
+        )
         if value in SKIP:
             continue
         labels[str(row["id"])] = value
