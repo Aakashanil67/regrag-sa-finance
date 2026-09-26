@@ -24,5 +24,5 @@ def test_default_leaves_settings_at_defaults():
         check=True,
         env=env,
     ).stdout
-    assert '"chunk_mode": "tiktoken"' in out and '"chunk_target": 800' in out
+    assert '"chunk_mode": "wordpiece"' in out and '"chunk_target": 240' in out
     assert '"chroma_dir": "chroma"' in out
