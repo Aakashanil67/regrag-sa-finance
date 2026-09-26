@@ -7,14 +7,14 @@ def test_defaults_to_openai_luna(monkeypatch):
     monkeypatch.delenv("LLM_PROVIDER", raising=False)
     monkeypatch.delenv("OPENAI_MODEL", raising=False)
     settings = llm.effective_llm_settings()
-    assert (settings.provider, settings.model) == ("openai", "gpt-6-luna")
+    assert (settings.provider, settings.model) == ("openai", "gpt-5.6-luna")
 
 
 def test_empty_env_values_fall_back(monkeypatch):
     monkeypatch.setenv("LLM_PROVIDER", "")
     monkeypatch.setenv("OPENAI_MODEL", "")
     settings = llm.effective_llm_settings()
-    assert (settings.provider, settings.model) == ("openai", "gpt-6-luna")
+    assert (settings.provider, settings.model) == ("openai", "gpt-5.6-luna")
 
 
 def test_openai_request_and_cost(monkeypatch):
@@ -34,11 +34,11 @@ def test_openai_request_and_cost(monkeypatch):
     monkeypatch.delenv("LLM_PROVIDER", raising=False)
     monkeypatch.delenv("OPENAI_MODEL", raising=False)
     result = llm.complete("sys", "user", max_tokens=123)
-    assert seen["model"] == "gpt-6-luna"
+    assert seen["model"] == "gpt-5.6-luna"
     assert seen["max_completion_tokens"] == 123
     assert "max_tokens" not in seen
     assert "temperature" not in seen
-    assert result.cost_usd == (1000 * 0.10 + 200 * 0.50) / 1e6
+    assert result.cost_usd == (1000 * 0.20 + 200 * 1.20) / 1e6
 
 
 def test_older_model_keeps_temperature_and_max_tokens(monkeypatch):
