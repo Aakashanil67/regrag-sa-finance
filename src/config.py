@@ -29,14 +29,14 @@ def _env(name: str, default: str) -> str:
 # "roughly how big is this chunk", which is all the chunk-size budget needs.
 TOKENIZER_ENCODING = "cl100k_base"
 # 800 tokens plus reranking won the v1.0 chunk-size sweep (reports/archive/v1.0-audit/improvement_log.md)
-CHUNK_MODE = _env("CHUNK_MODE", "tiktoken")  # tiktoken | wordpiece
-CHUNK_TARGET_TOKENS = int(_env("CHUNK_TARGET", "800"))
-CHUNK_OVERLAP_TOKENS = int(_env("CHUNK_OVERLAP", "75"))
+CHUNK_MODE = _env("CHUNK_MODE", "wordpiece")  # tiktoken | wordpiece
+CHUNK_TARGET_TOKENS = int(_env("CHUNK_TARGET", "240"))
+CHUNK_OVERLAP_TOKENS = int(_env("CHUNK_OVERLAP", "32"))
 EMBEDDING_MODEL_NAME = _env("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 EMBEDDING_MODEL_REVISION = _env("EMBEDDING_REVISION", "1110a243fdf4706b3f48f1d95db1a4f5529b4d41")
-RETRIEVAL_STRATEGY = _env("RETRIEVAL_STRATEGY", "semantic")
+RETRIEVAL_STRATEGY = _env("RETRIEVAL_STRATEGY", "named_balanced")
 RERANK = _env("RERANK", "1") == "1"
-CITATION_REPAIR = _env("CITATION_REPAIR", "0") == "1"
+CITATION_REPAIR = _env("CITATION_REPAIR", "1") == "1"
 RETRIEVAL_K = int(_env("K", "5"))
 _chroma = Path(_env("CHROMA_DIR", "chroma"))
 CHROMA_DIR = _chroma if _chroma.is_absolute() else ROOT / _chroma

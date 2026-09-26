@@ -1,0 +1,6 @@
+timestamp,run_id,split,label,config,closed_book,n,answer_rate,refusal_recall,task_outcome,raw_citation_precision,retrieval_any_hit,retrieval_all_hit,cost_usd
+2026-09-26T20:53:11+00:00,dev-baseline,dev,baseline,baseline,False,40,0.8823529411764706,1.0,0.9,1.0,0.9411764705882353,0.8235294117647058,0.0368
+2026-09-26T20:56:25+00:00,dev-wordpiece,dev,wordpiece,wordpiece,False,40,0.9411764705882353,1.0,0.95,1.0,1.0,0.8235294117647058,0.0204
+2026-09-26T21:00:39+00:00,dev-bge,dev,bge,bge,False,40,0.8823529411764706,1.0,0.9,1.0,0.8529411764705882,0.7647058823529411,0.0307
+2026-09-26T21:04:00+00:00,dev-hybrid,dev,hybrid,hybrid,False,40,0.8823529411764706,1.0,0.9,1.0,0.9705882352941176,0.7647058823529411,0.0214
+2026-09-26T21:07:24+00:00,dev-closedbook,dev,closedbook,default,True,40,0.8235294117647058,0.16666666666666666,0.725,,0.0,0.0,0.0174
