@@ -35,7 +35,7 @@ jobs:
       # machine's setting. This step proves it on Linux, in about two seconds, by forcing the
       # exact checkout behaviour that exposed the bug and running the real hash-matching test
       # against the result — delete .gitattributes and this goes red.
-      - name: A CRLF-defaulting checkout must still reproduce the sealed test hash
+      - name: A CRLF checkout must still reproduce evals/protocol_test.json's hash
         run: |
           git -c core.autocrlf=true checkout-index -a -f --prefix="$RUNNER_TEMP/crlf-check/"
           cd "$RUNNER_TEMP/crlf-check"
