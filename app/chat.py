@@ -121,7 +121,9 @@ for index, example in enumerate(EXAMPLE_QUESTIONS):
     if st.button(example, key=f"example_{index}"):
         clicked = example
 
-question = st.chat_input("Ask about SARB, IFRS 9, the National Credit Act, or FSCA rules...") or clicked
+question = (
+    st.chat_input("Ask about SARB, IFRS 9, the National Credit Act, or FSCA rules...") or clicked
+)
 
 if question:
     st.session_state.history.append({"role": "user", "content": question})
