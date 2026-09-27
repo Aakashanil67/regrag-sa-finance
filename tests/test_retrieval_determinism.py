@@ -46,7 +46,9 @@ def _retrieve_in_a_fresh_process(query: str) -> list[str]:
 
 
 def test_the_same_query_in_two_separate_interpreters_returns_the_same_top_k():
-    if not (CHROMA_DIR / "chroma.sqlite3").exists():
+    # build.json, not chroma.sqlite3: any test that opens the client creates an empty sqlite file,
+    # which is how CI ended up running this against a store with no chunks in it
+    if not (CHROMA_DIR / "build.json").exists():
         pytest.skip("vector store not built — run python -m src.store --rebuild first")
 
     for query in _QUERIES:
