@@ -1,6 +1,6 @@
 # Corpus
 
-27 public regulatory and standards documents covering South African banking supervision, consumer
+28 public regulatory and standards documents covering South African banking supervision, consumer
 credit law, and IFRS 9. The PDFs themselves aren't committed (see the repo `.gitignore`) — run:
 
 ```bash

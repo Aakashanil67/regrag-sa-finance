@@ -76,6 +76,16 @@ perfect. Page numbers in the evidence column are PDF pages, one-based.
    current IFRS 9 requirements must cite the 2021 snapshot as historical only and refuse a claim
    that it includes later amendments.
 
+## Documents added in this version
+
+Six documents were added after the review above: `fsr_act_9_2017` (Financial Sector Regulation
+Act, from treasury.gov.za), `banks_act_94_1990`, `regs_banks_2012`, `nca_regs_2006` and
+`nca_affordability_regs_2015` (all from gov.za), and `fsca_cs3_2020_banks` (Conduct Standard 3 of
+2020, from the banking association's copy of Annexure A, OCR'd, see `reports/ocr_check.md`). I
+added them because the question set needed the binding instruments behind the guidance notes and
+the press release already in the corpus. The manifest now has 28 entries. The count of 22 and the
+statement that Conduct Standard 3 of 2020 is absent apply to the audit as it was run.
+
 ## Manifest decision
 
 No manifest or source PDF was changed. The existing metadata for the SARB successor relationships
