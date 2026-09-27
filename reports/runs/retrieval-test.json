@@ -1,0 +1,329 @@
+[
+ {
+  "config": "baseline",
+  "split": "test",
+  "settings": {
+   "chunk_mode": "tiktoken",
+   "chunk_target": 800,
+   "chunk_overlap": 75,
+   "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+   "embedding_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+   "retrieval_strategy": "semantic",
+   "rerank": true,
+   "citation_repair": false,
+   "chroma_dir": "chroma_variants/baseline",
+   "k": 5
+  },
+  "chunks": 1857,
+  "embedding_limit": 256,
+  "truncated_chunks": 1606,
+  "rows": [
+   {
+    "strategy": "semantic",
+    "rerank": false,
+    "n": 48,
+    "any_hit": 32,
+    "all_hit": 26,
+    "multi_all_hit": 4,
+    "multi_n": 12,
+    "mrr": 0.423,
+    "p50_ms": 237
+   },
+   {
+    "strategy": "semantic",
+    "rerank": true,
+    "n": 48,
+    "any_hit": 37,
+    "all_hit": 29,
+    "multi_all_hit": 3,
+    "multi_n": 12,
+    "mrr": 0.585,
+    "p50_ms": 2372
+   },
+   {
+    "strategy": "named_balanced",
+    "rerank": false,
+    "n": 48,
+    "any_hit": 32,
+    "all_hit": 26,
+    "multi_all_hit": 4,
+    "multi_n": 12,
+    "mrr": 0.423,
+    "p50_ms": 237
+   },
+   {
+    "strategy": "named_balanced",
+    "rerank": true,
+    "n": 48,
+    "any_hit": 37,
+    "all_hit": 29,
+    "multi_all_hit": 3,
+    "multi_n": 12,
+    "mrr": 0.585,
+    "p50_ms": 2301
+   },
+   {
+    "strategy": "bm25",
+    "rerank": false,
+    "n": 48,
+    "any_hit": 41,
+    "all_hit": 37,
+    "multi_all_hit": 6,
+    "multi_n": 12,
+    "mrr": 0.686,
+    "p50_ms": 13
+   },
+   {
+    "strategy": "bm25",
+    "rerank": true,
+    "n": 48,
+    "any_hit": 41,
+    "all_hit": 36,
+    "multi_all_hit": 6,
+    "multi_n": 12,
+    "mrr": 0.641,
+    "p50_ms": 2087
+   },
+   {
+    "strategy": "hybrid",
+    "rerank": false,
+    "n": 48,
+    "any_hit": 37,
+    "all_hit": 33,
+    "multi_all_hit": 6,
+    "multi_n": 12,
+    "mrr": 0.615,
+    "p50_ms": 253
+   },
+   {
+    "strategy": "hybrid",
+    "rerank": true,
+    "n": 48,
+    "any_hit": 39,
+    "all_hit": 34,
+    "multi_all_hit": 6,
+    "multi_n": 12,
+    "mrr": 0.618,
+    "p50_ms": 2324
+   }
+  ]
+ },
+ {
+  "config": "wordpiece",
+  "split": "test",
+  "settings": {
+   "chunk_mode": "wordpiece",
+   "chunk_target": 240,
+   "chunk_overlap": 32,
+   "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+   "embedding_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+   "retrieval_strategy": "named_balanced",
+   "rerank": true,
+   "citation_repair": true,
+   "chroma_dir": "chroma_variants/wordpiece",
+   "k": 5
+  },
+  "chunks": 6152,
+  "embedding_limit": 256,
+  "truncated_chunks": 0,
+  "rows": [
+   {
+    "strategy": "semantic",
+    "rerank": false,
+    "n": 48,
+    "any_hit": 32,
+    "all_hit": 24,
+    "multi_all_hit": 1,
+    "multi_n": 12,
+    "mrr": 0.396,
+    "p50_ms": 639
+   },
+   {
+    "strategy": "semantic",
+    "rerank": true,
+    "n": 48,
+    "any_hit": 40,
+    "all_hit": 32,
+    "multi_all_hit": 4,
+    "multi_n": 12,
+    "mrr": 0.677,
+    "p50_ms": 1573
+   },
+   {
+    "strategy": "named_balanced",
+    "rerank": false,
+    "n": 48,
+    "any_hit": 32,
+    "all_hit": 24,
+    "multi_all_hit": 1,
+    "multi_n": 12,
+    "mrr": 0.396,
+    "p50_ms": 636
+   },
+   {
+    "strategy": "named_balanced",
+    "rerank": true,
+    "n": 48,
+    "any_hit": 40,
+    "all_hit": 32,
+    "multi_all_hit": 4,
+    "multi_n": 12,
+    "mrr": 0.677,
+    "p50_ms": 1585
+   },
+   {
+    "strategy": "bm25",
+    "rerank": false,
+    "n": 48,
+    "any_hit": 36,
+    "all_hit": 30,
+    "multi_all_hit": 4,
+    "multi_n": 12,
+    "mrr": 0.596,
+    "p50_ms": 35
+   },
+   {
+    "strategy": "bm25",
+    "rerank": true,
+    "n": 48,
+    "any_hit": 42,
+    "all_hit": 33,
+    "multi_all_hit": 2,
+    "multi_n": 12,
+    "mrr": 0.753,
+    "p50_ms": 994
+   },
+   {
+    "strategy": "hybrid",
+    "rerank": false,
+    "n": 48,
+    "any_hit": 38,
+    "all_hit": 33,
+    "multi_all_hit": 6,
+    "multi_n": 12,
+    "mrr": 0.507,
+    "p50_ms": 705
+   },
+   {
+    "strategy": "hybrid",
+    "rerank": true,
+    "n": 48,
+    "any_hit": 43,
+    "all_hit": 36,
+    "multi_all_hit": 4,
+    "multi_n": 12,
+    "mrr": 0.765,
+    "p50_ms": 1620
+   }
+  ]
+ },
+ {
+  "config": "bge",
+  "split": "test",
+  "settings": {
+   "chunk_mode": "wordpiece",
+   "chunk_target": 480,
+   "chunk_overlap": 48,
+   "embedding_model": "BAAI/bge-small-en-v1.5",
+   "embedding_revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
+   "retrieval_strategy": "named_balanced",
+   "rerank": true,
+   "citation_repair": true,
+   "chroma_dir": "chroma_variants/bge",
+   "k": 5
+  },
+  "chunks": 3238,
+  "embedding_limit": 512,
+  "truncated_chunks": 0,
+  "rows": [
+   {
+    "strategy": "semantic",
+    "rerank": false,
+    "n": 48,
+    "any_hit": 39,
+    "all_hit": 30,
+    "multi_all_hit": 2,
+    "multi_n": 12,
+    "mrr": 0.496,
+    "p50_ms": 392
+   },
+   {
+    "strategy": "semantic",
+    "rerank": true,
+    "n": 48,
+    "any_hit": 40,
+    "all_hit": 34,
+    "multi_all_hit": 4,
+    "multi_n": 12,
+    "mrr": 0.653,
+    "p50_ms": 2437
+   },
+   {
+    "strategy": "named_balanced",
+    "rerank": false,
+    "n": 48,
+    "any_hit": 39,
+    "all_hit": 30,
+    "multi_all_hit": 2,
+    "multi_n": 12,
+    "mrr": 0.496,
+    "p50_ms": 405
+   },
+   {
+    "strategy": "named_balanced",
+    "rerank": true,
+    "n": 48,
+    "any_hit": 40,
+    "all_hit": 34,
+    "multi_all_hit": 4,
+    "multi_n": 12,
+    "mrr": 0.653,
+    "p50_ms": 2442
+   },
+   {
+    "strategy": "bm25",
+    "rerank": false,
+    "n": 48,
+    "any_hit": 38,
+    "all_hit": 33,
+    "multi_all_hit": 6,
+    "multi_n": 12,
+    "mrr": 0.627,
+    "p50_ms": 20
+   },
+   {
+    "strategy": "bm25",
+    "rerank": true,
+    "n": 48,
+    "any_hit": 41,
+    "all_hit": 33,
+    "multi_all_hit": 4,
+    "multi_n": 12,
+    "mrr": 0.652,
+    "p50_ms": 2054
+   },
+   {
+    "strategy": "hybrid",
+    "rerank": false,
+    "n": 48,
+    "any_hit": 41,
+    "all_hit": 35,
+    "multi_all_hit": 5,
+    "multi_n": 12,
+    "mrr": 0.65,
+    "p50_ms": 436
+   },
+   {
+    "strategy": "hybrid",
+    "rerank": true,
+    "n": 48,
+    "any_hit": 39,
+    "all_hit": 34,
+    "multi_all_hit": 5,
+    "multi_n": 12,
+    "mrr": 0.649,
+    "p50_ms": 2458
+   }
+  ]
+ }
+]

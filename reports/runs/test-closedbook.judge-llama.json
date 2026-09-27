@@ -1,0 +1,364 @@
+{
+ "run": "test-closedbook.json",
+ "judge": "llama",
+ "model": "llama3.1:8b",
+ "summary": {
+  "answerable": 48,
+  "correct": 31,
+  "partial": 0,
+  "incorrect": 11,
+  "refused": 6,
+  "unparsed": 0,
+  "support": {
+   "supported": 0,
+   "partial": 0,
+   "unsupported": 0,
+   "unparsed": 0
+  },
+  "answered_unanswerable": 12
+ },
+ "items": [
+  {
+   "id": "t01",
+   "type": "single",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating that the National Credit Regulator is subject to the Minister's directions, which is not mentioned in the reference."
+  },
+  {
+   "id": "t02",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts without any contradictions."
+  },
+  {
+   "id": "t03",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t04",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts mentioned in the reference, without adding or contradicting any information."
+  },
+  {
+   "id": "t05",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that the designated deputy Registrar may stand in for the Registrar, which is in line with the reference's statement about the Deputy Registrar's competence."
+  },
+  {
+   "id": "t06",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the inclusion of weekends and public holidays, and the use of carried-forward balances."
+  },
+  {
+   "id": "t07",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the period over which a climate target applies, including the base year and target year or deadline, and also mentions interim milestones or targets, which is in line with the reference answer."
+  },
+  {
+   "id": "t08",
+   "type": "single",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating that provisions for credit-impaired exposures are treated as specific credit-risk adjustments, rather than as specific provisions."
+  },
+  {
+   "id": "t09",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t10",
+   "type": "single",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating that the primary credit bureau is the one that originally collected the information, whereas the reference states it is a registered credit bureau authorised by the regulator to host full-file consumer credit information."
+  },
+  {
+   "id": "t11",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions."
+  },
+  {
+   "id": "t12",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts mentioned in the reference, without any contradictions or additional information."
+  },
+  {
+   "id": "t13",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that the proposed framework prevents 'double dipping' and that multiple payments may be permitted only under specific conditions, aligning with the reference's key facts."
+  },
+  {
+   "id": "t14",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the grounds on which a credit provider may not unfairly discriminate, as specified in the reference."
+  },
+  {
+   "id": "t15",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key findings of the regulatory self-assessment pilot, including the focus on customer outcomes, policies and processes addressing customer fairness, and gaps in product design and targeting, monitoring, and post-sale barriers."
+  },
+  {
+   "id": "t16",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t17",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions."
+  },
+  {
+   "id": "t18",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t19",
+   "type": "threshold",
+   "correctness": "refused"
+  },
+  {
+   "id": "t20",
+   "type": "threshold",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating a maximum period of five years, which is longer than the 12 months stated in the reference."
+  },
+  {
+   "id": "t21",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the time frame of five days and the requirement to provide reasons if the distribution is delayed."
+  },
+  {
+   "id": "t22",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts without any contradictions."
+  },
+  {
+   "id": "t23",
+   "type": "threshold",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating six months instead of three months before the end of the first term."
+  },
+  {
+   "id": "t24",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the percentage and the basis on which it is calculated."
+  },
+  {
+   "id": "t25",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the effective date and the option for earlier application."
+  },
+  {
+   "id": "t26",
+   "type": "threshold",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer states a much lower percentage than the reference answer."
+  },
+  {
+   "id": "t27",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that South African banks must apply the current IFRS 9 requirements as endorsed in South Africa, which aligns with the reference's key facts."
+  },
+  {
+   "id": "t28",
+   "type": "status",
+   "correctness": "refused"
+  },
+  {
+   "id": "t29",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that IFRS 9 replaces IAS 39 and mentions the option to continue applying IAS 39's hedge-accounting requirements, matching the reference's key facts."
+  },
+  {
+   "id": "t30",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that Section 86A has not yet been brought into operation by proclamation, matching the key facts in the reference answer."
+  },
+  {
+   "id": "t31",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that the Conduct Standard for Banks still required the Minister of Finance’s approval after parliamentary consideration."
+  },
+  {
+   "id": "t32",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that directives remain effective until formally withdrawn, without contradicting or adding to the reference's key facts."
+  },
+  {
+   "id": "t33",
+   "type": "multi",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating a 20 business day notice period instead of at least 5 business days, and also incorrectly states that an applicant for credit bureau registration must use Form 3 instead of Form 5."
+  },
+  {
+   "id": "t34",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that a bank should not charge a complainant a fee for lodging or pursuing a complaint, and that conduct standards require complaints procedures to be accessible, transparent and fair, which aligns with the reference's key facts."
+  },
+  {
+   "id": "t35",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts about IFRS 9's change in credit loss recognition and the SARB's treatment of Stage 2 exposures, without any contradictions or omissions."
+  },
+  {
+   "id": "t36",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts about the Derivatives Conduct Standard and the Retail Distribution Review, without any contradictions or omissions."
+  },
+  {
+   "id": "t37",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts about disputing inaccurate information with a credit bureau and taking a complaint to the National Credit Regulator, without any contradictions or omissions."
+  },
+  {
+   "id": "t38",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts about plain language and complaint processes without any contradictions."
+  },
+  {
+   "id": "t39",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the effective date of IFRS 9 and the information entities must consider when determining impairments."
+  },
+  {
+   "id": "t40",
+   "type": "multi",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating the publication date as 27 November 2020 instead of 8 July 2020, and also adds additional requirements not mentioned in the reference."
+  },
+  {
+   "id": "t41",
+   "type": "multi",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating that a debt counsellor applies on Form 16 instead of Form 4, and also incorrectly specifies that the payment distribution agent must deposit the monies into a separate trust account at a bank registered under the Banks Act, which is not menti"
+  },
+  {
+   "id": "t42",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts without any contradictions."
+  },
+  {
+   "id": "t43",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts about the Fair-Treatment Programme's place in Twin Peaks and the requirements for conduct standards on fair treatment of customers."
+  },
+  {
+   "id": "t44",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts about the Retail Distribution Review and the cap on insurer binder fees."
+  },
+  {
+   "id": "t45",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t46",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t47",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t48",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t49",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t50",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t51",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t52",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t53",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t54",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t55",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t56",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t57",
+   "type": "false_premise",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference, as it states that debt counsellors do collect and distribute monies on behalf of consumers, which is not allowed according to the regulation."
+  },
+  {
+   "id": "t58",
+   "type": "false_premise",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer states that the Minister designates the Registrar after consulting the Governor of the South African Reserve Bank, which contradicts the reference that the Reserve Bank designates the Registrar subject to the Minister's approval."
+  },
+  {
+   "id": "t59",
+   "type": "false_premise",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the year the Financial Sector Regulation Act was introduced and the year the Conduct Standard for Banks was published."
+  },
+  {
+   "id": "t60",
+   "type": "false_premise",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the reference's key facts, including the conditions under which ongoing fees or commission may be paid, and does not contradict them."
+  }
+ ]
+}

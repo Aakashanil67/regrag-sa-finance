@@ -1,0 +1,364 @@
+{
+ "run": "test-closedbook.json",
+ "judge": "qwen",
+ "model": "qwen2.5:7b",
+ "summary": {
+  "answerable": 48,
+  "correct": 23,
+  "partial": 11,
+  "incorrect": 8,
+  "refused": 6,
+  "unparsed": 0,
+  "support": {
+   "supported": 0,
+   "partial": 0,
+   "unsupported": 0,
+   "unparsed": 0
+  },
+  "answered_unanswerable": 12
+ },
+ "items": [
+  {
+   "id": "t01",
+   "type": "single",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate's answer contradicts the reference."
+  },
+  {
+   "id": "t02",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the key facts provided in the reference answer."
+  },
+  {
+   "id": "t03",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t04",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "Missing the aspect about monitoring and evaluation of financial education programs."
+  },
+  {
+   "id": "t05",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key fact from the reference answer."
+  },
+  {
+   "id": "t06",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately describes the method of calculating the average daily balance as stated in the reference answer."
+  },
+  {
+   "id": "t07",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer includes and expands on the key facts provided in the reference answer."
+  },
+  {
+   "id": "t08",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "The candidate answer incorrectly states that provisions are treated as specific credit-risk adjustments rather than specific provisions as stated in the reference answer."
+  },
+  {
+   "id": "t09",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t10",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "Missing the part about being authorised by the regulator."
+  },
+  {
+   "id": "t11",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "The candidate answer includes additional information not present in the reference answer."
+  },
+  {
+   "id": "t12",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the key facts provided in the reference answer."
+  },
+  {
+   "id": "t13",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the reference answer without contradicting it."
+  },
+  {
+   "id": "t14",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts without contradiction."
+  },
+  {
+   "id": "t15",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "It includes additional information not present in the reference answer."
+  },
+  {
+   "id": "t16",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t17",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "The candidate answer omits the related order for reckless credit."
+  },
+  {
+   "id": "t18",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t19",
+   "type": "threshold",
+   "correctness": "refused"
+  },
+  {
+   "id": "t20",
+   "type": "threshold",
+   "correctness": "incorrect",
+   "correctness_reason": "Contradicts the reference answer."
+  },
+  {
+   "id": "t21",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the key facts provided in the reference answer."
+  },
+  {
+   "id": "t22",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts provided in the reference answer."
+  },
+  {
+   "id": "t23",
+   "type": "threshold",
+   "correctness": "partial",
+   "correctness_reason": "The candidate answer states six months, while the reference answer states three months before the end of the first term."
+  },
+  {
+   "id": "t24",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key fact from the reference answer."
+  },
+  {
+   "id": "t25",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the reference answer."
+  },
+  {
+   "id": "t26",
+   "type": "threshold",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer states 10%, while the reference answer states 40%."
+  },
+  {
+   "id": "t27",
+   "type": "status",
+   "correctness": "partial",
+   "correctness_reason": "While the answer correctly states that banks should follow the current version, it adds details about SARB prudential standards which are not in the reference answer."
+  },
+  {
+   "id": "t28",
+   "type": "status",
+   "correctness": "refused"
+  },
+  {
+   "id": "t29",
+   "type": "status",
+   "correctness": "partial",
+   "correctness_reason": "It correctly states that IFRS 9 replaced IAS 39 but adds unnecessary details about hedge accounting that are not relevant to the main question."
+  },
+  {
+   "id": "t30",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the reference answer without adding or contradicting any information."
+  },
+  {
+   "id": "t31",
+   "type": "status",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate contradicts the reference by stating that the Conduct Standard for Banks still needed approval after parliamentary consideration, while the reference states it was finalized and published."
+  },
+  {
+   "id": "t32",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the reference answer without any contradictions."
+  },
+  {
+   "id": "t33",
+   "type": "multi",
+   "correctness": "incorrect",
+   "correctness_reason": "The notice period and form number are incorrect."
+  },
+  {
+   "id": "t34",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the reference answer without any contradictions or omissions."
+  },
+  {
+   "id": "t35",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately states the changes in IFRS 9 and the SARB's treatment of Stage 2 exposures as per the reference answer."
+  },
+  {
+   "id": "t36",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately describes the key aspects of both the Derivatives Conduct Standard and the RDR regarding conflicts of interest without contradiction."
+  },
+  {
+   "id": "t37",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "Missing the 20 business days resolution period and the need to use the prescribed complaint form with the NCR."
+  },
+  {
+   "id": "t38",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the reference answer's key facts without contradiction."
+  },
+  {
+   "id": "t39",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the reference answer without any contradictions or omissions."
+  },
+  {
+   "id": "t40",
+   "type": "multi",
+   "correctness": "incorrect",
+   "correctness_reason": "Date of publication and bank's actions on complaints are incorrect."
+  },
+  {
+   "id": "t41",
+   "type": "multi",
+   "correctness": "incorrect",
+   "correctness_reason": "Form 16 is incorrect; it should be Form 4. Additionally, the description of the bank registration is not accurate."
+  },
+  {
+   "id": "t42",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the key facts provided in the reference answer."
+  },
+  {
+   "id": "t43",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately reflects the key points of the reference answer without any contradictions."
+  },
+  {
+   "id": "t44",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the reference answer's key points without contradiction."
+  },
+  {
+   "id": "t45",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t46",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t47",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t48",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t49",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t50",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t51",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t52",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t53",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t54",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t55",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t56",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t57",
+   "type": "false_premise",
+   "correctness": "incorrect",
+   "correctness_reason": "The reference states that debt counsellors are not allowed to collect and distribute monies, which contradicts the candidate's answer."
+  },
+  {
+   "id": "t58",
+   "type": "false_premise",
+   "correctness": "partial",
+   "correctness_reason": "The candidate omits the approval step by the Minister."
+  },
+  {
+   "id": "t59",
+   "type": "false_premise",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the reference answer's key facts."
+  },
+  {
+   "id": "t60",
+   "type": "false_premise",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the reference, explaining that ongoing remuneration is for services rendered and acknowledging transitional arrangements as a recognized concern."
+  }
+ ]
+}

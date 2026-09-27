@@ -1,0 +1,1648 @@
+{
+ "schema": 3,
+ "run_id": "test-closedbook",
+ "created_at": "2026-09-26T22:58:44+00:00",
+ "split": "test",
+ "label": "closedbook",
+ "config": "default",
+ "closed_book": true,
+ "settings": {
+  "chunk_mode": "wordpiece",
+  "chunk_target": 240,
+  "chunk_overlap": 32,
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "embedding_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "retrieval_strategy": "named_balanced",
+  "rerank": true,
+  "citation_repair": true,
+  "chroma_dir": "chroma",
+  "k": 5
+ },
+ "pipeline_fingerprint": null,
+ "questions_sha256": "e1265c494d6bda359e6d3437794eff5928359ac515be7bb5f7515daa23712283",
+ "complete": true,
+ "metrics": {
+  "n": 60,
+  "answer_rate": {
+   "k": 42,
+   "n": 48,
+   "rate": 0.875,
+   "ci95": [
+    0.7529927291394518,
+    0.9414302824959915
+   ]
+  },
+  "refusal_recall": {
+   "k": 0,
+   "n": 12,
+   "rate": 0.0,
+   "ci95": [
+    0.0,
+    0.2425007574992425
+   ]
+  },
+  "task_outcome": {
+   "k": 42,
+   "n": 60,
+   "rate": 0.7,
+   "ci95": [
+    0.5749105303360957,
+    0.801019897472731
+   ]
+  },
+  "raw_citation_precision": {
+   "k": 0,
+   "n": 0,
+   "rate": null,
+   "ci95": [
+    null,
+    null
+   ]
+  },
+  "served_citations": 0,
+  "served_unverified_citations": 0,
+  "section_ref_rate": {
+   "k": 0,
+   "n": 0,
+   "rate": null,
+   "ci95": [
+    null,
+    null
+   ]
+  },
+  "retrieval_any_hit": {
+   "k": 0,
+   "n": 48,
+   "rate": 0.0,
+   "ci95": [
+    0.0,
+    0.0741026511527422
+   ]
+  },
+  "retrieval_all_hit": {
+   "k": 0,
+   "n": 48,
+   "rate": 0.0,
+   "ci95": [
+    0.0,
+    0.0741026511527422
+   ]
+  },
+  "repairs": 0,
+  "refusal_reasons": {
+   "model_refusal": 6
+  },
+  "failed_items": 0,
+  "cost_usd": 0.026
+ },
+ "items": [
+  {
+   "id": "t01",
+   "type": "single",
+   "question": "Is the National Credit Regulator subject to anyone's direction when it performs its functions?",
+   "reference_answer": "No. The regulator is independent and subject only to the Constitution and the law.",
+   "evidence": [
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 20,
+     "quote": "is independent and subject only to the Constitution and the law"
+    }
+   ],
+   "answer": "Yes. The National Credit Regulator is accountable to, and subject to the directions of, the Minister responsible for the National Credit Act, but only within the powers and limits provided by that Act.",
+   "served_answer": "Yes. The National Credit Regulator is accountable to, and subject to the directions of, the Minister responsible for the National Credit Act, but only within the powers and limits provided by that Act.",
+   "raw_model_output": "Yes. The National Credit Regulator is accountable to, and subject to the directions of, the Minister responsible for the National Credit Act, but only within the powers and limits provided by that Act.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 66,
+    "output_tokens": 975,
+    "cost_usd": 0.0011832000000000001
+   },
+   "latency_ms": 10652
+  },
+  {
+   "id": "t02",
+   "type": "single",
+   "question": "What must a bank do with the complaints information it records?",
+   "reference_answer": "It must scrutinise and analyse the recorded complaints information on an ongoing basis and use it to manage conduct risks and improve outcomes and processes for customers.",
+   "evidence": [
+    {
+     "doc_id": "fsca_cs3_2020_banks",
+     "page": 20,
+     "quote": "Complaints information recorded in accordance with subsection (15) must be scrutinised and analysed by a bank on an ongoing basis"
+    }
+   ],
+   "answer": "A bank must analyse the complaints information it records to identify trends, recurring problems and possible systemic issues. It must use those findings to address root causes, improve its products and services, and report relevant complaints information to its governing body and the regulator when required.",
+   "served_answer": "A bank must analyse the complaints information it records to identify trends, recurring problems and possible systemic issues. It must use those findings to address root causes, improve its products and services, and report relevant complaints information to its governing body and the regulator when required.",
+   "raw_model_output": "A bank must analyse the complaints information it records to identify trends, recurring problems and possible systemic issues. It must use those findings to address root causes, improve its products and services, and report relevant complaints information to its governing body and the regulator when required.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 61,
+    "output_tokens": 233,
+    "cost_usd": 0.00029179999999999994
+   },
+   "latency_ms": 3279
+  },
+  {
+   "id": "t03",
+   "type": "single",
+   "question": "Which kinds of institution count as eligible financial institutions when banks are involved?",
+   "reference_answer": "Among others, a financial institution licensed or required to be licensed as a bank under the Banks Act.",
+   "evidence": [
+    {
+     "doc_id": "fsr_act_9_2017",
+     "page": 30,
+     "quote": "A financial institution licensed or required to be licensed as a bank in terms of the Banks Act"
+    }
+   ],
+   "answer": "I don't have a source for that.",
+   "served_answer": null,
+   "raw_model_output": "I don't have a source for that.",
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 63,
+    "output_tokens": 529,
+    "cost_usd": 0.0006474
+   },
+   "latency_ms": 6287
+  },
+  {
+   "id": "t04",
+   "type": "single",
+   "question": "What may the conduct standards made under the financial sector statute prescribe about financial education?",
+   "reference_answer": "They may cover the design, suitability, implementation, monitoring and evaluation of financial education programs.",
+   "evidence": [
+    {
+     "doc_id": "fsr_act_9_2017",
+     "page": 120,
+     "quote": "the design, suitability, implementation, monitoring and evaluation of financial education programs"
+    }
+   ],
+   "answer": "Conduct standards may prescribe requirements for financial institutions concerning the provision of financial education, including its content, form, timing and manner of delivery.",
+   "served_answer": "Conduct standards may prescribe requirements for financial institutions concerning the provision of financial education, including its content, form, timing and manner of delivery.",
+   "raw_model_output": "Conduct standards may prescribe requirements for financial institutions concerning the provision of financial education, including its content, form, timing and manner of delivery.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 65,
+    "output_tokens": 292,
+    "cost_usd": 0.0003634
+   },
+   "latency_ms": 4014
+  },
+  {
+   "id": "t05",
+   "type": "single",
+   "question": "Who may stand in for the Registrar of Deposit-taking Institutions once a deputy has been designated?",
+   "reference_answer": "The Deputy Registrar, who works under the Registrar's control and directions, is competent to perform any function the Registrar may perform.",
+   "evidence": [
+    {
+     "doc_id": "banks_act_94_1990",
+     "page": 10,
+     "quote": "who shall, subject to the control and directions of the Registrar, be competent to"
+    }
+   ],
+   "answer": "The designated deputy Registrar of Deposit-taking Institutions may stand in for the Registrar.",
+   "served_answer": "The designated deputy Registrar of Deposit-taking Institutions may stand in for the Registrar.",
+   "raw_model_output": "The designated deputy Registrar of Deposit-taking Institutions may stand in for the Registrar.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 67,
+    "output_tokens": 258,
+    "cost_usd": 0.00032299999999999994
+   },
+   "latency_ms": 3369
+  },
+  {
+   "id": "t06",
+   "type": "single",
+   "question": "How is a bank's average daily balance for a month worked out in its returns?",
+   "reference_answer": "By totalling the amounts for each day of the month and dividing the total by the number of calendar days in that month.",
+   "evidence": [
+    {
+     "doc_id": "regs_banks_2012",
+     "page": 20,
+     "quote": "shall be calculated by totalling the amounts thereof for each day of the month and by dividing such total by the number of calendar days"
+    }
+   ],
+   "answer": "A bank’s average daily balance for a month is generally calculated by adding the relevant end-of-day balance for each calendar day of the month and dividing the total by the number of calendar days in that month. Thus, weekends and public holidays are normally included, using the applicable carried-forward balance where no new daily balance is recorded.",
+   "served_answer": "A bank’s average daily balance for a month is generally calculated by adding the relevant end-of-day balance for each calendar day of the month and dividing the total by the number of calendar days in that month. Thus, weekends and public holidays are normally included, using the applicable carried-forward balance where no new daily balance is recorded.",
+   "raw_model_output": "A bank’s average daily balance for a month is generally calculated by adding the relevant end-of-day balance for each calendar day of the month and dividing the total by the number of calendar days in that month. Thus, weekends and public holidays are normally included, using the applicable carried-forward balance where no new daily balance is recorded.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 66,
+    "output_tokens": 209,
+    "cost_usd": 0.000264
+   },
+   "latency_ms": 3135
+  },
+  {
+   "id": "t07",
+   "type": "single",
+   "question": "What must banks say about the period over which a climate target applies?",
+   "reference_answer": "They must disclose the period over which the target applies and the base period against which progress is measured.",
+   "evidence": [
+    {
+     "doc_id": "sarb_g3_2025_climate_disclosures",
+     "page": 6,
+     "quote": "the period over which the target applies and the base period for which progress is measured"
+    }
+   ],
+   "answer": "Banks must disclose the period to which each climate target applies, including the base year and the target year or deadline. They should also state any interim milestones or targets.",
+   "served_answer": "Banks must disclose the period to which each climate target applies, including the base year and the target year or deadline. They should also state any interim milestones or targets.",
+   "raw_model_output": "Banks must disclose the period to which each climate target applies, including the base year and the target year or deadline. They should also state any interim milestones or targets.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 63,
+    "output_tokens": 239,
+    "cost_usd": 0.0002994
+   },
+   "latency_ms": 3639
+  },
+  {
+   "id": "t08",
+   "type": "single",
+   "question": "How must a bank treat provisions on credit-impaired exposures for regulatory purposes?",
+   "reference_answer": "Provisions on credit-impaired (Stage 3) exposures are treated as specific provisions for regulatory purposes.",
+   "evidence": [
+    {
+     "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+     "page": 3,
+     "quote": "that is, Stage 3 exposures, shall be treated as SP for regulatory purposes"
+    }
+   ],
+   "answer": "Provisions for credit-impaired exposures must be treated as **specific credit-risk adjustments**, reducing the exposure amount rather than as general provisions. Under the IRB approach, any shortfall between regulatory expected loss and eligible provisions is deducted from Common Equity Tier 1 capital; any excess is recognised only subject to applicable Tier 2 limits.",
+   "served_answer": "Provisions for credit-impaired exposures must be treated as **specific credit-risk adjustments**, reducing the exposure amount rather than as general provisions. Under the IRB approach, any shortfall between regulatory expected loss and eligible provisions is deducted from Common Equity Tier 1 capital; any excess is recognised only subject to applicable Tier 2 limits.",
+   "raw_model_output": "Provisions for credit-impaired exposures must be treated as **specific credit-risk adjustments**, reducing the exposure amount rather than as general provisions. Under the IRB approach, any shortfall between regulatory expected loss and eligible provisions is deducted from Common Equity Tier 1 capital; any excess is recognised only subject to applicable Tier 2 limits.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 64,
+    "output_tokens": 264,
+    "cost_usd": 0.00032960000000000004
+   },
+   "latency_ms": 4152
+  },
+  {
+   "id": "t09",
+   "type": "single",
+   "question": "Which seven categories are the operational resilience principles organised under?",
+   "reference_answer": "Governance, operational risk management, business continuity planning and testing, mapping of interconnections and interdependencies, third-party dependency management, incident management, and resilient ICT including cyber security.",
+   "evidence": [
+    {
+     "doc_id": "sarb_d10_2021_operational_resilience",
+     "page": 2,
+     "quote": "The paper outlines principles that are organised across the following seven categories"
+    }
+   ],
+   "answer": "I don't have a source for that.",
+   "served_answer": null,
+   "raw_model_output": "I don't have a source for that.",
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 60,
+    "output_tokens": 234,
+    "cost_usd": 0.0002928
+   },
+   "latency_ms": 3428
+  },
+  {
+   "id": "t10",
+   "type": "single",
+   "question": "What is a primary credit bureau in the context of disputed credit information?",
+   "reference_answer": "A registered credit bureau authorised by the regulator to host full-file consumer credit information, including payment profile information.",
+   "evidence": [
+    {
+     "doc_id": "ncr_guideline_disputed_credit_complaints",
+     "page": 2,
+     "quote": "A registered credit bureau authorised by the NCR to host full-file consumer credit information, including payment profile information"
+    }
+   ],
+   "answer": "A primary credit bureau is the credit bureau that originally collected or holds the disputed credit information from the relevant data provider, rather than merely reproducing information obtained from another bureau. In a dispute, it is generally the bureau responsible for investigating and correcting the information where appropriate.",
+   "served_answer": "A primary credit bureau is the credit bureau that originally collected or holds the disputed credit information from the relevant data provider, rather than merely reproducing information obtained from another bureau. In a dispute, it is generally the bureau responsible for investigating and correcting the information where appropriate.",
+   "raw_model_output": "A primary credit bureau is the credit bureau that originally collected or holds the disputed credit information from the relevant data provider, rather than merely reproducing information obtained from another bureau. In a dispute, it is generally the bureau responsible for investigating and correcting the information where appropriate.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 63,
+    "output_tokens": 203,
+    "cost_usd": 0.0002562
+   },
+   "latency_ms": 3267
+  },
+  {
+   "id": "t11",
+   "type": "single",
+   "question": "What must an over-the-counter derivatives provider do in dealing with its supervisor?",
+   "reference_answer": "It must engage with the Authority in an open and cooperative way and disclose any material non-compliance or material operational failure.",
+   "evidence": [
+    {
+     "doc_id": "fsca_conduct_standard_otc_derivatives_2018",
+     "page": 3,
+     "quote": "engage with the Authority in an open and cooperative way, and must disclose to the Authority appropriately any material incidence of non-compliance"
+    }
+   ],
+   "answer": "An over-the-counter derivatives provider must deal with its supervisor openly and cooperatively. It must promptly disclose any material information or change in circumstances that the supervisor would reasonably expect to be informed of.",
+   "served_answer": "An over-the-counter derivatives provider must deal with its supervisor openly and cooperatively. It must promptly disclose any material information or change in circumstances that the supervisor would reasonably expect to be informed of.",
+   "raw_model_output": "An over-the-counter derivatives provider must deal with its supervisor openly and cooperatively. It must promptly disclose any material information or change in circumstances that the supervisor would reasonably expect to be informed of.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 64,
+    "output_tokens": 256,
+    "cost_usd": 0.00032
+   },
+   "latency_ms": 3703
+  },
+  {
+   "id": "t12",
+   "type": "single",
+   "question": "What must a derivatives provider warn a client about once it agrees to treat the client as a counterparty?",
+   "reference_answer": "It must warn the client in writing of the limits on client protection that categorisation as a counterparty brings, and of the clearing obligations the client may face.",
+   "evidence": [
+    {
+     "doc_id": "fsca_conduct_standard_otc_derivatives_2018",
+     "page": 4,
+     "quote": "the provider must warn the client in writing of the limitations to the level of client protection a categorisation as a counterparty entails"
+    }
+   ],
+   "answer": "It must warn the client in writing of the consequences of being treated as a counterparty, including that the client will not receive the regulatory protections applicable to clients under the Financial Markets Act and the relevant Conduct Standard.",
+   "served_answer": "It must warn the client in writing of the consequences of being treated as a counterparty, including that the client will not receive the regulatory protections applicable to clients under the Financial Markets Act and the relevant Conduct Standard.",
+   "raw_model_output": "It must warn the client in writing of the consequences of being treated as a counterparty, including that the client will not receive the regulatory protections applicable to clients under the Financial Markets Act and the relevant Conduct Standard.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 70,
+    "output_tokens": 512,
+    "cost_usd": 0.0006284
+   },
+   "latency_ms": 5791
+  },
+  {
+   "id": "t13",
+   "type": "single",
+   "question": "Can an intermediary be paid twice for the same service under the proposed remuneration framework?",
+   "reference_answer": "No. An intermediary may not be remunerated for the same or a similar service twice.",
+   "evidence": [
+    {
+     "doc_id": "fsca_rdr_2014",
+     "page": 6,
+     "quote": "An intermediary may not be remunerated for the same or a similar service twice"
+    }
+   ],
+   "answer": "Generally, no: the proposed framework is intended to prevent “double dipping” where an intermediary receives two forms of remuneration for the same service. Multiple payments may be permitted only where they relate to genuinely separate services, are justified, and comply with the applicable disclosure and conflict-of-interest requirements.",
+   "served_answer": "Generally, no: the proposed framework is intended to prevent “double dipping” where an intermediary receives two forms of remuneration for the same service. Multiple payments may be permitted only where they relate to genuinely separate services, are justified, and comply with the applicable disclosure and conflict-of-interest requirements.",
+   "raw_model_output": "Generally, no: the proposed framework is intended to prevent “double dipping” where an intermediary receives two forms of remuneration for the same service. Multiple payments may be permitted only where they relate to genuinely separate services, are justified, and comply with the applicable disclosure and conflict-of-interest requirements.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 65,
+    "output_tokens": 265,
+    "cost_usd": 0.000331
+   },
+   "latency_ms": 3986
+  },
+  {
+   "id": "t14",
+   "type": "single",
+   "question": "On what grounds may a credit provider not unfairly discriminate when it assesses a person's ability to meet a credit agreement?",
+   "reference_answer": "It may not unfairly discriminate on grounds set out in section 9(3) of the Constitution or in Chapter 2 of the Promotion of Equality and Prevention of Unfair Discrimination Act.",
+   "evidence": [
+    {
+     "doc_id": "nca_notebook_brochure",
+     "page": 6,
+     "quote": "must not unfairly discriminate directly or indirectly against any natural person, juristic person or association of persons"
+    }
+   ],
+   "answer": "A credit provider may not unfairly discriminate on the grounds of race, gender, sex, marital status, ethnic or social origin, colour, sexual orientation, age, disability, religion, conscience, belief, culture, language or birth when assessing a person’s ability to meet the obligations of a credit agreement.",
+   "served_answer": "A credit provider may not unfairly discriminate on the grounds of race, gender, sex, marital status, ethnic or social origin, colour, sexual orientation, age, disability, religion, conscience, belief, culture, language or birth when assessing a person’s ability to meet the obligations of a credit agreement.",
+   "raw_model_output": "A credit provider may not unfairly discriminate on the grounds of race, gender, sex, marital status, ethnic or social origin, colour, sexual orientation, age, disability, religion, conscience, belief, culture, language or birth when assessing a person’s ability to meet the obligations of a credit agreement.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 72,
+    "output_tokens": 268,
+    "cost_usd": 0.00033599999999999993
+   },
+   "latency_ms": 3720
+  },
+  {
+   "id": "t15",
+   "type": "single",
+   "question": "What did the early regulatory self-assessment pilot find about customer outcomes across the product life cycle?",
+   "reference_answer": "The focus on customer outcomes was clearer at the design stage than in other parts of the product life cycle.",
+   "evidence": [
+    {
+     "doc_id": "fsca_tcf_2011",
+     "page": 6,
+     "quote": "Focus on customer outcomes is clearer at design stage than other parts of the product life cycle"
+    }
+   ],
+   "answer": "The pilot found that firms generally had policies and processes addressing customer fairness, but had weaker evidence that these translated into consistently good customer outcomes throughout the product life cycle. The main gaps were in demonstrating effective product design and targeting, ongoing monitoring, and avoiding unreasonable post-sale barriers.",
+   "served_answer": "The pilot found that firms generally had policies and processes addressing customer fairness, but had weaker evidence that these translated into consistently good customer outcomes throughout the product life cycle. The main gaps were in demonstrating effective product design and targeting, ongoing monitoring, and avoiding unreasonable post-sale barriers.",
+   "raw_model_output": "The pilot found that firms generally had policies and processes addressing customer fairness, but had weaker evidence that these translated into consistently good customer outcomes throughout the product life cycle. The main gaps were in demonstrating effective product design and targeting, ongoing monitoring, and avoiding unreasonable post-sale barriers.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 68,
+    "output_tokens": 575,
+    "cost_usd": 0.0007036
+   },
+   "latency_ms": 7492
+  },
+  {
+   "id": "t16",
+   "type": "single",
+   "question": "Which supporting documents accompanied the banks conduct standard when it was released?",
+   "reference_answer": "A document detailing the expected impact of the conduct standard, and a report on the consultation process.",
+   "evidence": [
+    {
+     "doc_id": "fsca_press_conduct_standard_banks_2020",
+     "page": 1,
+     "quote": "has published the conduct standard for banks along with a document detailing the expected impact of the conduct standard"
+    }
+   ],
+   "answer": "I don't have a source for that.",
+   "served_answer": null,
+   "raw_model_output": "I don't have a source for that.",
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 62,
+    "output_tokens": 420,
+    "cost_usd": 0.0005164
+   },
+   "latency_ms": 5489
+  },
+  {
+   "id": "t17",
+   "type": "single",
+   "question": "What can the Tribunal do about a credit agreement in a debt intervention application if it finds the agreement reckless?",
+   "reference_answer": "It can make an order declaring the credit agreement reckless, together with the related order for reckless credit.",
+   "evidence": [
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 61,
+     "quote": "an order declaring any credit agreement that forms part of the application to be reckless"
+    }
+   ],
+   "answer": "It may declare the credit agreement reckless and either set aside all or part of the consumer’s rights and obligations under it, or suspend the agreement’s force and effect.",
+   "served_answer": "It may declare the credit agreement reckless and either set aside all or part of the consumer’s rights and obligations under it, or suspend the agreement’s force and effect.",
+   "raw_model_output": "It may declare the credit agreement reckless and either set aside all or part of the consumer’s rights and obligations under it, or suspend the agreement’s force and effect.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 70,
+    "output_tokens": 554,
+    "cost_usd": 0.0006787999999999999
+   },
+   "latency_ms": 6986
+  },
+  {
+   "id": "t18",
+   "type": "single",
+   "question": "May the terms and conditions of a Commissioner's office be reduced during their term?",
+   "reference_answer": "No. The terms and conditions of office of the Commissioner or a Deputy Commissioner may not be reduced during that person's term of office.",
+   "evidence": [
+    {
+     "doc_id": "fsr_act_9_2017",
+     "page": 90,
+     "quote": "The terms and conditions of office of the Commissioner or a Deputy Commissioner may not be reduced during that person"
+    }
+   ],
+   "answer": "I don't have a source for that.",
+   "served_answer": null,
+   "raw_model_output": "I don't have a source for that.",
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 65,
+    "output_tokens": 463,
+    "cost_usd": 0.0005686
+   },
+   "latency_ms": 5881
+  },
+  {
+   "id": "t19",
+   "type": "threshold",
+   "question": "Within how many business days must an applicant for registration answer a request for information from the regulator?",
+   "reference_answer": "Within 15 business days after the request is delivered to the applicant.",
+   "evidence": [
+    {
+     "doc_id": "nca_regs_2006",
+     "page": 10,
+     "quote": "within 15 business days after the request is delivered to the applicant"
+    }
+   ],
+   "answer": "I don't have a source for that.",
+   "served_answer": null,
+   "raw_model_output": "I don't have a source for that.",
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 68,
+    "output_tokens": 506,
+    "cost_usd": 0.0006207999999999999
+   },
+   "latency_ms": 6792
+  },
+  {
+   "id": "t20",
+   "type": "threshold",
+   "question": "For how long can the Tribunal restrict a debt intervention applicant's right to apply for credit after extinguishing debt, at most?",
+   "reference_answer": "The total period of limitation may not exceed 12 months.",
+   "evidence": [
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 63,
+     "quote": "right to apply for credit contemplated in subsection (8) (a) may not exceed 12 months"
+    }
+   ],
+   "answer": "The Tribunal may restrict the applicant’s right to apply for credit for a maximum period of **five years**.",
+   "served_answer": "The Tribunal may restrict the applicant’s right to apply for credit for a maximum period of **five years**.",
+   "raw_model_output": "The Tribunal may restrict the applicant’s right to apply for credit for a maximum period of **five years**.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 74,
+    "output_tokens": 404,
+    "cost_usd": 0.0004996
+   },
+   "latency_ms": 5315
+  },
+  {
+   "id": "t21",
+   "type": "threshold",
+   "question": "How quickly must a payment distribution agent pass on the money it receives?",
+   "reference_answer": "It must distribute monies within five days of receipt, failing which it must give reasons.",
+   "evidence": [
+    {
+     "doc_id": "nca_affordability_regs_2015",
+     "page": 8,
+     "quote": "distribute monies received within five (5) days of receipt"
+    }
+   ],
+   "answer": "A payment distribution agent must generally pass on the money it receives within **five business days**.",
+   "served_answer": "A payment distribution agent must generally pass on the money it receives within **five business days**.",
+   "raw_model_output": "A payment distribution agent must generally pass on the money it receives within **five business days**.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 63,
+    "output_tokens": 145,
+    "cost_usd": 0.00018659999999999998
+   },
+   "latency_ms": 2684
+  },
+  {
+   "id": "t22",
+   "type": "threshold",
+   "question": "By when must a credit provider report a school or student loan to the national credit register?",
+   "reference_answer": "Within 30 business days of signature, or alternatively at the end of the month in which the agreement was concluded.",
+   "evidence": [
+    {
+     "doc_id": "nca_regs_2006",
+     "page": 21,
+     "quote": "to the National Credit Register within 30 business days of signature thereof"
+    }
+   ],
+   "answer": "",
+   "served_answer": "",
+   "raw_model_output": "",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 67,
+    "output_tokens": 1024,
+    "cost_usd": 0.0012422
+   },
+   "latency_ms": 9154
+  },
+  {
+   "id": "t23",
+   "type": "threshold",
+   "question": "How long before a Commissioner's first term ends must the Minister say whether they propose to re-appoint them?",
+   "reference_answer": "At least three months before the end of the first term.",
+   "evidence": [
+    {
+     "doc_id": "fsr_act_9_2017",
+     "page": 90,
+     "quote": "The Minister must, at least three months before the end of a person"
+    }
+   ],
+   "answer": "The Minister must say whether they propose to re-appoint the Commissioner at least **six months before the Commissioner’s first term ends**.",
+   "served_answer": "The Minister must say whether they propose to re-appoint the Commissioner at least **six months before the Commissioner’s first term ends**.",
+   "raw_model_output": "The Minister must say whether they propose to re-appoint the Commissioner at least **six months before the Commissioner’s first term ends**.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 71,
+    "output_tokens": 179,
+    "cost_usd": 0.00022899999999999998
+   },
+   "latency_ms": 2891
+  },
+  {
+   "id": "t24",
+   "type": "threshold",
+   "question": "What is the ceiling on binder fees an insurer may pay a non-mandated intermediary?",
+   "reference_answer": "Binder fees are capped per function, and the total may not exceed 9% of applicable premiums if all binder functions are performed.",
+   "evidence": [
+    {
+     "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+     "page": 3,
+     "quote": "the total of which cannot exceed 9% of applicable premiums if all binder functions are performed"
+    }
+   ],
+   "answer": "The ceiling is **9% of the premium received by the insurer** under the relevant policy.",
+   "served_answer": "The ceiling is **9% of the premium received by the insurer** under the relevant policy.",
+   "raw_model_output": "The ceiling is **9% of the premium received by the insurer** under the relevant policy.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 67,
+    "output_tokens": 345,
+    "cost_usd": 0.0004274
+   },
+   "latency_ms": 4400
+  },
+  {
+   "id": "t25",
+   "type": "threshold",
+   "question": "From which date did IFRS 9 take effect for annual reporting periods?",
+   "reference_answer": "For annual periods beginning on or after 1 January 2018.",
+   "evidence": [
+    {
+     "doc_id": "ifrs9_project_summary_2014",
+     "page": 3,
+     "quote": "IFRS 9 is effective for annual periods beginning on or after 1 January 2018"
+    }
+   ],
+   "answer": "IFRS 9 took effect for annual reporting periods beginning on or after 1 January 2018. Earlier application was permitted.",
+   "served_answer": "IFRS 9 took effect for annual reporting periods beginning on or after 1 January 2018. Earlier application was permitted.",
+   "raw_model_output": "IFRS 9 took effect for annual reporting periods beginning on or after 1 January 2018. Earlier application was permitted.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 64,
+    "output_tokens": 70,
+    "cost_usd": 9.68e-05
+   },
+   "latency_ms": 1874
+  },
+  {
+   "id": "t26",
+   "type": "threshold",
+   "question": "What share of its share capital and reserve funds may a controlling company put into non-banking investments?",
+   "reference_answer": "Its investments of that kind may not at any time exceed 40 per cent of the sum of its share capital and reserve funds.",
+   "evidence": [
+    {
+     "doc_id": "banks_act_94_1990",
+     "page": 30,
+     "quote": "does not at any time exceed 40 per cent of the sum of its share"
+    }
+   ],
+   "answer": "A controlling company may invest up to **10% of its share capital and reserve funds** in non-banking investments.",
+   "served_answer": "A controlling company may invest up to **10% of its share capital and reserve funds** in non-banking investments.",
+   "raw_model_output": "A controlling company may invest up to **10% of its share capital and reserve funds** in non-banking investments.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 69,
+    "output_tokens": 310,
+    "cost_usd": 0.0003858
+   },
+   "latency_ms": 4149
+  },
+  {
+   "id": "t27",
+   "type": "status",
+   "question": "Is an earlier version of IFRS 9 still the text banks should follow?",
+   "reference_answer": "No. The July 2014 publication is the final version and replaces earlier versions of IFRS 9.",
+   "evidence": [
+    {
+     "doc_id": "ifrs9_project_summary_2014",
+     "page": 4,
+     "quote": "replaces earlier versions of IFRS 9 and completes the IASB's project to replace IAS 39"
+    }
+   ],
+   "answer": "No. South African banks generally must apply the current IFRS 9 requirements as endorsed in South Africa and applicable under SARB prudential standards, unless a specific transitional provision or regulatory directive permits otherwise.",
+   "served_answer": "No. South African banks generally must apply the current IFRS 9 requirements as endorsed in South Africa and applicable under SARB prudential standards, unless a specific transitional provision or regulatory directive permits otherwise.",
+   "raw_model_output": "No. South African banks generally must apply the current IFRS 9 requirements as endorsed in South Africa and applicable under SARB prudential standards, unless a specific transitional provision or regulatory directive permits otherwise.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 65,
+    "output_tokens": 159,
+    "cost_usd": 0.0002038
+   },
+   "latency_ms": 2932
+  },
+  {
+   "id": "t28",
+   "type": "status",
+   "question": "Is Guidance Note 3 of 2024 on climate disclosures still the current guidance for banks?",
+   "reference_answer": "No. Guidance Note 3 of 2025 replaces Guidance Note 3 of 2024.",
+   "evidence": [
+    {
+     "doc_id": "sarb_g3_2025_climate_disclosures",
+     "page": 1,
+     "quote": "This Guidance Note replaces Guidance Note 3 of 2024."
+    }
+   ],
+   "answer": "I don't have a source for that.",
+   "served_answer": null,
+   "raw_model_output": "I don't have a source for that.",
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 68,
+    "output_tokens": 131,
+    "cost_usd": 0.00017079999999999998
+   },
+   "latency_ms": 2368
+  },
+  {
+   "id": "t29",
+   "type": "status",
+   "question": "Does IAS 39 still govern how financial instruments are accounted for now that IFRS 9 is final?",
+   "reference_answer": "No. IFRS 9 replaces IAS 39 and completes the project to replace it.",
+   "evidence": [
+    {
+     "doc_id": "ifrs9_project_summary_2014",
+     "page": 4,
+     "quote": "IFRS 9 replaces IAS 39, one of the Standards inherited by the IASB when it began its work in 2001"
+    }
+   ],
+   "answer": "No. IFRS 9 replaced IAS 39 for most financial-instrument accounting, although entities may elect to continue applying IAS 39’s hedge-accounting requirements instead of IFRS 9’s hedge-accounting model.",
+   "served_answer": "No. IFRS 9 replaced IAS 39 for most financial-instrument accounting, although entities may elect to continue applying IAS 39’s hedge-accounting requirements instead of IFRS 9’s hedge-accounting model.",
+   "raw_model_output": "No. IFRS 9 replaced IAS 39 for most financial-instrument accounting, although entities may elect to continue applying IAS 39’s hedge-accounting requirements instead of IFRS 9’s hedge-accounting model.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 70,
+    "output_tokens": 164,
+    "cost_usd": 0.00021079999999999997
+   },
+   "latency_ms": 3181
+  },
+  {
+   "id": "t30",
+   "type": "status",
+   "question": "Is the debt intervention procedure in section 86A of the credit statute already in operation?",
+   "reference_answer": "Not yet. Section 86A is only to be inserted from a date fixed by the President by proclamation, and that date has not been determined.",
+   "evidence": [
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 60,
+     "quote": "S. 86A to be inserted by s. 13 of Act No. 7 of 2019 with effect from a date fixed by the President by proclamation in the Gazette"
+    }
+   ],
+   "answer": "No. Section 86A of South Africa’s National Credit Act has not yet been brought into operation by proclamation, so the statutory debt-intervention procedure is not currently available.",
+   "served_answer": "No. Section 86A of South Africa’s National Credit Act has not yet been brought into operation by proclamation, so the statutory debt-intervention procedure is not currently available.",
+   "raw_model_output": "No. Section 86A of South Africa’s National Credit Act has not yet been brought into operation by proclamation, so the statutory debt-intervention procedure is not currently available.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 67,
+    "output_tokens": 556,
+    "cost_usd": 0.0006806
+   },
+   "latency_ms": 6159
+  },
+  {
+   "id": "t31",
+   "type": "status",
+   "question": "Was the conduct standard for banks still awaiting approval after it went through Parliament in 2020?",
+   "reference_answer": "No. After the parliamentary process the conduct standard was made final and published.",
+   "evidence": [
+    {
+     "doc_id": "fsca_press_conduct_standard_banks_2020",
+     "page": 1,
+     "quote": "Having successfully undergone the parliamentary process, the conduct standard has been made final"
+    }
+   ],
+   "answer": "Yes. Parliamentary consideration was not the final approval step—the Conduct Standard for Banks still required the Minister of Finance’s approval, which was obtained later in 2020 before publication.",
+   "served_answer": "Yes. Parliamentary consideration was not the final approval step—the Conduct Standard for Banks still required the Minister of Finance’s approval, which was obtained later in 2020 before publication.",
+   "raw_model_output": "Yes. Parliamentary consideration was not the final approval step—the Conduct Standard for Banks still required the Minister of Finance’s approval, which was obtained later in 2020 before publication.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 68,
+    "output_tokens": 875,
+    "cost_usd": 0.0010635999999999998
+   },
+   "latency_ms": 9417
+  },
+  {
+   "id": "t32",
+   "type": "status",
+   "question": "Do Banks Act directives lapse at year end unless the status circular confirms them?",
+   "reference_answer": "No. Directives remain effective until the Prudential Authority formally withdraws them in writing.",
+   "evidence": [
+    {
+     "doc_id": "sarb_c1_2026_status_of_circulars",
+     "page": 3,
+     "quote": "all such issued directives will remain effective until such time as they are withdrawn in writing by the PA"
+    }
+   ],
+   "answer": "No. A directive issued under the Banks Act does not automatically lapse at year-end; it generally remains effective until it is withdrawn, revoked, replaced, or otherwise expires under its own terms, and a status circular is ordinarily informational rather than a condition of continued validity.",
+   "served_answer": "No. A directive issued under the Banks Act does not automatically lapse at year-end; it generally remains effective until it is withdrawn, revoked, replaced, or otherwise expires under its own terms, and a status circular is ordinarily informational rather than a condition of continued validity.",
+   "raw_model_output": "No. A directive issued under the Banks Act does not automatically lapse at year-end; it generally remains effective until it is withdrawn, revoked, replaced, or otherwise expires under its own terms, and a status circular is ordinarily informational rather than a condition of continued validity.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 64,
+    "output_tokens": 168,
+    "cost_usd": 0.0002144
+   },
+   "latency_ms": 3095
+  },
+  {
+   "id": "t33",
+   "type": "multi",
+   "question": "How much notice must a registrant give to cancel its registration voluntarily, and which form applies to an applicant for credit bureau registration?",
+   "reference_answer": "The notice must specify a cancellation date at least five business days after the date of the notice. An applicant for registration as a credit bureau uses Form 5.",
+   "evidence": [
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 40,
+     "quote": "specifying a date, at least five business days after the date of the notice, on which the cancellation is to take effect"
+    },
+    {
+     "doc_id": "nca_regs_2006",
+     "page": 10,
+     "quote": "Form 5, if applying for registration as a credit bureau"
+    }
+   ],
+   "answer": "A registrant must give the National Credit Regulator at least **20 business days’ written notice** to voluntarily cancel its registration. An applicant for credit bureau registration must use **Form 3**.",
+   "served_answer": "A registrant must give the National Credit Regulator at least **20 business days’ written notice** to voluntarily cancel its registration. An applicant for credit bureau registration must use **Form 3**.",
+   "raw_model_output": "A registrant must give the National Credit Regulator at least **20 business days’ written notice** to voluntarily cancel its registration. An applicant for credit bureau registration must use **Form 3**.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 75,
+    "output_tokens": 430,
+    "cost_usd": 0.000531
+   },
+   "latency_ms": 4611
+  },
+  {
+   "id": "t34",
+   "type": "multi",
+   "question": "Can a bank charge a complainant for using its complaints process, and what may conduct standards say about resolving complaints?",
+   "reference_answer": "No. A bank may not impose any charge for a complainant to use its complaint processes. Conduct standards may also cover the resolution of complaints and disputes about products and services, including redress.",
+   "evidence": [
+    {
+     "doc_id": "fsca_cs3_2020_banks",
+     "page": 20,
+     "quote": "may not impose any charge for a complainant to make use of complaint processes and procedures"
+    },
+    {
+     "doc_id": "fsr_act_9_2017",
+     "page": 120,
+     "quote": "the resolution of complaints and disputes concerning those products and services, including redress"
+    }
+   ],
+   "answer": "A bank generally should not charge a complainant a fee merely for lodging or pursuing a complaint through its internal complaints process. Conduct standards typically require complaints procedures to be accessible, transparent and fair, with complaints handled objectively, resolved within reasonable or prescribed timeframes, and the outcome and any available escalation or redress clearly communicated.",
+   "served_answer": "A bank generally should not charge a complainant a fee merely for lodging or pursuing a complaint through its internal complaints process. Conduct standards typically require complaints procedures to be accessible, transparent and fair, with complaints handled objectively, resolved within reasonable or prescribed timeframes, and the outcome and any available escalation or redress clearly communicated.",
+   "raw_model_output": "A bank generally should not charge a complainant a fee merely for lodging or pursuing a complaint through its internal complaints process. Conduct standards typically require complaints procedures to be accessible, transparent and fair, with complaints handled objectively, resolved within reasonable or prescribed timeframes, and the outcome and any available escalation or redress clearly communicated.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 72,
+    "output_tokens": 223,
+    "cost_usd": 0.00028199999999999997
+   },
+   "latency_ms": 4211
+  },
+  {
+   "id": "t35",
+   "type": "multi",
+   "question": "Why did IFRS 9 change when credit losses are recognised, and how does the banking regulator treat Stage 2 exposures?",
+   "reference_answer": "IFRS 9 removed the need for a trigger event before credit losses are recognised. The regulator treats Stage 2 exposures as general provisions for regulatory purposes.",
+   "evidence": [
+    {
+     "doc_id": "ifrs9_project_summary_2014",
+     "page": 14,
+     "quote": "so that it is no longer necessary for a trigger event to have occurred before credit losses are recognised"
+    },
+    {
+     "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+     "page": 3,
+     "quote": "Stage 2 exposures shall be treated as GP for regulatory purposes"
+    }
+   ],
+   "answer": "IFRS 9 replaced IAS 39’s “incurred-loss” model because it could delay recognition of deteriorating credit quality, adopting a forward-looking expected-credit-loss model that recognises losses earlier. Under the SARB’s prudential framework, a Stage 2 exposure—where credit risk has increased significantly since initial recognition—is generally not automatically treated as defaulted or non-performing, but it must carry a lifetime ECL provision and be closely monitored; default classification remains governed by prudential default criteria.",
+   "served_answer": "IFRS 9 replaced IAS 39’s “incurred-loss” model because it could delay recognition of deteriorating credit quality, adopting a forward-looking expected-credit-loss model that recognises losses earlier. Under the SARB’s prudential framework, a Stage 2 exposure—where credit risk has increased significantly since initial recognition—is generally not automatically treated as defaulted or non-performing, but it must carry a lifetime ECL provision and be closely monitored; default classification remains governed by prudential default criteria.",
+   "raw_model_output": "IFRS 9 replaced IAS 39’s “incurred-loss” model because it could delay recognition of deteriorating credit quality, adopting a forward-looking expected-credit-loss model that recognises losses earlier. Under the SARB’s prudential framework, a Stage 2 exposure—where credit risk has increased significantly since initial recognition—is generally not automatically treated as defaulted or non-performing, but it must carry a lifetime ECL provision and be closely monitored; default classification remains governed by prudential default criteria.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 74,
+    "output_tokens": 346,
+    "cost_usd": 0.00043
+   },
+   "latency_ms": 4266
+  },
+  {
+   "id": "t36",
+   "type": "multi",
+   "question": "How do the derivatives conduct standard and the retail distribution review each deal with conflicts of interest?",
+   "reference_answer": "A derivatives provider must manage conflicts of interest fairly between itself and its clients and counterparties. The review says intermediary remuneration should not contribute to conflicts of interest that undermine suitable advice and fair outcomes.",
+   "evidence": [
+    {
+     "doc_id": "fsca_conduct_standard_otc_derivatives_2018",
+     "page": 3,
+     "quote": "at all times manage conflicts of interest fairly, both between itself and its clients and counterparties"
+    },
+    {
+     "doc_id": "fsca_rdr_2014",
+     "page": 6,
+     "quote": "Intermediary remuneration should not contribute to conflicts of interest that may undermine suitable product advice and fair outcomes for customers"
+    }
+   ],
+   "answer": "The **Derivatives Conduct Standard** requires regulated firms to identify, prevent or manage conflicts of interest in the provision of derivatives services—supported by governance, policies, controls and, where appropriate, disclosure—so that clients are treated fairly.  \nThe **Retail Distribution Review (RDR)** addresses conflicts mainly in retail product distribution, particularly those created by commission, incentives, product-provider influence and conflicted remuneration, proposing clearer adviser roles, more transparent charging and remuneration structures aligned with customers’ interests.",
+   "served_answer": "The **Derivatives Conduct Standard** requires regulated firms to identify, prevent or manage conflicts of interest in the provision of derivatives services—supported by governance, policies, controls and, where appropriate, disclosure—so that clients are treated fairly.  \nThe **Retail Distribution Review (RDR)** addresses conflicts mainly in retail product distribution, particularly those created by commission, incentives, product-provider influence and conflicted remuneration, proposing clearer adviser roles, more transparent charging and remuneration structures aligned with customers’ interests.",
+   "raw_model_output": "The **Derivatives Conduct Standard** requires regulated firms to identify, prevent or manage conflicts of interest in the provision of derivatives services—supported by governance, policies, controls and, where appropriate, disclosure—so that clients are treated fairly.  \nThe **Retail Distribution Review (RDR)** addresses conflicts mainly in retail product distribution, particularly those created by commission, incentives, product-provider influence and conflicted remuneration, proposing clearer adviser roles, more transparent charging and remuneration structures aligned with customers’ interests.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 67,
+    "output_tokens": 316,
+    "cost_usd": 0.00039259999999999995
+   },
+   "latency_ms": 4869
+  },
+  {
+   "id": "t37",
+   "type": "multi",
+   "question": "What may a person do about inaccurate information held by a credit bureau, and how do they take a disputed-information complaint to the regulator?",
+   "reference_answer": "They may challenge the accuracy of the information. A person who has challenged information may then submit a complaint in the prescribed manner and form to the National Credit Regulator.",
+   "evidence": [
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 50,
+     "quote": "challenge the accuracy of any information concerning that person"
+    },
+    {
+     "doc_id": "ncr_guideline_disputed_credit_complaints",
+     "page": 2,
+     "quote": "individuals who have challenged information held by credit providers or credit bureaus are entitled to submit a complaint"
+    }
+   ],
+   "answer": "Under the National Credit Act, dispute the information in writing with the credit bureau, request a free copy of your credit record, and provide supporting documents; the bureau must flag and investigate the entry and resolve the dispute within 20 business days, correcting or removing information it cannot verify.  \nIf it is not resolved, lodge a complaint with the National Credit Regulator (NCR), using the prescribed complaint form and attaching your identity document, credit report, written dispute, the bureau’s response (or proof of no response), and supporting evidence.",
+   "served_answer": "Under the National Credit Act, dispute the information in writing with the credit bureau, request a free copy of your credit record, and provide supporting documents; the bureau must flag and investigate the entry and resolve the dispute within 20 business days, correcting or removing information it cannot verify.  \nIf it is not resolved, lodge a complaint with the National Credit Regulator (NCR), using the prescribed complaint form and attaching your identity document, credit report, written dispute, the bureau’s response (or proof of no response), and supporting evidence.",
+   "raw_model_output": "Under the National Credit Act, dispute the information in writing with the credit bureau, request a free copy of your credit record, and provide supporting documents; the bureau must flag and investigate the entry and resolve the dispute within 20 business days, correcting or removing information it cannot verify.  \nIf it is not resolved, lodge a complaint with the National Credit Regulator (NCR), using the prescribed complaint form and attaching your identity document, credit report, written dispute, the bureau’s response (or proof of no response), and supporting evidence.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 76,
+    "output_tokens": 378,
+    "cost_usd": 0.00046879999999999996
+   },
+   "latency_ms": 5523
+  },
+  {
+   "id": "t38",
+   "type": "multi",
+   "question": "How does the credit statute test whether a document is in plain language, and what must a bank ensure about how accessible its complaint processes are?",
+   "reference_answer": "A document is in plain language if an ordinary consumer with average literacy skills and minimal credit experience could be expected to understand it without undue effort. A bank must make its complaint processes and procedures transparent, visible and accessible through appropriate channels.",
+   "evidence": [
+    {
+     "doc_id": "nca_notebook_brochure",
+     "page": 12,
+     "quote": "with average literacy skills and minimal credit experience"
+    },
+    {
+     "doc_id": "fsca_cs3_2020_banks",
+     "page": 20,
+     "quote": "processes and procedures are transparent, visible and accessible through channels that are appropriate"
+    }
+   ],
+   "answer": "Under the National Credit Act, a document is in plain language if an ordinary consumer in the intended class, with average literacy and minimal credit experience, could reasonably understand its content, significance and effect without undue effort. A bank must ensure that its complaint procedures are easily accessible, clearly publicised and free or low-cost for customers to use.",
+   "served_answer": "Under the National Credit Act, a document is in plain language if an ordinary consumer in the intended class, with average literacy and minimal credit experience, could reasonably understand its content, significance and effect without undue effort. A bank must ensure that its complaint procedures are easily accessible, clearly publicised and free or low-cost for customers to use.",
+   "raw_model_output": "Under the National Credit Act, a document is in plain language if an ordinary consumer in the intended class, with average literacy and minimal credit experience, could reasonably understand its content, significance and effect without undue effort. A bank must ensure that its complaint procedures are easily accessible, clearly publicised and free or low-cost for customers to use.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 77,
+    "output_tokens": 425,
+    "cost_usd": 0.0005254
+   },
+   "latency_ms": 5733
+  },
+  {
+   "id": "t39",
+   "type": "multi",
+   "question": "From when does IFRS 9 apply, and what information must entities take into account when determining impairments, as the banking regulator summarises it?",
+   "reference_answer": "IFRS 9 applies to annual periods beginning on or after 1 January 2018. Entities must take into account all information available without undue cost or effort, including forward-looking information.",
+   "evidence": [
+    {
+     "doc_id": "ifrs9_project_summary_2014",
+     "page": 3,
+     "quote": "IFRS 9 is effective for annual periods beginning on or after 1 January 2018"
+    },
+    {
+     "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+     "page": 2,
+     "quote": "IFRS 9 requires entities to take into account all information that is available without undue cost or effort"
+    }
+   ],
+   "answer": "IFRS 9 applies to annual periods beginning on or after 1 January 2018. In determining impairment, entities must consider all reasonable and supportable information available without undue cost or effort, including historical experience, current conditions, and forecasts of future economic conditions.",
+   "served_answer": "IFRS 9 applies to annual periods beginning on or after 1 January 2018. In determining impairment, entities must consider all reasonable and supportable information available without undue cost or effort, including historical experience, current conditions, and forecasts of future economic conditions.",
+   "raw_model_output": "IFRS 9 applies to annual periods beginning on or after 1 January 2018. In determining impairment, entities must consider all reasonable and supportable information available without undue cost or effort, including historical experience, current conditions, and forecasts of future economic conditions.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 79,
+    "output_tokens": 226,
+    "cost_usd": 0.000287
+   },
+   "latency_ms": 3131
+  },
+  {
+   "id": "t40",
+   "type": "multi",
+   "question": "When did the conduct regulator publish the conduct standard for banks, and what must a bank do when it receives a complaint?",
+   "reference_answer": "The FSCA published it on 8 July 2020. A bank must acknowledge receipt of a complaint and promptly tell the complainant the process to be followed.",
+   "evidence": [
+    {
+     "doc_id": "fsca_press_conduct_standard_banks_2020",
+     "page": 1,
+     "quote": "FSCA Press Release 08 July 2020 FSCA publishes the conduct standard for banks"
+    },
+    {
+     "doc_id": "fsca_cs3_2020_banks",
+     "page": 20,
+     "quote": "within a reasonable time after receipt of a complaint, acknowledge receipt thereof and promptly"
+    }
+   ],
+   "answer": "The FSCA published the Conduct Standard for Banks (FSCA 3 of 2020) on 27 November 2020. When a bank receives a complaint, it must acknowledge, record and investigate it, communicate the outcome within a reasonable period, and inform the complainant of available escalation or ombud avenues if unresolved.",
+   "served_answer": "The FSCA published the Conduct Standard for Banks (FSCA 3 of 2020) on 27 November 2020. When a bank receives a complaint, it must acknowledge, record and investigate it, communicate the outcome within a reasonable period, and inform the complainant of available escalation or ombud avenues if unresolved.",
+   "raw_model_output": "The FSCA published the Conduct Standard for Banks (FSCA 3 of 2020) on 27 November 2020. When a bank receives a complaint, it must acknowledge, record and investigate it, communicate the outcome within a reasonable period, and inform the complainant of available escalation or ombud avenues if unresolved.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 73,
+    "output_tokens": 587,
+    "cost_usd": 0.000719
+   },
+   "latency_ms": 6658
+  },
+  {
+   "id": "t41",
+   "type": "multi",
+   "question": "Which form does a debt counsellor use to apply for registration, and where must a payment distribution agent deposit the monies it collects?",
+   "reference_answer": "A debt counsellor applies on Form 4. A payment distribution agent must deposit collected monies into a trust account opened at a registered bank.",
+   "evidence": [
+    {
+     "doc_id": "nca_regs_2006",
+     "page": 10,
+     "quote": "Form 4, if applying for registration as a debt counsellor"
+    },
+    {
+     "doc_id": "nca_affordability_regs_2015",
+     "page": 8,
+     "quote": "deposit monies collected from consumers into a trust account opened at a registered bank"
+    }
+   ],
+   "answer": "A debt counsellor applies for registration using **Form 16**. A payment distribution agent must deposit the monies collected into a **separate trust account at a bank registered under the Banks Act**, distinct from its own funds.",
+   "served_answer": "A debt counsellor applies for registration using **Form 16**. A payment distribution agent must deposit the monies collected into a **separate trust account at a bank registered under the Banks Act**, distinct from its own funds.",
+   "raw_model_output": "A debt counsellor applies for registration using **Form 16**. A payment distribution agent must deposit the monies collected into a **separate trust account at a bank registered under the Banks Act**, distinct from its own funds.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 75,
+    "output_tokens": 566,
+    "cost_usd": 0.0006942
+   },
+   "latency_ms": 6223
+  },
+  {
+   "id": "t42",
+   "type": "multi",
+   "question": "When was the text of Basel II due to be published according to the 2004 circular, and when did the Basel Committee issue its operational resilience principles?",
+   "reference_answer": "The Basel Committee confirmed it would publish the Basel II text at the end of June 2004. It issued its paper on principles for operational resilience in March 2021.",
+   "evidence": [
+    {
+     "doc_id": "sarb_circular_6_2004_basel_ii_update",
+     "page": 1,
+     "quote": "will publish the text of Basel II at the end of June 2004"
+    },
+    {
+     "doc_id": "sarb_d10_2021_operational_resilience",
+     "page": 1,
+     "quote": "In March 2021 the Basel Committee on Banking Supervision (BCBS) issued a paper on principles for operational resilience"
+    }
+   ],
+   "answer": "According to the 2004 circular, the Basel II text was due to be published by the end of June 2004. The Basel Committee issued its principles for operational resilience on 31 March 2021.",
+   "served_answer": "According to the 2004 circular, the Basel II text was due to be published by the end of June 2004. The Basel Committee issued its principles for operational resilience on 31 March 2021.",
+   "raw_model_output": "According to the 2004 circular, the Basel II text was due to be published by the end of June 2004. The Basel Committee issued its principles for operational resilience on 31 March 2021.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 80,
+    "output_tokens": 207,
+    "cost_usd": 0.0002644
+   },
+   "latency_ms": 3293
+  },
+  {
+   "id": "t43",
+   "type": "multi",
+   "question": "How did the fair-treatment programme of the financial services board see its place in Twin Peaks, and what may conduct standards require on fair treatment of customers?",
+   "reference_answer": "It expected treating customers fairly to form part of the market conduct peak of the Twin Peaks model. Conduct standards may set requirements for the fair treatment of financial customers.",
+   "evidence": [
+    {
+     "doc_id": "fsca_tcf_2011",
+     "page": 3,
+     "quote": "TCF will form part of the market conduct peak in the Twin Peaks model"
+    },
+    {
+     "doc_id": "fsr_act_9_2017",
+     "page": 120,
+     "quote": "requirements for the fair treatment of financial customers, including in relation to"
+    }
+   ],
+   "answer": "The FSB’s Treating Customers Fairly (TCF) programme was conceived as the market-conduct foundation of Twin Peaks, to be embedded in binding conduct legislation, standards and supervision rather than operate as a stand-alone code. Conduct standards may therefore require firms to design and target suitable products, provide clear information and suitable advice, deliver promised performance and service, avoid unreasonable post-sale barriers, and maintain effective complaints and redress processes.",
+   "served_answer": "The FSB’s Treating Customers Fairly (TCF) programme was conceived as the market-conduct foundation of Twin Peaks, to be embedded in binding conduct legislation, standards and supervision rather than operate as a stand-alone code. Conduct standards may therefore require firms to design and target suitable products, provide clear information and suitable advice, deliver promised performance and service, avoid unreasonable post-sale barriers, and maintain effective complaints and redress processes.",
+   "raw_model_output": "The FSB’s Treating Customers Fairly (TCF) programme was conceived as the market-conduct foundation of Twin Peaks, to be embedded in binding conduct legislation, standards and supervision rather than operate as a stand-alone code. Conduct standards may therefore require firms to design and target suitable products, provide clear information and suitable advice, deliver promised performance and service, avoid unreasonable post-sale barriers, and maintain effective complaints and redress processes.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 79,
+    "output_tokens": 435,
+    "cost_usd": 0.0005378
+   },
+   "latency_ms": 5240
+  },
+  {
+   "id": "t44",
+   "type": "multi",
+   "question": "What did the retail distribution review say about the reasonableness of intermediary remuneration, and which cap on insurer binder fees took effect in 2018?",
+   "reference_answer": "All remuneration must be reasonable and commensurate with the services rendered. In 2018 the maximum binder fees an insurer may pay a non-mandated intermediary were capped.",
+   "evidence": [
+    {
+     "doc_id": "fsca_rdr_2014",
+     "page": 6,
+     "quote": "All remuneration must be reasonable and commensurate with the actual services rendered"
+    },
+    {
+     "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+     "page": 3,
+     "quote": "The capping of the maximum binder fees that an insurer may pay to a non-mandated intermediary"
+    }
+   ],
+   "answer": "The Retail Distribution Review said intermediary remuneration should be **reasonable and commensurate with the actual services provided**, rather than excessive or driven by conflicted incentives. From 2018, insurer binder fees were subject to a **9% cap of the relevant premium**.",
+   "served_answer": "The Retail Distribution Review said intermediary remuneration should be **reasonable and commensurate with the actual services provided**, rather than excessive or driven by conflicted incentives. From 2018, insurer binder fees were subject to a **9% cap of the relevant premium**.",
+   "raw_model_output": "The Retail Distribution Review said intermediary remuneration should be **reasonable and commensurate with the actual services provided**, rather than excessive or driven by conflicted incentives. From 2018, insurer binder fees were subject to a **9% cap of the relevant premium**.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 79,
+    "output_tokens": 574,
+    "cost_usd": 0.0007045999999999999
+   },
+   "latency_ms": 6554
+  },
+  {
+   "id": "t45",
+   "type": "unanswerable",
+   "question": "What cooling-off period applies after a consumer signs up for a credit card over the telephone?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "A consumer who signs up for a credit card by telephone generally has **five business days** to terminate the credit agreement under section 121 of South Africa’s National Credit Act. The notice must be given to the credit provider within that period.",
+   "served_answer": "A consumer who signs up for a credit card by telephone generally has **five business days** to terminate the credit agreement under section 121 of South Africa’s National Credit Act. The notice must be given to the credit provider within that period.",
+   "raw_model_output": "A consumer who signs up for a credit card by telephone generally has **five business days** to terminate the credit agreement under section 121 of South Africa’s National Credit Act. The notice must be given to the credit provider within that period.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 67,
+    "output_tokens": 227,
+    "cost_usd": 0.00028579999999999995
+   },
+   "latency_ms": 3566
+  },
+  {
+   "id": "t46",
+   "type": "unanswerable",
+   "question": "What conduct requirements apply to crypto-asset service providers under the financial advisory statute?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "Under the FAIS Act, crypto-asset service providers that give advice or perform intermediary services must generally be licensed as financial services providers and comply with the FAIS General Code of Conduct. This requires them to act honestly, fairly, professionally and with due skill, care and diligence; provide clear, timely and non-misleading disclosures (including risks, fees and conflicts); assess client needs and suitability, keep appropriate records, and maintain complaint-handling procedures. They must also meet FAIS fit-and-proper, supervision, conflict-management and reporting requirements applicable to their licence category.",
+   "served_answer": "Under the FAIS Act, crypto-asset service providers that give advice or perform intermediary services must generally be licensed as financial services providers and comply with the FAIS General Code of Conduct. This requires them to act honestly, fairly, professionally and with due skill, care and diligence; provide clear, timely and non-misleading disclosures (including risks, fees and conflicts); assess client needs and suitability, keep appropriate records, and maintain complaint-handling procedures. They must also meet FAIS fit-and-proper, supervision, conflict-management and reporting requirements applicable to their licence category.",
+   "raw_model_output": "Under the FAIS Act, crypto-asset service providers that give advice or perform intermediary services must generally be licensed as financial services providers and comply with the FAIS General Code of Conduct. This requires them to act honestly, fairly, professionally and with due skill, care and diligence; provide clear, timely and non-misleading disclosures (including risks, fees and conflicts); assess client needs and suitability, keep appropriate records, and maintain complaint-handling procedures. They must also meet FAIS fit-and-proper, supervision, conflict-management and reporting requirements applicable to their licence category.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 65,
+    "output_tokens": 280,
+    "cost_usd": 0.000349
+   },
+   "latency_ms": 4514
+  },
+  {
+   "id": "t47",
+   "type": "unanswerable",
+   "question": "What inflation target range do South African banks and their regulators cite for monetary policy?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "South Africa’s monetary policy inflation target range is **3% to 6%**, with a **4.5% midpoint**.",
+   "served_answer": "South Africa’s monetary policy inflation target range is **3% to 6%**, with a **4.5% midpoint**.",
+   "raw_model_output": "South Africa’s monetary policy inflation target range is **3% to 6%**, with a **4.5% midpoint**.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 65,
+    "output_tokens": 65,
+    "cost_usd": 9.1e-05
+   },
+   "latency_ms": 1820
+  },
+  {
+   "id": "t48",
+   "type": "unanswerable",
+   "question": "How is capital gains tax worked out when a shareholder sells shares in a bank?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "If the shares were held as a capital investment, the capital gain is generally the selling proceeds less the shares’ base cost (including eligible acquisition and disposal costs); if held for trading, the profit is usually taxed as ordinary income instead. For an individual, 40% of the net annual capital gain—after allowable capital losses and the annual exclusion—is included in taxable income and taxed at the person’s marginal rate; companies generally use an 80% inclusion rate. Bank shares do not ordinarily attract a special capital-gains-tax calculation merely because the issuer is a bank.",
+   "served_answer": "If the shares were held as a capital investment, the capital gain is generally the selling proceeds less the shares’ base cost (including eligible acquisition and disposal costs); if held for trading, the profit is usually taxed as ordinary income instead. For an individual, 40% of the net annual capital gain—after allowable capital losses and the annual exclusion—is included in taxable income and taxed at the person’s marginal rate; companies generally use an 80% inclusion rate. Bank shares do not ordinarily attract a special capital-gains-tax calculation merely because the issuer is a bank.",
+   "raw_model_output": "If the shares were held as a capital investment, the capital gain is generally the selling proceeds less the shares’ base cost (including eligible acquisition and disposal costs); if held for trading, the profit is usually taxed as ordinary income instead. For an individual, 40% of the net annual capital gain—after allowable capital losses and the annual exclusion—is included in taxable income and taxed at the person’s marginal rate; companies generally use an 80% inclusion rate. Bank shares do not ordinarily attract a special capital-gains-tax calculation merely because the issuer is a bank.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 65,
+    "output_tokens": 248,
+    "cost_usd": 0.00031059999999999996
+   },
+   "latency_ms": 3850
+  },
+  {
+   "id": "t49",
+   "type": "unanswerable",
+   "question": "What data-sharing standards must banks meet to take part in open banking?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "South Africa currently has no legally mandated open-banking data standard or accreditation framework that banks must meet. Any data sharing must nevertheless comply with laws such as POPIA, including informed customer consent, purpose limitation, data minimisation, security safeguards and accountable third-party processing.",
+   "served_answer": "South Africa currently has no legally mandated open-banking data standard or accreditation framework that banks must meet. Any data sharing must nevertheless comply with laws such as POPIA, including informed customer consent, purpose limitation, data minimisation, security safeguards and accountable third-party processing.",
+   "raw_model_output": "South Africa currently has no legally mandated open-banking data standard or accreditation framework that banks must meet. Any data sharing must nevertheless comply with laws such as POPIA, including informed customer consent, purpose limitation, data minimisation, security safeguards and accountable third-party processing.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 63,
+    "output_tokens": 209,
+    "cost_usd": 0.00026339999999999995
+   },
+   "latency_ms": 3817
+  },
+  {
+   "id": "t50",
+   "type": "unanswerable",
+   "question": "How must a credit provider assess affordability for a buy-now-pay-later product?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "If the buy-now-pay-later arrangement is a credit agreement under the National Credit Act, the provider must perform the prescribed affordability assessment before granting credit and avoid reckless lending. It must verify the consumer’s income and consider statutory deductions, reasonable living expenses, existing debt repayments and the proposed instalments, using the prescribed supporting information (such as payslips and/or bank statements) to establish sufficient discretionary income.",
+   "served_answer": "If the buy-now-pay-later arrangement is a credit agreement under the National Credit Act, the provider must perform the prescribed affordability assessment before granting credit and avoid reckless lending. It must verify the consumer’s income and consider statutory deductions, reasonable living expenses, existing debt repayments and the proposed instalments, using the prescribed supporting information (such as payslips and/or bank statements) to establish sufficient discretionary income.",
+   "raw_model_output": "If the buy-now-pay-later arrangement is a credit agreement under the National Credit Act, the provider must perform the prescribed affordability assessment before granting credit and avoid reckless lending. It must verify the consumer’s income and consider statutory deductions, reasonable living expenses, existing debt repayments and the proposed instalments, using the prescribed supporting information (such as payslips and/or bank statements) to establish sufficient discretionary income.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 65,
+    "output_tokens": 325,
+    "cost_usd": 0.000403
+   },
+   "latency_ms": 5119
+  },
+  {
+   "id": "t51",
+   "type": "unanswerable",
+   "question": "How much foreign currency may a bank customer send abroad each year under exchange control rules?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "A South African resident may generally transfer up to **R1 million per calendar year** abroad under the **Single Discretionary Allowance**, without prior approval, subject to bank checks. A further **R10 million per calendar year** may generally be transferred under the **Foreign Investment Allowance**, subject to tax-compliance requirements and the bank’s approval.",
+   "served_answer": "A South African resident may generally transfer up to **R1 million per calendar year** abroad under the **Single Discretionary Allowance**, without prior approval, subject to bank checks. A further **R10 million per calendar year** may generally be transferred under the **Foreign Investment Allowance**, subject to tax-compliance requirements and the bank’s approval.",
+   "raw_model_output": "A South African resident may generally transfer up to **R1 million per calendar year** abroad under the **Single Discretionary Allowance**, without prior approval, subject to bank checks. A further **R10 million per calendar year** may generally be transferred under the **Foreign Investment Allowance**, subject to tax-compliance requirements and the bank’s approval.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 66,
+    "output_tokens": 195,
+    "cost_usd": 0.0002472
+   },
+   "latency_ms": 3443
+  },
+  {
+   "id": "t52",
+   "type": "unanswerable",
+   "question": "What cap applies to the interchange fee a bank earns on card transactions?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "In South Africa, the interchange fee is capped at **0.20% of the transaction value for debit cards** and **0.30% for credit cards**. These are maximum rates; a lower rate may apply by agreement.",
+   "served_answer": "In South Africa, the interchange fee is capped at **0.20% of the transaction value for debit cards** and **0.30% for credit cards**. These are maximum rates; a lower rate may apply by agreement.",
+   "raw_model_output": "In South Africa, the interchange fee is capped at **0.20% of the transaction value for debit cards** and **0.30% for credit cards**. These are maximum rates; a lower rate may apply by agreement.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 63,
+    "output_tokens": 262,
+    "cost_usd": 0.000327
+   },
+   "latency_ms": 4049
+  },
+  {
+   "id": "t53",
+   "type": "unanswerable",
+   "question": "What does the Prudential Authority expect of banks that use artificial intelligence models?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "The Prudential Authority expects banks to govern AI as a material risk, with clear board and senior-management accountability, robust data governance, model validation, documentation, security, and ongoing monitoring. Banks should also address model bias, explainability, customer protection, operational resilience, outsourcing and third-party risks, and retain meaningful human oversight. AI use must comply with existing prudential, risk-management, consumer-protection and regulatory-reporting requirements.",
+   "served_answer": "The Prudential Authority expects banks to govern AI as a material risk, with clear board and senior-management accountability, robust data governance, model validation, documentation, security, and ongoing monitoring. Banks should also address model bias, explainability, customer protection, operational resilience, outsourcing and third-party risks, and retain meaningful human oversight. AI use must comply with existing prudential, risk-management, consumer-protection and regulatory-reporting requirements.",
+   "raw_model_output": "The Prudential Authority expects banks to govern AI as a material risk, with clear board and senior-management accountability, robust data governance, model validation, documentation, security, and ongoing monitoring. Banks should also address model bias, explainability, customer protection, operational resilience, outsourcing and third-party risks, and retain meaningful human oversight. AI use must comply with existing prudential, risk-management, consumer-protection and regulatory-reporting requirements.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 64,
+    "output_tokens": 264,
+    "cost_usd": 0.00032960000000000004
+   },
+   "latency_ms": 4414
+  },
+  {
+   "id": "t54",
+   "type": "unanswerable",
+   "question": "How are Islamic banking products treated when a bank calculates its capital requirement?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "In South Africa, Islamic banking products are generally included in a bank’s risk-weighted assets and capital adequacy calculation according to their underlying economic and credit risks, rather than being exempt because they are Sharia-compliant. The applicable treatment depends on the structure—for example, an ijara is treated broadly like a lease exposure, while mudarabah or musharakah involves investment/equity-type risk—and must comply with the Prudential Authority’s capital rules.",
+   "served_answer": "In South Africa, Islamic banking products are generally included in a bank’s risk-weighted assets and capital adequacy calculation according to their underlying economic and credit risks, rather than being exempt because they are Sharia-compliant. The applicable treatment depends on the structure—for example, an ijara is treated broadly like a lease exposure, while mudarabah or musharakah involves investment/equity-type risk—and must comply with the Prudential Authority’s capital rules.",
+   "raw_model_output": "In South Africa, Islamic banking products are generally included in a bank’s risk-weighted assets and capital adequacy calculation according to their underlying economic and credit risks, rather than being exempt because they are Sharia-compliant. The applicable treatment depends on the structure—for example, an ijara is treated broadly like a lease exposure, while mudarabah or musharakah involves investment/equity-type risk—and must comply with the Prudential Authority’s capital rules.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 63,
+    "output_tokens": 353,
+    "cost_usd": 0.0004362
+   },
+   "latency_ms": 5396
+  },
+  {
+   "id": "t55",
+   "type": "unanswerable",
+   "question": "How often must a bank submit its internal capital adequacy assessment to the regulator?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "A South African bank must submit its Internal Capital Adequacy Assessment Process (ICAAP) document to the Prudential Authority at least annually. The Authority may also require more frequent submissions where appropriate.",
+   "served_answer": "A South African bank must submit its Internal Capital Adequacy Assessment Process (ICAAP) document to the Prudential Authority at least annually. The Authority may also require more frequent submissions where appropriate.",
+   "raw_model_output": "A South African bank must submit its Internal Capital Adequacy Assessment Process (ICAAP) document to the Prudential Authority at least annually. The Authority may also require more frequent submissions where appropriate.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 65,
+    "output_tokens": 177,
+    "cost_usd": 0.0002254
+   },
+   "latency_ms": 3369
+  },
+  {
+   "id": "t56",
+   "type": "unanswerable",
+   "question": "What minimum deposit must a consumer put down when a credit provider finances a vehicle?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "A consumer must generally pay a minimum deposit of **10% of the vehicle’s purchase price** when it is financed by a credit provider under South African regulations.",
+   "served_answer": "A consumer must generally pay a minimum deposit of **10% of the vehicle’s purchase price** when it is financed by a credit provider under South African regulations.",
+   "raw_model_output": "A consumer must generally pay a minimum deposit of **10% of the vehicle’s purchase price** when it is financed by a credit provider under South African regulations.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 65,
+    "output_tokens": 408,
+    "cost_usd": 0.0005026
+   },
+   "latency_ms": 5137
+  },
+  {
+   "id": "t57",
+   "type": "false_premise",
+   "question": "Since debt counsellors now collect and distribute consumers' money under the 2015 regulations, how do they account to consumers for it?",
+   "reference_answer": "The premise is incorrect: the regulation says a debt counsellor must not collect and distribute monies on behalf of consumers.",
+   "evidence": [
+    {
+     "doc_id": "nca_affordability_regs_2015",
+     "page": 12,
+     "quote": "A debt counselor must not collect and distribute monies on behalf of consumers."
+    }
+   ],
+   "answer": "They must provide the consumer with regular, itemised statements showing payments received, amounts and dates distributed to each credit provider, fees or deductions, and the remaining balance. The payment-distribution agency must also provide transaction-level records and reconcile the account, enabling the consumer to verify that distributions match the debt-rearrangement order.",
+   "served_answer": "They must provide the consumer with regular, itemised statements showing payments received, amounts and dates distributed to each credit provider, fees or deductions, and the remaining balance. The payment-distribution agency must also provide transaction-level records and reconcile the account, enabling the consumer to verify that distributions match the debt-rearrangement order.",
+   "raw_model_output": "They must provide the consumer with regular, itemised statements showing payments received, amounts and dates distributed to each credit provider, fees or deductions, and the remaining balance. The payment-distribution agency must also provide transaction-level records and reconcile the account, enabling the consumer to verify that distributions match the debt-rearrangement order.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 76,
+    "output_tokens": 585,
+    "cost_usd": 0.0007172000000000001
+   },
+   "latency_ms": 7371
+  },
+  {
+   "id": "t58",
+   "type": "false_premise",
+   "question": "Does the Minister alone designate the Registrar of Deposit-taking Institutions under the 1990 Act?",
+   "reference_answer": "No. The Reserve Bank designates the Registrar, subject to the Minister's approval, rather than the Minister acting alone.",
+   "evidence": [
+    {
+     "doc_id": "banks_act_94_1990",
+     "page": 10,
+     "quote": "The Reserve Bank shall, subject to the approval of the Minister, designate"
+    }
+   ],
+   "answer": "No. Under the 1990 Act, the Minister designates the Registrar only after consulting the Governor of the South African Reserve Bank.",
+   "served_answer": "No. Under the 1990 Act, the Minister designates the Registrar only after consulting the Governor of the South African Reserve Bank.",
+   "raw_model_output": "No. Under the 1990 Act, the Minister designates the Registrar only after consulting the Governor of the South African Reserve Bank.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 67,
+    "output_tokens": 548,
+    "cost_usd": 0.000671
+   },
+   "latency_ms": 5950
+  },
+  {
+   "id": "t59",
+   "type": "false_premise",
+   "question": "Was the conduct standard for banks published in 2018, when the Financial Sector Regulation Act was introduced?",
+   "reference_answer": "No. The Act was introduced in 2018, but the conduct standard for banks was not published until 8 July 2020.",
+   "evidence": [
+    {
+     "doc_id": "fsca_press_conduct_standard_banks_2020",
+     "page": 1,
+     "quote": "FSCA Press Release 08 July 2020 FSCA publishes the conduct standard for banks"
+    }
+   ],
+   "answer": "No. The Financial Sector Regulation Act 9 of 2017 came into effect in 2018, but the Conduct Standard for Banks was published later, as Conduct Standard 1 of 2020.",
+   "served_answer": "No. The Financial Sector Regulation Act 9 of 2017 came into effect in 2018, but the Conduct Standard for Banks was published later, as Conduct Standard 1 of 2020.",
+   "raw_model_output": "No. The Financial Sector Regulation Act 9 of 2017 came into effect in 2018, but the Conduct Standard for Banks was published later, as Conduct Standard 1 of 2020.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 70,
+    "output_tokens": 180,
+    "cost_usd": 0.00023
+   },
+   "latency_ms": 3568
+  },
+  {
+   "id": "t60",
+   "type": "false_premise",
+   "question": "The retail distribution review lets intermediaries collect ongoing commission whether or not they service the customer, so how is that justified?",
+   "reference_answer": "The premise is incorrect: ongoing fees or commission may only be paid if ongoing advice and services are actually rendered.",
+   "evidence": [
+    {
+     "doc_id": "fsca_rdr_2014",
+     "page": 6,
+     "quote": "Ongoing fees and/or commission may only be paid if ongoing advice and services are indeed rendered"
+    }
+   ],
+   "answer": "It is not intended to be an unconditional entitlement: ongoing remuneration is meant to compensate for ongoing advice or other agreed services, with disclosure and customer agreement. Trail or ongoing commissions may nevertheless continue under transitional or legacy arrangements, which can make payment persist even where service is limited; that is a recognised concern rather than the core justification of the RDR.",
+   "served_answer": "It is not intended to be an unconditional entitlement: ongoing remuneration is meant to compensate for ongoing advice or other agreed services, with disclosure and customer agreement. Trail or ongoing commissions may nevertheless continue under transitional or legacy arrangements, which can make payment persist even where service is limited; that is a recognised concern rather than the core justification of the RDR.",
+   "raw_model_output": "It is not intended to be an unconditional entitlement: ongoing remuneration is meant to compensate for ongoing advice or other agreed services, with disclosure and customer agreement. Trail or ongoing commissions may nevertheless continue under transitional or legacy arrangements, which can make payment persist even where service is limited; that is a recognised concern rather than the core justification of the RDR.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 73,
+    "output_tokens": 183,
+    "cost_usd": 0.0002342
+   },
+   "latency_ms": 3384
+  }
+ ]
+}
