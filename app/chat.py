@@ -39,13 +39,15 @@ _REFUSAL_REASON_LABELS = {
 st.set_page_config(page_title="RegRAG — SA Financial Regulation Assistant", page_icon="⚖️")
 st.title("RegRAG")
 st.caption(
-    "Answers South African financial regulation questions from a fixed local corpus (SARB, "
-    "IFRS 9, National Credit Act, FSCA). **Educational tool — not legal advice.**"
+    "Answers questions on South African banking and consumer-credit regulation (Prudential "
+    "Authority directives, the Banks Act and its regulations, the National Credit Act and its "
+    "regulations, FSCA conduct standards, IFRS 9) from a fixed corpus, citing the page. Not "
+    "legal advice."
 )
 
 st.caption(
-    "Demo model: Llama 3.2 3B on a free CPU. New questions take 1-2 minutes; the examples are "
-    "instant. The evaluated system uses GPT-5.6 Luna."
+    "Answers come from GPT-5.6 Luna by default; set LLM_PROVIDER=ollama in .env to run a free "
+    "local model instead."
 )
 
 if "history" not in st.session_state:
