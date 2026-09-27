@@ -48,9 +48,9 @@ pipeline:
 On the test-split retrieval benchmark, with reranking, all-evidence-documents-in-top-k reached
 32/48 for dense search, 33/48 for BM25 and 36/48 for hybrid: hybrid scores higher here than the
 dense retrieval the pipeline ships, a reversal of the dev-set result that picked dense in the
-first place, and it stays unshipped because the selection rule was fixed before this run. No
-human has checked these 60 answers yet. The review
-was deferred, so the numbers above rest on two 7-8B local judges only, and
+first place, and it stays unshipped because the selection rule was fixed before this run. The
+human review was deferred, so these 60 answers have not yet been checked by a person; the numbers
+above rest on two 7-8B local judges only, and
 `reports/review_packet_v1.2.md` is sitting ready for whoever does that check. On the 34-item dev
 set where a kappa was computed, the two judges agreed on 59-68% of graded items (kappa 0.32 on the
 RAG run, 0.51 closed-book), a real but middling agreement between two weak graders, not a ground
@@ -84,12 +84,11 @@ UI, talking to the API over HTTP instead of importing the RAG code directly.
 
 ## Design decisions
 
-**The v1.1 embedder was silently truncating most of what it stored, and counting tokens on the
-wrong tokenizer is what hid it.** v1.1 cut chunks at 800 tokens by a generic tokenizer, but the
-MiniLM embedder only reads 256 wordpieces, so 614 of 795 chunks lost roughly three-quarters of
-their text before it ever reached the model. Chunking against the embedder's own wordpiece count
-(240 tokens, 32 overlap) fixed it: nothing is truncated at 6,152 chunks, and it's the single
-biggest reason the fixed pipeline retrieves more evidence documents than the old one.
+**Truncation, hiding in the wrong tokenizer.** v1.1 cut chunks at 800 tokens by a generic
+tokenizer, but the MiniLM embedder only reads 256 wordpieces, so 614 of 795 chunks lost roughly
+three-quarters of their text before it ever reached the model. Chunking against the embedder's own
+wordpiece count (240 tokens, 32 overlap) fixed it: nothing is truncated at 6,152 chunks, and it's
+the single biggest reason the fixed pipeline retrieves more evidence documents than the old one.
 
 **BM25 and hybrid retrieval, measured, not assumed, better.** Both were built and benchmarked
 against dense semantic search on the dev set, and neither won: hybrid's all-documents-hit rate on wordpiece topped out at 26/34 against
@@ -120,11 +119,10 @@ reproducibility that an approximate index can't guarantee.
   graded it, and their dev-set kappa (0.32-0.51) says they're a cheap second opinion, not ground
   truth. `reports/review_packet_v1.2.md` has every item ready for that review.
 - Retrieval is the main limiter on the answer rate: 8 of 48 answerable test questions retrieved no
-  evidence page at all. Three of the eleven refusals were multi-part questions where only one of
-  two named sources came back.
-- Two items went the other way: the model answered a buy-now-pay-later question from adjacent,
-  not on-point, text (t50), and went along with a false premise about debt-counsellor conduct
-  because the relevant page wasn't retrieved (t57).
+  evidence page at all, and three of the eleven refusals were multi-part questions where only one
+  of two named sources came back. Two items went the other way: the model answered a
+  buy-now-pay-later question from adjacent, not on-point, text (t50), and went along with a false
+  premise about debt-counsellor conduct because the relevant page wasn't retrieved (t57).
 - The final FMA Conduct Standard 2 of 2018 isn't in the corpus: its current URL on the FSCA's
   JS-rendered site couldn't be resolved for this release, and Conduct Standard 3 of 2020 (Banks)
   is a scanned image PDF read only through OCR.
