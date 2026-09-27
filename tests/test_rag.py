@@ -36,15 +36,67 @@ def test_citation_matching_a_retrieved_page_is_verified(monkeypatch):
     assert result.refused is False
 
 
-def test_citation_to_a_page_never_retrieved_is_flagged_unverified(monkeypatch):
+def test_unverified_page_citation_is_replaced_by_a_refusal(monkeypatch):
     monkeypatch.setattr(
-        rag, "retrieve", lambda q, k=5, rerank=False: [_chunk(page_start=3, page_end=3)]
+        rag, "retrieve", lambda q, k=5, rerank=True: [_chunk(page_start=3, page_end=3)]
     )
     monkeypatch.setattr(rag, "complete", _fake_llm("Banks must comply. [sarb_d3_2023, p.99]"))
 
     result = rag.answer_question("What must banks do?")
 
-    assert result.citations == [rag.Citation(doc_id="sarb_d3_2023", page=99, verified=False)]
+    assert result.refused is True
+    assert result.answer == rag.INSUFFICIENT_CONTEXT_PHRASE
+    assert result.citations == []
+    assert result.refusal_reason == rag.RefusalReason.UNVERIFIED_CITATION
+
+
+def test_uncited_model_answer_is_replaced_by_a_refusal(monkeypatch):
+    monkeypatch.setattr(rag, "retrieve", lambda q, k=5, rerank=True: [_chunk()])
+    monkeypatch.setattr(rag, "complete", _fake_llm("The Act requires disclosure."))
+
+    result = rag.answer_question("What does the Act require?")
+
+    assert result.refused is True
+    assert result.answer == rag.INSUFFICIENT_CONTEXT_PHRASE
+    assert result.citations == []
+    assert result.refusal_reason == rag.RefusalReason.MISSING_CITATION
+
+
+def test_every_non_empty_answer_line_must_end_in_a_citation(monkeypatch):
+    text = "First supported claim. [sarb_d3_2023, p.1]\nSecond unsupported claim."
+    monkeypatch.setattr(rag, "retrieve", lambda q, k=5, rerank=True: [_chunk()])
+    monkeypatch.setattr(rag, "complete", _fake_llm(text))
+
+    result = rag.answer_question("Summarise the requirements.")
+
+    assert result.refused is True
+    assert result.refusal_reason == rag.RefusalReason.UNCITED_LINE
+
+
+def test_refusal_phrase_with_extra_text_is_normalised_and_rejected(monkeypatch):
+    text = f"{rag.INSUFFICIENT_CONTEXT_PHRASE} But outside knowledge says otherwise."
+    monkeypatch.setattr(rag, "retrieve", lambda q, k=5, rerank=True: [_chunk()])
+    monkeypatch.setattr(rag, "complete", _fake_llm(text))
+
+    result = rag.answer_question("An unsupported question")
+
+    assert result.answer == rag.INSUFFICIENT_CONTEXT_PHRASE
+    assert result.refusal_reason == rag.RefusalReason.MALFORMED_REFUSAL
+
+
+def test_multiple_verified_citations_at_line_end_are_accepted(monkeypatch):
+    text = "Both instruments address credit risk. [sarb_d3_2023, p.1] [sarb_d8_2023, p.2]"
+    chunks = [
+        _chunk(doc_id="sarb_d3_2023"),
+        _chunk(doc_id="sarb_d8_2023", page_start=2, page_end=2),
+    ]
+    monkeypatch.setattr(rag, "retrieve", lambda q, k=5, rerank=True: chunks)
+    monkeypatch.setattr(rag, "complete", _fake_llm(text))
+
+    result = rag.answer_question("Compare them.")
+
+    assert result.refused is False
+    assert all(c.verified for c in result.citations)
 
 
 def test_refusal_phrase_produces_no_citations_even_if_present_in_text(monkeypatch):
@@ -81,6 +133,25 @@ def test_page_range_citation_expands_to_every_covered_page(monkeypatch):
 
     pages = sorted(c.page for c in result.citations)
     assert pages == [5, 6, 7]
+    assert all(c.verified for c in result.citations)
+
+
+def test_citation_with_a_trailing_section_reference_is_still_extracted(monkeypatch):
+    # a real holdout run had the model write [doc_id, p.11-12, 1.4.1] — a well-sourced, correct
+    # citation with a bonus section number the prompt's exact-form rule doesn't ask for. The old
+    # regex required the bracket to close right after the page, so this whole line silently
+    # extracted zero citations and the answer wrongly refused as MISSING_CITATION.
+    monkeypatch.setattr(
+        rag, "retrieve", lambda q, k=5, rerank=True: [_chunk(page_start=11, page_end=12)]
+    )
+    monkeypatch.setattr(
+        rag, "complete", _fake_llm("Banks must comply. [sarb_d3_2023, p.11-12, 1.4.1]")
+    )
+
+    result = rag.answer_question("What must banks do?")
+
+    assert result.refused is False
+    assert sorted(c.page for c in result.citations) == [11, 12]
     assert all(c.verified for c in result.citations)
 
 
@@ -133,28 +204,44 @@ def test_format_context_omits_source_line_for_an_unknown_doc_id(monkeypatch):
     assert "Source type" not in context
 
 
-def test_citing_the_third_party_guide_produces_a_source_notice(monkeypatch):
+def test_citing_a_third_party_document_produces_a_source_notice(monkeypatch):
+    # a synthetic manifest entry, not a real corpus doc_id: the only third-party source the
+    # corpus used to carry (pwc_practical_guide_ifrs9) was removed as stale, but the
+    # notice-generation logic keyed on is_third_party still needs its own coverage
     monkeypatch.setattr(
         rag,
-        "retrieve",
-        lambda q, k=5, rerank=False: [_chunk(doc_id="pwc_practical_guide_ifrs9")],
+        "_doc_metadata",
+        lambda: {
+            "mock_third_party_doc": {
+                "is_third_party": True,
+                "document_type": "Commentary",
+                "published_date": "2020-01-01",
+                "issuing_authority": "Some Publisher",
+                "title": "Mock Third-Party Commentary",
+            }
+        },
+    )
+    monkeypatch.setattr(
+        rag, "retrieve", lambda q, k=5, rerank=False: [_chunk(doc_id="mock_third_party_doc")]
     )
     monkeypatch.setattr(
         rag,
         "complete",
-        _fake_llm("IFRS 9 uses an expected-loss model. [pwc_practical_guide_ifrs9, p.1]"),
+        _fake_llm("IFRS 9 uses an expected-loss model. [mock_third_party_doc, p.1]"),
     )
 
     result = rag.answer_question("What impairment model does IFRS 9 use?")
 
     assert len(result.source_notices) == 1
-    assert "third-party commentary" in result.source_notices[0]
-    assert "pwc_practical_guide_ifrs9" in result.source_notices[0]
+    notice = result.source_notices[0]
+    assert notice.kind == "third_party_source"
+    assert "third-party commentary" in notice.text
+    assert "mock_third_party_doc" in notice.text
     # the notice is structured data, never folded into the graded answer text
     assert "third-party" not in result.answer
 
 
-def test_citing_a_circular_produces_a_superseded_instrument_notice(monkeypatch):
+def test_citing_a_withdrawn_circular_produces_a_notice_with_evidence(monkeypatch):
     monkeypatch.setattr(
         rag,
         "retrieve",
@@ -173,18 +260,23 @@ def test_citing_a_circular_produces_a_superseded_instrument_notice(monkeypatch):
     result = rag.answer_question("By what date were comments due?")
 
     assert len(result.source_notices) == 1
-    assert "Circular" in result.source_notices[0]
-    assert "sarb_circular_19_2004_capital_hybrid_instruments" in result.source_notices[0]
+    notice = result.source_notices[0]
+    assert notice.kind == "withdrawn_source"
+    assert "sarb_circular_19_2004_capital_hybrid_instruments" in notice.text
+    assert "withdrawn" in notice.text
+    assert notice.evidence == [rag.SourceReference("sarb_c1_2026_status_of_circulars", 1)]
 
 
 def test_citing_a_current_directive_produces_no_notices(monkeypatch):
     monkeypatch.setattr(
         rag,
         "retrieve",
-        lambda q, k=5, rerank=False: [_chunk(doc_id="sarb_d8_2023_threshold_amounts")],
+        lambda q, k=5, rerank=False: [_chunk(doc_id="sarb_d3_2023_accounting_provisions_ifrs9")],
     )
     monkeypatch.setattr(
-        rag, "complete", _fake_llm("Banks must comply. [sarb_d8_2023_threshold_amounts, p.1]")
+        rag,
+        "complete",
+        _fake_llm("Banks must comply. [sarb_d3_2023_accounting_provisions_ifrs9, p.1]"),
     )
 
     result = rag.answer_question("What must banks do?")
@@ -195,8 +287,19 @@ def test_citing_a_current_directive_produces_no_notices(monkeypatch):
 def test_a_refusal_produces_no_source_notices_even_for_a_flagged_document_type(monkeypatch):
     monkeypatch.setattr(
         rag,
-        "retrieve",
-        lambda q, k=5, rerank=False: [_chunk(doc_id="pwc_practical_guide_ifrs9")],
+        "_doc_metadata",
+        lambda: {
+            "mock_third_party_doc": {
+                "is_third_party": True,
+                "document_type": "Commentary",
+                "published_date": "2020-01-01",
+                "issuing_authority": "Some Publisher",
+                "title": "Mock Third-Party Commentary",
+            }
+        },
+    )
+    monkeypatch.setattr(
+        rag, "retrieve", lambda q, k=5, rerank=False: [_chunk(doc_id="mock_third_party_doc")]
     )
     monkeypatch.setattr(rag, "complete", _fake_llm(rag.INSUFFICIENT_CONTEXT_PHRASE))
 

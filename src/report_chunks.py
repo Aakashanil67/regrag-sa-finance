@@ -88,7 +88,9 @@ def write_chunk_quality_report(chunks_by_doc: dict[str, list[Chunk]]) -> None:
         if len(garbage) > 15:
             lines.append(f"- ...and {len(garbage) - 15} more")
 
-    (REPORTS_DIR / "chunk_quality.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (REPORTS_DIR / "chunk_quality.md").write_text(
+        "\n".join(lines) + "\n", encoding="utf-8", newline="\n"
+    )
     print(
         f"wrote reports/chunk_quality.md ({len(all_chunks)} chunks, {len(garbage)} flagged as garbage)"
     )

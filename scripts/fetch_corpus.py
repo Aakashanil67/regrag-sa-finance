@@ -40,7 +40,9 @@ def _download(entry: dict) -> bytes:
     last_error = None
     for attempt in range(1, _MAX_ATTEMPTS + 1):
         try:
-            response = httpx.get(entry["url"], headers=headers, follow_redirects=True, timeout=30.0)
+            response = httpx.get(
+                entry["download_url"], headers=headers, follow_redirects=True, timeout=30.0
+            )
             response.raise_for_status()
             content_type = response.headers.get("content-type", "")
             if "pdf" not in content_type and not response.content.startswith(b"%PDF"):

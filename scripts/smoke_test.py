@@ -52,7 +52,7 @@ def run() -> None:
         lines.append("---")
         lines.append("")
 
-    (REPORTS_DIR / "smoke_test.md").write_text("\n".join(lines), encoding="utf-8")
+    (REPORTS_DIR / "smoke_test.md").write_text("\n".join(lines), encoding="utf-8", newline="\n")
     print(f"\nwrote reports/smoke_test.md ({len(QUESTIONS)} questions)")
 
 

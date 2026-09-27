@@ -2,14 +2,12 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Same CPU-only torch install as Dockerfile.api, for the same reason — see the comment there.
-# Neither UI process runs a model (chat.py talks to the API over HTTP, ops.py reads the SQLite log
-# and the report files), but both install the full requirements.txt, so without this they'd carry
-# the same ~3.4GB of unusable CUDA libraries the API image did.
-RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# No torch, no Chroma, no sentence-transformers, no Anthropic SDK: neither UI process runs a model
+# or touches the vector store directly — chat.py and ops.py both talk to the API over HTTP only
+# (see app/ops.py's module docstring for why that boundary matters). requirements-ui.txt is
+# Streamlit/httpx/pandas only.
+COPY requirements-ui.txt .
+RUN pip install --no-cache-dir -r requirements-ui.txt
 
 COPY src/ ./src/
 COPY app/ ./app/

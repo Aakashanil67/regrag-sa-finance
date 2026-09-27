@@ -1,0 +1,675 @@
+{
+ "source": "dev-wordpiece.json",
+ "items": [
+  {
+   "id": "d01",
+   "raw_model_output": "A court or Tribunal may declare a credit agreement reckless in proceedings where the agreement is being considered, as determined under the relevant Part of the Act. [nca_act_34_2005, p.55]\n\nDuring a debt-review assessment, a debt counsellor must report a credit agreement to the National Credit Regulator or Magistrate’s Court when there are reasonable grounds to suspect that it is reckless. [nca_act_34_2005, p.55]\n\nA credit provider must not enter into a reckless credit agreement with a prospective consumer. [nca_act_34_2005, p.54]",
+   "contexts": [
+    [
+     "bee731d38682c2853e29bb619e2332504e91d1315cd287e14b20ca729a0c34f9",
+     "nca_act_34_2005",
+     55,
+     55,
+     "83.   Declaration of reckless credit agreement.—(1)  Despite any provision of law or agreement to the",
+     "section 136 and the national credit regulator must investigate that report in accordance with section 139. ( 4 ) the tribunal may impose an administrative fine contemplated in section (Pending amendment: S. 82A to be inserted by s. 10 of Act No. 7 of 2019 with effect from a date fixed by the President by proclamation in the Gazette – date not determined.) contrary, in any court or Tribunal proceedings in which a credit agreement is being considered, the court or Tribunal, as the case may be, may declare that the credit agreement is reckless, as determined in accordance with this Part. [Sub­s. (1) substituted by s. 25 (b) of Act No. 19 of 2014.] (2)  If a court or Tribunal declares that a credit agreement is reckless in terms of section 80 (1) (a) or"
+    ],
+    [
+     "a7e22f56047deda85738382549483060096027631affa603a167ec8e6e6cb926",
+     "nca_act_34_2005",
+     57,
+     57,
+     "86.   Application for debt review.—(1)  A consumer may apply to a debt counsellor in the prescribed manner",
+     "credit agreements appear to be reckless. ( pending amendment : para. ( b ) to be substituted by s. 12 ( a ) of act no. 7 of 2019 with effect from a date fixed by the President by proclamation in the Gazette – date not determined.) (7)  If, as a result of an assessment conducted in terms of subsection (6), a debt counsellor reasonably concludes that— the consumer is not over­indebted, the debt counsellor must reject the application, even if the debt counsellor has concluded that a particular credit agreement was reckless at the time it was entered into; the consumer is not over­indebted, but is nevertheless experiencing, or likely to experience, difficulty satisfying all the consumer’s obligations under credit agreements in a timely manner, the debt counsellor may recommend that the consumer and the respective credit providers voluntarily consider and agree on a plan of debt re­arrangement; or manner, the debt counsellor may recommend that the consumer and the respective credit providers voluntarily consider and agree on a plan of debt rearrangement ; or"
+    ],
+    [
+     "9cb9a90eb0a250f9c11da387db71a348cfc24456e1bc3887fcb8395d9a84d439",
+     "nca_act_34_2005",
+     55,
+     55,
+     "80 (1) (b) (ii), the court or Tribunal, as the case may be—",
+     "2014. ] ( 2 ) if a court or tribunal declares that a credit agreement is reckless in terms of section 80 ( 1 ) ( a ) or setting aside all or part of the consumer’s rights and obligations under that agreement, as the court determines just and reasonable in the circumstances; or suspending the force and effect of that credit agreement in accordance with subsection (3) (b) (i). [Sub­s. (2) amended by s. 25 (c) of Act No. 19 of 2014.] (3)  If a court or Tribunal, as the case may be, declares that a credit agreement is reckless in terms of section"
+    ],
+    [
+     "ba904aae13d97d31897b2de738f00ed0ca8a3f399bffdd600f99222c30c3f131",
+     "nca_act_34_2005",
+     54,
+     54,
+     "81.   Prevention of reckless credit.—(1)  When applying for a credit agreement, and while that application is",
+     "has such a purpose for applying for that credit agreement. ( 3 ) a credit provider must not enter into a reckless credit agreement with a prospective consumer. (4)  For all purposes of this Act, it is a complete defence to an allegation that a credit agreement is reckless if — the credit provider establishes that the consumer failed to fully and truthfully answer any requests for information made by the credit provider as part of the assessment required by this section; and a court or the Tribunal determines that the consumer’s failure to do so materially affected the ability of the credit provider to make a proper assessment. (Date of commencement of s. 81: 1 June, 2007.)"
+    ],
+    [
+     "146c17ff02ce4228e6ca429835f1b51ff445a87d679167f578c46c8758d4ab9c",
+     "nca_act_34_2005",
+     55,
+     55,
+     "82A.   Report and investigation of reckless credit agreement.—(1)  If during",
+     "an assessment contemplated in section 86 (6) there are reasonable grounds to suspect that a credit agreement included in that assessment is a reckless credit agreement, the debt counsellor must report that suspected reckless credit agreement to— the National Credit Regulator where the debt counsellor rejects the application as contemplated in section 86 (7) (a)  o r   m a k e s   a recommendation contemplated in section 86 (7) (b); or the Magistrate’s Court where the debt counsellor makes a recommendation contemplated in section 86 (7) (c). (2)  A credit provider must, within seven business days of receipt of a request and at a fee not exceeding the maximum prescribed fee, provide a debt counsellor with the following information requested in relation to the consumer concerned: Relevant application for credit; pre­agreement statement; quote; credit agreement entered into with the consumer; (e) documentation in support of steps taken in terms of section 81 (2); ( f ) record of payments made; and (g) documentation in support of any steps taken after default by the consumer."
+    ]
+   ],
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 55,
+     "verified": true,
+     "section_ref": "s 82A"
+    },
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 55,
+     "verified": true,
+     "section_ref": "s 82A"
+    },
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 54,
+     "verified": true,
+     "section_ref": "s 81"
+    }
+   ]
+  },
+  {
+   "id": "d02",
+   "raw_model_output": "The debt counsellor must report the suspected reckless credit agreement to the National Credit Regulator if rejecting the application or making a recommendation under section 86(7)(b), or to the Magistrate’s Court if making a recommendation under section 86(7)(c). [nca_act_34_2005, p.55]",
+   "contexts": [
+    [
+     "146c17ff02ce4228e6ca429835f1b51ff445a87d679167f578c46c8758d4ab9c",
+     "nca_act_34_2005",
+     55,
+     55,
+     "82A.   Report and investigation of reckless credit agreement.—(1)  If during",
+     "an assessment contemplated in section 86 (6) there are reasonable grounds to suspect that a credit agreement included in that assessment is a reckless credit agreement, the debt counsellor must report that suspected reckless credit agreement to— the National Credit Regulator where the debt counsellor rejects the application as contemplated in section 86 (7) (a)  o r   m a k e s   a recommendation contemplated in section 86 (7) (b); or the Magistrate’s Court where the debt counsellor makes a recommendation contemplated in section 86 (7) (c). (2)  A credit provider must, within seven business days of receipt of a request and at a fee not exceeding the maximum prescribed fee, provide a debt counsellor with the following information requested in relation to the consumer concerned: Relevant application for credit; pre­agreement statement; quote; credit agreement entered into with the consumer; (e) documentation in support of steps taken in terms of section 81 (2); ( f ) record of payments made; and (g) documentation in support of any steps taken after default by the consumer."
+    ],
+    [
+     "a7e22f56047deda85738382549483060096027631affa603a167ec8e6e6cb926",
+     "nca_act_34_2005",
+     57,
+     57,
+     "86.   Application for debt review.—(1)  A consumer may apply to a debt counsellor in the prescribed manner",
+     "credit agreements appear to be reckless. ( pending amendment : para. ( b ) to be substituted by s. 12 ( a ) of act no. 7 of 2019 with effect from a date fixed by the President by proclamation in the Gazette – date not determined.) (7)  If, as a result of an assessment conducted in terms of subsection (6), a debt counsellor reasonably concludes that— the consumer is not over­indebted, the debt counsellor must reject the application, even if the debt counsellor has concluded that a particular credit agreement was reckless at the time it was entered into; the consumer is not over­indebted, but is nevertheless experiencing, or likely to experience, difficulty satisfying all the consumer’s obligations under credit agreements in a timely manner, the debt counsellor may recommend that the consumer and the respective credit providers voluntarily consider and agree on a plan of debt re­arrangement; or manner, the debt counsellor may recommend that the consumer and the respective credit providers voluntarily consider and agree on a plan of debt rearrangement ; or"
+    ],
+    [
+     "fbf85132f2a62d1bc367c22d12a5e8fafe5823528949d2022dac4aeae6d3f311",
+     "nca_regs_2006",
+     25,
+     25,
+     "from all registered credit bureaux within 5 business days which will result",
+     "agreements declared reckless and / or restructuring of hisher debt obligations ; ( 6 ) a statement advising the consumer that the application for debt review will be removed in credit providers being entitled to take legal steps against the consumer. Debt restructuring by court order 26.(1) An application ~ terms of section 86(9) of the Act must be submitted to court within 20 business days after the debt counsellor has provided the consumer with a letter of rejection. (2) The court may on application by the consumer and good cause shown, extend the 20 business day period. (3) When making an application as contemplated in section 86(9), a consumer must complete Form 18. Clearance Certificate 27. A debt counsellor must issue’a clearance certificate in Form 19 if the consumer has fully satisfied all the debt obligations under every credit agreement that was subject to the debt re-arrangement order or agreement, in accordance with that order or agreement"
+    ],
+    [
+     "a4b1034076847d4c4b7bfdcf901638d888d147f49f76b723b9b6359262e9ac2b",
+     "nca_regs_2006",
+     24,
+     24,
+     "fw registered mail or e-mail",
+     "26 No. 28864 (8) In making a determination that a particular debt is reckless, as per section 86(6)(b) of the Act, a debt counsellor must refer to section 80 of the Act and M e r  consider the following; (a) the level of indebtedness of the consumer after that particular agreement was entered into; and whether, when that particular credit agreement was entered into, the total debt obligations including the new agreement exceeded the net income reduced by minimum living expenses; the consumers’ bank statement, salary or wage advice and records obtained fiom a credit bureau; any guidelines published by the National Credit Regulator proposing evaluative mechanisms, models and procedures in terms of section 82 of the Act; (9) Any arrangement made by the debt counsellor with credit providers must be reduced to writing and signed by all credit providers mentioned, the debt counsellor and the consumer. (b) (c) (d) - etion of the assessment, the debt counsellor must submit form 17.2 to all the it providers and all registered credit bureaux within 5 business days; (1"
+    ],
+    [
+     "8dbf11bec1214c703e1eac87efb617aa41ff5fceecfb68b45bbe168368211c41",
+     "nca_act_34_2005",
+     57,
+     57,
+     "86.   Application for debt review.—(1)  A consumer may apply to a debt counsellor in the prescribed manner",
+     ", in the prescribed manner and form — ( i ) all credit providers that are listed in the application ; and ( ii ) every registered credit bureau. (5)  A consumer who applies to a debt counsellor, and each credit provider contemplated in subsection (4) (b), must— comply with any reasonable requests by the debt counsellor to facilitate the evaluation of the consumer’s state of indebtedness and the prospects for responsible debt re­arrangement; and participate in good faith in the review and in any negotiations designed to result in responsible debt re­arrangement. (6)  A debt counsellor who has accepted an application in terms of this section must determine, in the prescribed manner and within the prescribed time— whether the consumer appears to be over­indebted; and if the consumer seeks a declaration of reckless credit, whether any of the consumer’s credit agreements appear to be reckless. whether any of the consumer’s credit agreements appear to be reckless. (Pending amendment: Para. (b) to be substituted by s. 12 (a) of Act No."
+    ]
+   ],
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 55,
+     "verified": true,
+     "section_ref": "s 82A"
+    }
+   ]
+  },
+  {
+   "id": "d03",
+   "raw_model_output": "A bank must establish, maintain and operate an adequate and effective complaints-management framework that ensures the fair treatment of complainants and is proportionate to its business and risks, business model, products, services and customers. [fsca_cs3_2020_banks, p.15]\n\nThe framework must allocate responsibilities, set appropriate performance and remuneration standards, document complaint-management and categorisation procedures with timeframes, define escalation and review processes, and provide for complaint record-keeping, monitoring, analysis and reporting. [fsca_cs3_2020_banks, p.16]\n\nIt must provide appropriate communication with complainants and their authorised representatives, engagement with relevant parties, trained and suitably skilled decision-makers, and safeguards against conflicts of interest. [fsca_cs3_2020_banks, p.16] [fsca_cs3_2020_banks, p.17]\n\nThe bank must categorise, record and report reportable complaints, maintain an internal escalation and review process, analyse complaint information to identify and manage conduct risks and prevent recurrence, and report relevant information to its governing body and key persons. [fsca_cs3_2020_banks, p.18] [fsca_cs3_2020_banks, p.20]\n\nThe complaint processes must be transparent, visible and accessible through appropriate channels, may not charge complainants, and must use plain language in communications with retail complainants. [fsca_cs3_2020_banks, p.20]",
+   "contexts": [
+    [
+     "c12ab2220dfdf8a53b4814517ff6a47c8f6df27be35eaadd5321666ea80fbf85",
+     "fsca_cs3_2020_banks",
+     18,
+     18,
+     "",
+     "the accessibility of funds, changes or switches between financial products or financial services ; ( h ) complaints relating to complaints handling ; and ( i other complaints. (8) | Abank, in addition to the categorisation set out in subsection (7), must consider additional categories relevant to its chosen business model, financial products, financial services and financial customer base that will support the effectiveness of its complaint management framework in managing conduct risks and effecting improved outcomes and processes for its financial customers. (9) A bank must categorise, record and report on reportable complaints by identifying the category contemplated in subsection (7) to which a complaint most closely relates and group complaints accordingly. (10) A bank must establish and maintain an appropriate internal complaints escalation and review process. 18 complaint most closely relates and group complaints accordingly. ( 10 ) a bank must establish and maintain an appropriate internal complaints escalation and review process. 18"
+    ],
+    [
+     "0d2739509ac11762f07d89f3ee3a72466cf75cfaaf1dfc6bc24ba4582feca6af",
+     "fsca_cs3_2020_banks",
+     20,
+     20,
+     "",
+     "(16) Complaints information recorded in accordance with subsection (15) must be scrutinised and analysed by a bank on an ongoing basis and uillised to proactively identify and manage conduct risks and affect improved outcomes and processes for its financial customers, and to prevent recurrences of poor outcomes and errors. (17) Abank must establish and maintain appropriate processes and procedures for reporting of the information in subsection (16) to its governing body and appropriate key persons. (18) A bank must ensure that Its complaint processes and procedures are transparent, visible and accessible through channels that are appropriate to the bank and its financial customers. (19) Abank may not impose any charge for a complainant to make use of complaint processes and procedures. (20) All communications with a retait complainant must use plain language."
+    ],
+    [
+     "9656ff43966147a5ead55433f0bad1fcfe3ec50ccffabee0f928523f3e3bb62a",
+     "fsca_cs3_2020_banks",
+     17,
+     17,
+     "",
+     "governing body of a bank is responsible for effective complaints management and must approve and oversee the effectiveness of the implementation of the bank ' s complaints management framework. (5) The oversight responsibility referred to in 8(4), may be delegated to a person of appropriate seniority and expertise within the bank, (6) Any person that is responsible for making decisions or recommendations in respect of complaints generally or a specific complaint must - (a) be adequately trained; (b) have an appropriate mix of experience, knowledge and skills in complaints handling, fair treatment of financlal customers, the subject matter of the complaints concerned and relevant legal and regulatory matters; (co) not be referred to as an internal ombud to avold creating confusion with the established relevant ombuds; (d) not be subject to a conflict of interest; and 17 ombud to avold creating confusion with the established relevant ombuds ; ( d ) not be subject to a conflict of interest ; and 17"
+    ],
+    [
+     "711cbfe0677d4177854ecb0d9f93a1ad1d19b05b6570cdbd8a337b49130945fd",
+     "fsca_cs3_2020_banks",
+     16,
+     16,
+     "",
+     "( 3 ) | the complaints management framework must at least, provide for - ( a ) relevant objectives, key principles and the proper allocation of responsibilities for dealing with complaints across the business of the bank ; ( b ) appropriate performance standards and remuneration and reward strategies ( internally and where any functions are outsourced ) for complaints management to ensure objectivity and impartiality ; ( c ) documented procedures for the appropriate management and categorisation of complaints, including expected timeframes and the circumstances under which any of the timeframes may be extended ; ( a ) | documented procedures which clearly define the escalation, decisionmaking, monitoring, oversight and review processes within the complaints management framework ; ( e ) appropriate complaint record keeping, monitoring and analysis of complaints, and reporting ( regular and ad hoc ) to the governing body of the bank and any relevant committee on - ( ) identified risks, trends and actions taken in response thereto ; and ( ii ) the effectiveness and outcomes of the complaints management framework ; ( 8 appropriate communication with complainants and their authorised representatives on the complaints and the complaints processes and procedures ; ( g ) appropriate engagement between the bank and a relevant"
+    ],
+    [
+     "b09f81297d3bbccc634778c0f3c1f907c80a6ae93e14d23ecbd9ccda4ba25fa3",
+     "fsca_cs3_2020_banks",
+     15,
+     15,
+     "",
+     "interest rate concerned, appropriately describe the rate of interest concemed and also disclose to a financial customer the effective annual interest rate of the financial product. (5) | The Authority may determine the manner and form of disclosures that must be made in respect of financial products and financial services to retall financial customers. 8. Complaints (1) A bank must establish, maintain and operate an adequate and effective complaints management framework to ensure the fair treatment of complainants that - (a) is proportionate to the nature, scale and complexity of the bank's business and risks; (b) is appropriate for the business model, financial products, financial services and financial customers of the bank; 18 bank ' s business and risks ; ( b ) is appropriate for the business model, financial products, financial services and financial customers of the bank ; 18"
+    ]
+   ],
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [
+    {
+     "doc_id": "fsca_cs3_2020_banks",
+     "page": 15,
+     "verified": true,
+     "section_ref": null
+    },
+    {
+     "doc_id": "fsca_cs3_2020_banks",
+     "page": 16,
+     "verified": true,
+     "section_ref": null
+    },
+    {
+     "doc_id": "fsca_cs3_2020_banks",
+     "page": 16,
+     "verified": true,
+     "section_ref": null
+    },
+    {
+     "doc_id": "fsca_cs3_2020_banks",
+     "page": 17,
+     "verified": true,
+     "section_ref": null
+    },
+    {
+     "doc_id": "fsca_cs3_2020_banks",
+     "page": 18,
+     "verified": true,
+     "section_ref": null
+    },
+    {
+     "doc_id": "fsca_cs3_2020_banks",
+     "page": 20,
+     "verified": true,
+     "section_ref": null
+    },
+    {
+     "doc_id": "fsca_cs3_2020_banks",
+     "page": 20,
+     "verified": true,
+     "section_ref": null
+    }
+   ]
+  },
+  {
+   "id": "d04",
+   "raw_model_output": "Banks must assess the adequacy and robustness of their current policies, processes and practices against the BCBS principles for operational resilience. [sarb_d10_2021_operational_resilience, p.3]\n\nBanks must apply the principles on a consolidated basis and integrate them into a forward-looking operational resilience approach aligned with their operational risk appetite and tolerance for disruption. [sarb_d4_2023_operational_resilience, p.2]",
+   "contexts": [
+    [
+     "21431e869babc6797ccc633ccdfcfec417ffa18cdd26f79964c913e5802335cd",
+     "sarb_d10_2021_operational_resilience",
+     3,
+     3,
+     "1 Available online at https://www.bis.org/bcbs/publ/d516.pdf",
+     "3 2. Directive 2.1 Based on the aforesaid, and in accordance with the provisions of section 6(6) of the Banks Act 94 of 1990, banks are hereby directed as follows: 2.1.1 Banks must assess the adequacy and robustness of their current policies, processes and practices against the principles for operational resilience issued by the BCBS. 2.1.2 All operational resilience controls implemented by the bank must follow a risk­ based approach that is aligned with the bank's risk appetite, based on the nature, size and complexity of its operations. 2.1.3 Banks must ensure that all principles contained in the BCBS paper are addressed either through internal resources or by means of outsourcing/third party agreements without undue delay. 2.1.4 Existing risk management frameworks, business continuity plans and third-party dependency management must be implemented consistently within the bank. 2.1.5 Banks must consider whether its operational resilience approach is appropriately harmonised with the stated actions, organisational mappings, and definitions of critical functions and critical shared services contained in its recovery and resolution plans."
+    ],
+    [
+     "5eb6ff635e9aa031f18d7aa54dbcc620530350d49b9f8fe91e8ba200c84d15c7",
+     "sarb_d4_2023_operational_resilience",
+     3,
+     3,
+     "2.1.5 Banks must consider whether its operational resilience approach is appropriately",
+     "banks act 94 of 1990, banks are hereby directed as follows : and practices against the principles for operational resilience issued by the bcbs. approach that is aligned with the bank's risk appetite, based on the nature, size and complexity of its operations. either through internal resources or by means of outsourcing/third party agreements without undue delay. dependency management must be implemented consistently within the bank."
+    ],
+    [
+     "93c683e5d67c5d8b16aea6ce67e3d9ab938944aea2dd52562e4e8b7c001a6e86",
+     "sarb_d4_2023_operational_resilience",
+     1,
+     1,
+     "370 Helen Joseph Street  Pretoria  0002",
+     "have in place an enterprise - wide and systematic approach to operational resilience in order to adapt to the changing environment and to sustain core business services. In March 2021 the Basel Committee on Banking Supervision (BCBS) issued a paper on principles for operational resilience.1 The principles aim to strengthen banks' ability to withstand operational risk-related events that could cause significant operational failures or wide-scale disruptions in financial markets. The principles contained in the BCBS paper must not be considered in isolation, but rather be integrated into a bank’s enterprise-wide risk management framework. The Prudential Authority (PA) published Directive 10 of 2021 on 14 December 2021. Based on developments in the local and international regulatory environment as well as the need for alignment on implementation timelines with other jurisdictions, the PA decided to extend the previously determined date for compliance. This directive serves to direct banks to consider the adequacy and robustness of the banks’ current policies, processes and practices related to operational resilience, against the best practices contained in the BCBS paper on principles for operational resilience. 1."
+    ],
+    [
+     "64983ac5b9a826f9e74af5ebf50d019daf25147b023f008852239015a0b3dac7",
+     "sarb_d10_2021_operational_resilience",
+     1,
+     1,
+     "370 Helen Joseph Street  Pretoria  0002",
+     "sustain core business services. in march 2021 the basel committee on banking supervision ( bcbs ) issued a paper on principles for operational resilience1. The principles aim to strengthen banks' ability to withstand operational risk-related events that could cause significant operational failures or wide-scale disruptions in financial markets. The principles contained in the BCBS paper must not be considered in isolation, but rather be consolidated as part of a bank’s enterprise-wide risk management framework. This directive serves to direct banks to consider the adequacy and robustness of the banks’ current policies, processes and practices related to operational resilience, against the best practices contained in the BCBS paper on principles for operational resilience. 1. Introduction 1.1 In March 2021, the BCBS issued a paper on principles for operational resilience. for operational resilience. 1. introduction 1. 1 in march 2021, the bcbs issued a paper on principles for operational resilience."
+    ],
+    [
+     "b008f680414e844bb89b902865714f195c509678aee812f94750c389e6af68b4",
+     "sarb_d4_2023_operational_resilience",
+     2,
+     2,
+     "1.2.7 resilient information and communication technology (ICT), including cyber security.",
+     "1.3 The principles are required to be applied on a consolidated basis and also form an integral part of a bank’s forward-looking operational resilience approach in line with its operational risk appetite and tolerance for disruption. 1.4 The PA published Directive 10 of 2021 on 14 December 2021, stating that banks must comply with the respective requirements envisaged in the directive within 18 months of the publication date, which effectively translated to 30 June 2023.Based on developments in the local and international regulatory environment as well as the need for alignment on implementation timelines with other jurisdictions, the PA has decided to extend the previously determined date for compliance. 1.5 Regulation 39 of the Regulations relating to Banks (the Regulations) requires all banks to establish and maintain a robust process of corporate governance that is consistent with the nature, complexity and risk inherent in the bank's on-balance sheet and off-balance sheet activities and that responds to changes in the bank's environment and conditions. This process includes the maintenance of effective risk management and capital management by the bank."
+    ]
+   ],
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [
+    {
+     "doc_id": "sarb_d10_2021_operational_resilience",
+     "page": 3,
+     "verified": true,
+     "section_ref": "para 1"
+    },
+    {
+     "doc_id": "sarb_d4_2023_operational_resilience",
+     "page": 2,
+     "verified": true,
+     "section_ref": "para 1.2.7"
+    }
+   ]
+  },
+  {
+   "id": "d22",
+   "raw_model_output": "I don't have a source for that.",
+   "contexts": [
+    [
+     "71c789b1b62edd3ad9e395f524c3ef67e8d1da9fc281a479751798f002cd4f3b",
+     "regs_banks_2012",
+     65,
+     65,
+     "476",
+     "Means advances in respect of which the bank raised a specific impairment, and shall include any advance or restructured credit exposures subject to amended terms, conditions or concessions that are not formalised in writing. 67"
+    ],
+    [
+     "01516a23da4d12de665c8c820d8a83fee80006d6b2aeb633c217ad33103a8915",
+     "sarb_d3_2023_accounting_provisions_ifrs9",
+     1,
+     1,
+     "370 Helen Joseph Street  Pretoria  0002",
+     "##s given that ias 39 impairments were based on an incurred loss model which required a loss event to occur prior to a provision being raised. under"
+    ],
+    [
+     "e3218de498a89007fa0affcf6af043d7794022845ee4c281753ab1a73404a07f",
+     "ifrs9_project_summary_2014",
+     14,
+     14,
+     "improve ﬁ nancial reporting?",
+     ". the complexity of ias 39, which used multiple impairment models for ﬁ nancial instruments, was also identiﬁ ed as a concern."
+    ],
+    [
+     "23d0c1b8f10383c1ae8db037d005a9a914c190b7fc3fe483b55391ce2d22f849",
+     "ifrs9_issued_2021",
+     56,
+     56,
+     "and 5)",
+     "requirements in this standard to interim periods prior to the date of initial application if it is impracticable ( as defined in ias 8 ). Impairment (Section 5.5) An entity shall apply the impairment requirements in Section 5.5 retrospectively in accordance with IAS 8 subject to paragraphs 7.2.15 and 7.2.18–7.2.20. At the date of initial application, an entity shall use reasonable and supportable information that is available without undue cost or effort to determine the credit risk at the date that a financial instrument was initially recognised (or for loan commitments and financial guarantee contracts at the date that the entity became a party to the irrevocable commitment in accordance with paragraph 5.5.6) and compare that to the credit risk at the date of initial application of this Standard."
+    ],
+    [
+     "febe93483f668bfe4ebd3d644a6a1088951b33afa696ca33e127cfea02b9f7a4",
+     "nca_act_34_2005",
+     1,
+     1,
+     "NO. 34 OF 2005",
+     "2017 pending amendment by protection of personal information act, no. 4 of 2013 ( provisions mentioned below not yet proclaimed ) national credit amendment act, no. 7 of 2019 ACT To promote a fair and non­discriminatory marketplace for access to consumer credit and for that purpose to provide for the general regulation of consumer credit and improved standards of consumer information; to promote black economic empowerment and ownership within the consumer credit industry; to prohibit certain unfair credit and credit­marketing practices; to promote responsible credit granting and use and for that purpose to prohibit reckless credit granting; to provide for debt re­organisation in cases of over­indebtedness; to regulate credit information; to provide for registration of credit bureaux, credit providers and debt counselling services; to establish national norms and standards relating to consumer credit; to promote a consistent enforcement framework relating to consumer credit; to establish the National Credit Regulator and the National Consumer Tribunal; to repeal the Usury Act, 1968, and the Credit Agreements Act, 1980; and to provide for related incidental matters."
+    ]
+   ],
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": []
+  },
+  {
+   "id": "d28",
+   "raw_model_output": "I don't have a source for that.",
+   "contexts": [
+    [
+     "b008f680414e844bb89b902865714f195c509678aee812f94750c389e6af68b4",
+     "sarb_d4_2023_operational_resilience",
+     2,
+     2,
+     "1.2.7 resilient information and communication technology (ICT), including cyber security.",
+     "1.3 The principles are required to be applied on a consolidated basis and also form an integral part of a bank’s forward-looking operational resilience approach in line with its operational risk appetite and tolerance for disruption. 1.4 The PA published Directive 10 of 2021 on 14 December 2021, stating that banks must comply with the respective requirements envisaged in the directive within 18 months of the publication date, which effectively translated to 30 June 2023.Based on developments in the local and international regulatory environment as well as the need for alignment on implementation timelines with other jurisdictions, the PA has decided to extend the previously determined date for compliance. 1.5 Regulation 39 of the Regulations relating to Banks (the Regulations) requires all banks to establish and maintain a robust process of corporate governance that is consistent with the nature, complexity and risk inherent in the bank's on-balance sheet and off-balance sheet activities and that responds to changes in the bank's environment and conditions. This process includes the maintenance of effective risk management and capital management by the bank."
+    ],
+    [
+     "5eb6ff635e9aa031f18d7aa54dbcc620530350d49b9f8fe91e8ba200c84d15c7",
+     "sarb_d4_2023_operational_resilience",
+     3,
+     3,
+     "2.1.5 Banks must consider whether its operational resilience approach is appropriately",
+     "banks act 94 of 1990, banks are hereby directed as follows : and practices against the principles for operational resilience issued by the bcbs. approach that is aligned with the bank's risk appetite, based on the nature, size and complexity of its operations. either through internal resources or by means of outsourcing/third party agreements without undue delay. dependency management must be implemented consistently within the bank."
+    ],
+    [
+     "1da502e83fd50860da2fcdf3557f73eb1e3ec95ddcf8c94905852c6728d35263",
+     "sarb_d10_2021_operational_resilience",
+     2,
+     2,
+     "1 Available online at https://www.bis.org/bcbs/publ/d516.pdf",
+     "and that responds to changes in the bank ' s environment and conditions. this process includes the maintenance of effective risk management and capital management by the bank. In order to achieve the objective relating to the maintenance of effective risk management and capital management, every bank is required to have in place comprehensive risk management processes, practices and procedures, and board-approved policies. 1.5 Consequently, operational resilience must form an integral part of the enterprise risk management processes, practices and procedures, and board-approved policies of banks. 1.6 Regulation 38(4) of the Regulations states that when the Prudential Authority is of the opinion that a bank’s policies, processes and procedures relating to operational resilience are inadequate, the PA, among other things, may require the said bank to: 1.6.1 maintain additional capital, calculated in such a manner and subject to such conditions as may be specified in writing by the PA; or 1.6.2 duly align the bank’s operational resilience policies, processes, or procedures with the bank’s relevant exposure to risk."
+    ],
+    [
+     "ec056c40bd9b76714697095b87c34c18db9d14a55b762be6118248fc156c8d81",
+     "sarb_d4_2023_operational_resilience",
+     2,
+     2,
+     "1.2.7 resilient information and communication technology (ICT), including cyber security.",
+     "and that responds to changes in the bank ' s environment and conditions. this process includes the maintenance of effective risk management and capital management by the bank. In order to achieve the objective relating to the maintenance of effective risk management and capital management, every bank is required to have in place comprehensive risk management processes, practices and procedures, and board-approved policies. 1.6 Consequently, operational resilience must form an integral part of the enterprise risk management processes, practices and procedures, and board-approved policies of banks. 1.7 Regulation 38(4) of the Regulations states that when the PA is of the opinion that a bank’s policies, processes and procedures relating to operational resilience are inadequate, the PA, among other things, may require the said bank to:"
+    ],
+    [
+     "21431e869babc6797ccc633ccdfcfec417ffa18cdd26f79964c913e5802335cd",
+     "sarb_d10_2021_operational_resilience",
+     3,
+     3,
+     "1 Available online at https://www.bis.org/bcbs/publ/d516.pdf",
+     "3 2. Directive 2.1 Based on the aforesaid, and in accordance with the provisions of section 6(6) of the Banks Act 94 of 1990, banks are hereby directed as follows: 2.1.1 Banks must assess the adequacy and robustness of their current policies, processes and practices against the principles for operational resilience issued by the BCBS. 2.1.2 All operational resilience controls implemented by the bank must follow a risk­ based approach that is aligned with the bank's risk appetite, based on the nature, size and complexity of its operations. 2.1.3 Banks must ensure that all principles contained in the BCBS paper are addressed either through internal resources or by means of outsourcing/third party agreements without undue delay. 2.1.4 Existing risk management frameworks, business continuity plans and third-party dependency management must be implemented consistently within the bank. 2.1.5 Banks must consider whether its operational resilience approach is appropriately harmonised with the stated actions, organisational mappings, and definitions of critical functions and critical shared services contained in its recovery and resolution plans."
+    ]
+   ],
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": []
+  },
+  {
+   "id": "d32",
+   "raw_model_output": "I don't have a source for that.",
+   "contexts": [
+    [
+     "c47ba82a72e1c17f6d1e5f67cbf5f4d57f75df3cf22d78ca7afbee6541d952fc",
+     "ncr_guideline_feb_2026_clearance_certificates",
+     2,
+     2,
+     "2026",
+     "1 1. BACKGROUND Section 71(4) of the National Credit Act (“the NCA”) requires a debt counsellor, within (7) seven days of issuing a clearance certificate, to file a certified copy thereof with all credit bureaus. Such filing must be accompanied by letters issued by the relevant credit providers providing confirmation that such accounts have been paid up or have become uncollectable the by operation of law. To enhance security of consumers’ data, compliance with the Protection of Personal Information Act 4 of 2013 (“POPIA”), and standardising processes, the National Credit Regulator (“the NCR”) has designated the Credit Bureau Association (“the CBA”) to provide and maintain an authentication platform to be used by debt counsellors for the filing of the certified clearance certificates and supporting documents. Debt counsellors have already been onboarded and trained on this authentication platform through various guidelines, circulars and training webinars conducted by the NCR."
+    ],
+    [
+     "a45df606b9ca0d5ca14edc4b6c9c8f98a247b89540a835aa8184b879b769e962",
+     "nca_regs_2006",
+     17,
+     17,
+     "5 years",
+     "of a credit agreement entered into between the consumer and the credit provider ; developing a credit scoring system by a credit provider or credit bureau ; ( 5 ) should a report be required for a purpose set out in subregulation ( 4 ) ( c ) or ( e ) to ( g ), the consent of the consumer must be obtained prior to the report being requested ; ( 4 ) ( c ) or ( e ) to ( g ), the consent of the consumer must be obtained prior to the report being requested ;"
+    ],
+    [
+     "d1bbc2eed9f8881695c10e09451f02ff7f922beecd60d8739f582f346709de89",
+     "nca_regs_2006",
+     18,
+     18,
+     "5 years",
+     "28864 ( 6 ) in addition to the consumer credit information contemplated in section 70 ( 1 ) of the act, a registered credit bureau may receive, compile and report only the following information in respect of a consumer : ( a ) ( b ) payment history and status in respect of continuous services ; information that is relevant for the purpose of credit f? aud detection and prevention ; payments made by a consumer in respect of a debt, where the debt has been ceded or sold by the credit provider to another party ; information that is not related to and not intended for the purpose of providing consumer credit, provided that the consumer ’ s consent has been obtained to use the information for such purpose and to submit, compile and report such information ; ( c ) ( d ) ( 7 ) in addition to the sources of consumer credit information contemplated in section 70 ( 2 ) of the act, a registered credit bureau may receive consumer credit information in respect of a consumer fiom any person, provided the originating source of the information is one of the following persons : ( a ) ( b ) ( c ) ( d ) an organ of state, a court or judicial officer ; any provider of a"
+    ],
+    [
+     "aaa947524ec1c71a0fad29ce70ce97650566ace960d2253221b029304a90de0e",
+     "nca_act_34_2005",
+     46,
+     46,
+     "70.   Credit bureau information.—(1)  In this section, “consumer credit information” means information",
+     "’ s name, date of birth, identity number, marital status and family relationships, past and current addresses and other contact details, and related matters. (2)  A registered credit bureau must— accept the filing of consumer credit information from any credit provider on payment of the credit bureau’s filing fee, if any; (aA) accept without charge the filing of consumer credit information from the National Credit Regulator related to a debt intervention application, the status of such application and any order granted in respect of such application; (Pending amendment: Para. (aA) to be inserted by s. 7 (b) of Act No."
+    ],
+    [
+     "56394f3e52e3b40b2d35f65a986404c40cfaece28d2d096341156aafd6b8af09",
+     "nca_act_34_2005",
+     37,
+     37,
+     "52.   Certificate, validity and public notice of registration.—(1)  Upon registering an applicant, the National",
+     "registered activities, in the prescribed manner and form ; and ( f ) file any prescribed reports with the national credit regulator in the prescribed manner and form. (6)  In addition to the requirements of subsection (5), a registered credit bureau must submit to the National Credit Regulator an annual compliance report, certified by an independent auditor, addressing the following matters — Accuracy of data received and reported by it; incidence of complaints and complaint resolution; adequacy of procedures employed by it to ensure— (i) the accuracy of data received and reported by it; (ii) that confidentiality of data is maintained and all relevant legislation concerning the privacy and confidentiality of information is complied with; and (iii) that complaints are resolved; and any other related or similar matters prescribed by regulation."
+    ]
+   ],
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": []
+  },
+  {
+   "id": "d33",
+   "raw_model_output": "I don't have a source for that.",
+   "contexts": [
+    [
+     "335d3c101de3373209e42d9bb8bd944e57c904af6d69c1a550d4e6d0087046fc",
+     "nca_act_34_2005",
+     104,
+     104,
+     "171.   Regulations.—(1)  The Minister—",
+     "being less than the repurchase rate plus such percentage as is indicated in this regard in the industry guidelines contemplated on subparagraph ( bb ), w h e r e t h e repurchase rate is the interest rate set by the monetary policy committee of the south african reserve bank as its policy rate and reflects the rate at which commercial banks borrow rands from it as the central bank of the republic of south africa, thereby serving as benchmark for bank lending in the market ; and ( dd ) require the magistrate ’ s court and tribunal to first apply incremental and proportional reduction when the maximum rate of interest, fees or other charges are considered ; ( pending amendment : para."
+    ],
+    [
+     "24f0470ef37de197e0c68738495daba0d900ecaff2bbd07d76bfd733a12b3b3a",
+     "fsr_act_9_2017",
+     61,
+     62,
+     "27. (1) The ﬁnancial sector regulators and the Reserve Bank must, not later than six",
+     "61 45 50 (2) The Reserve Bank must, when exercising its powers in terms of this Chapter, take into account— any views expressed and any information reported by the ﬁnancial sector regulators; and any recommendations of the Financial Stability Oversight Committee. Memoranda of understanding relating to ﬁnancial stability"
+    ],
+    [
+     "279614e12a05122e8273b83155b30bb14bb1098c7ab58e0dd4c26016527c75e6",
+     "nca_act_34_2005",
+     73,
+     73,
+     "105.   Maximum rates of interest, fees and charges.—(1)  The Minister, after consulting the National Credit",
+     "rate as contemplated in section 103 ( 4 ), the new reference rate. ( date of commencement of s. 104 : 1 june, 2007. ) Regulator, may prescribe a method for calculating—"
+    ],
+    [
+     "5ca98b4e0367dcff6737d3c25a57fb6d15bb3978ce60be184ac9a2baee95a180",
+     "fsr_act_9_2017",
+     102,
+     102,
+     "102    No. 41060",
+     "(2) The ﬁnancial sector regulators and the Reserve Bank must, at least annually as part of their annual reports, or on request, report to the Minister, the Cabinet member responsible for administering the National Credit Act and the National Assembly on measures taken to co-operate and collaborate with each other. Memoranda of understanding member responsible for administering the national credit act and the national assembly on measures taken to co - operate and collaborate with each other. memoranda of understanding"
+    ],
+    [
+     "655889d3310bd410821073c873e94aba4b377544dc9c8996d6bff0c899e3c029",
+     "nca_act_34_2005",
+     13,
+     13,
+     "90 of 1989);",
+     ". 102 of 1996 ) ; “ south african reserve bank ” has the meaning set out in the south african reserve bank act, 1989 ( act no."
+    ]
+   ],
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": []
+  },
+  {
+   "id": "d34",
+   "raw_model_output": "I don't have a source for that.",
+   "contexts": [
+    [
+     "859ac0182f8615a6354b35da6e80bcfcee859135d3aafdc6f4701428503568e9",
+     "fsr_act_9_2017",
+     330,
+     330,
+     "10. The amendment of section 26—",
+     "will amount to [ 25 ] 15 per cent or more of the total nominal value of all of the issued shares of the long - term insurer concerned ; 326 to [ 25 ] 15 per cent or more of the total nominal value of all of the issued shares of the long - term insurer concerned ; 326"
+    ],
+    [
+     "e8550728fbc7e03fbe85122fb86d594c03c9ddb77dd141f055b4a5d41da7492b",
+     "fsca_rdr_2014",
+     71,
+     71,
+     "REFERENCE MATERIAL",
+     "industry, which was aimed at raising the standards and professionalism of financial advisers to safeguard the interests of retail clients ; therefore it focused on the faa. The main FAIR recommendations which have been accepted by MAS and are gradually being made the subject of MAS Guidelines cover the following topics (in summary): (i) a balanced scorecard remuneration framework to reward provision of good quality advice; (ii) a requirement that payout commissions be spread over a minimum of six years or the premium payment period (whichever shorter); (iii) a 55% cap on first year commissions; (iv) a requirement that financial advisers meet higher academic requirements; (v) a cap on revenue for non-financial advising related activities; (vi) additional safeguards to ensure transparency of products (e.g. bundled insurance products, trailer fees for collective investment schemes etc.); (vii) a requirement for insurers to participate in a web aggregator to enhance comparability among life insurance products; and (viii) a requirement for life insurance companies catering to the retail market to make available a set of “basic insurance” products through a direct channel at a nominal administration charge."
+    ],
+    [
+     "7f078e1053769a3b8f7f487da810ffad1ae34c29b0594a84c90ca890d2d41b25",
+     "sarb_circular_19_2004_capital_hybrid_instruments",
+     6,
+     6,
+     "",
+     "the core principles for effective banking supervision ( “ core principles ” ), which have become the most authoritative global standard for prudential regulation and supervision. Principle 6 of the Core Principles states that supervisors of banks have to set minimum capital-adequacy requirements for banks that reflect the risks that banks undertake and that supervisors have to define the components of capital, bearing in mind the ability of the various types of instruments to absorb losses. For internationally active banks, the requirements may not be less than those established in the 1988 Capital Accord. One of the criteria listed under principle 6 of the Core Principles for measuring the compliance of a country with the said principle is that the capital-adequacy requirements have to take into account the conditions under which the banking system operates and that the minimum requirements may be higher than the requirements specified in the 1988 Capital Accord. to take into account the conditions under which the banking system operates and that the minimum requirements may be higher than the requirements specified in the 1988 capital accord."
+    ],
+    [
+     "ca832a9ef2806392e0cc4d4c68ee162030a6417cdda491a7fc0ffbe989b737d5",
+     "fsca_rdr_2014",
+     66,
+     67,
+     "71  The final name of this statute is still to be determined",
+     "term insurance policies amendments to the insurance laws regulations ( under the short - term insurance act, 1998 ) vv conditions for short - term insurance cover cancellations amendments to the policyholder protection rules issued under the short - term insurance act, 1998 zz binder fees payable to multi - tied intermediaries to be capped amendments to the insurance laws regulations and determination by the registrar aaa commission cap for credit life insurance schemes with “ administrative work ” to be removed amendments to the insurance laws regulations ( under the long - term insurance act, 1998 ) bbb outsourcing fees for issuing insurance policy documents amendments to directive 159 and / or amendments to board notice 114 of 2014 : proposed governance and risk management framework for insurers ( 26 september 2014 ) amendments to directive 159 and / or amendments to board notice 114 of 2014 : proposed governance and risk management framework for insurers ( 26 september 2014 ) 65"
+    ],
+    [
+     "84d6c5bae9135c909eee88848fcee2f567223054a1fd2415ed49351d3b00f6cf",
+     "fsca_rdr_2014",
+     55,
+     55,
+     "CHAPTER 4: REGULATORY POLICY PROPOSALS",
+     "53 Proposal NN: Remuneration for selling and servicing life risk policies – mix of up-front commission and as-and-when service fees Subject to a differentiated approach for the low-income sector (see below), it is proposed that 50% of the remuneration payable by long-term insurers in respect of life risk policies may be paid up-front as a sales commission, and that the remaining 50% be payable on an as-and-when basis to provide for ongoing servicing and maintenance of the risk policy. The following additional requirements – to be expanded in more detailed conduct standards – will support this model: O Both the level and structure of commission and service fee payments by life insurers will continue to be subject to regulated caps and other regulatory requirements. Further technical work and consultation will be undertaken to determine what the new maximum commission and service fee levels should be. O The up-front commission component will be payable at the start of the policy, not split between the first and second year."
+    ]
+   ],
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": []
+  },
+  {
+   "id": "d35",
+   "raw_model_output": "I don't have a source for that.",
+   "contexts": [
+    [
+     "5d869751a715cd645a2034cda27693847a38f38a422be36285442ad7b6d11f93",
+     "fsr_act_9_2017",
+     236,
+     236,
+     "236    No. 41060",
+     "which the information shall be made available ; and ( ii ) use all reasonable means to oppose the compulsion to disclose, and otherwise to protect the information. (5) When sharing or disclosing information in terms of subsection (3) or (4), a ﬁnancial sector regulator or the Reserve Bank must comply with the requirements in those subsections, and a contravention of those requirements constitutes the sharing or disclosure of information in a manner that is not authorised, as referred to in section 272. (6) (a) A ﬁnancial sector regulator or the Reserve Bank must have in place written processes and procedures that— (i) clearly specify which officials and employees in the ﬁnancial sector regulator or the Reserve Bank are authorised to share or disclose information in terms of this section; and 234 45 50 55 60 in the ﬁnancial sector regulator or the reserve bank are authorised to share or disclose information in terms of this section ; and 234 45 50 55 60"
+    ],
+    [
+     "fce7c4207e2b090cf9f1a4fefe84683062b4507dd8ae2bbfa2ae5e8dadf8cc1f",
+     "nca_regs_2006",
+     19,
+     20,
+     "C",
+     "the filing of the challenge. ( 3 ) if the information is removed in terms of section 72 ( 3 ) ( b ), the credit bureau must the consumer and all parties to whom the information has been reported in the previous 20 business days as well as all other registered credit bureaux. 22 No. 28864 GOVERNMENT GAZETTE, 31 MAY 2006, Part Credit marketing practices Required content for advertising practices 21.(1) If an advertisement refers only to the availability of credit, and no reference is made to costs, interest rate or monthly instalment, no further disclosure of cost of credit, interest rate or monthly repayment is required. (2) If an advertisement discloses only the interest rate or the maximum and minimum rates where a range is applicable and no reference is made to other costs of credit, no further information has to be disclosed, but the advertisement must indicate that an initiation fee and service fee will be charged, if applicable; If an advertisement, other than an advertisement referred to in sub-regulation (2), discloses a monthly instalment, or any other cost of credit, the advertisement must also disclose the following: (a) instalment amount;"
+    ],
+    [
+     "3647ca74c318e1c53b73825446755226de79306a0fe0f9f23c6f16cc15ee4920",
+     "fsca_rdr_2014",
+     74,
+     74,
+     "2.2 Product disclosure rules",
+     "Product Disclosure Statement (PDS) requirements apply to financial products provided to retail clients when personal advice is provided and there is a recommendation to acquire a financial product. The PDS must include specified information (e.g. re benefits, features, costs, risks, commissions, dispute resolution) as well as information a person would reasonably require for the purpose of making a decision, as a retail client, whether to acquire the financial product. Exceptions apply e.g. for basic deposit products. A financial product is broadly defined to include (in summary) a facility through which a person makes a financial investment (such as interests in a managed investment scheme), manages a financial risk (such as insurance), or makes non-cash payments. Numerous exemptions apply (such as for credit, which is separately regulated). CA: Part 7.9, Division 2 Product Disclosure Statements. ASIC RG 168: Disclosure: Product Disclosure Statements (and other disclosure obligations). Pre-contractual, contractual and ongoing disclosure requirements apply to consumer credit contracts. NCCC: See especially, Part 2, Division 1 Negotiating and Making a Credit Contract and Division 5 Credit Provider’s Obligation to Account."
+    ],
+    [
+     "bf1bf0fdcb928c7ac7a9ea4e646fb58c32f28eaab4326ee1eacc53358c944861",
+     "nca_regs_2006",
+     20,
+     21,
+     ".",
+     "regulation ( 3 ) must also be disclosed. any of the following statements or phrases, or any wording that has substantially the same meaning, may not (a) “no credit checks require, (b) “blacklisted consumers welcome”; (c) “freecredit” If any of the following qualitative statements to the cost of credit or any wording that has substantially the same meaning, is made, total amount of all instalments, including interest, fees and compulsory insurance; residual or final amount payable (if any) No. 28864 23 (a) “cheap credit”; (b) “affordable credit”; (c) “low cost credit” specific information must be disclosed on the cost of credit, as per sub-regulation (2) or sub-regulation (3)."
+    ],
+    [
+     "4477952021cb205e1668b8bfcd3d04f0f263b0404a3cd2d0f9131d26ffe208e8",
+     "fsca_cs3_2020_banks",
+     14,
+     14,
+     "",
+     "Disclosures (1) Before, during and after the conclusion of a contract for the provision of a financial product or a financial service, a bank must take reasonable steps to ensure that a financial customer is aware of all relevant facts that could reasonably be expected to influence the financial customer's decisions relating to the financial product or financial service, Including - (a) _ abalanced presentation of benefits and risks In relation to the financial product or financial service; (b) all estimated costs to the financial customer in relation to the supply of that financial product or financial service, including the total expected or actual costs as may be appropriate, and, for the same period, the total expected, or actual returns earned by the financial customer In relation to the supply of that financial product orfinancial service as may be appropriate; (c) _ contractual obligations of the financial customer and the bank; (d) the consequences for each party should there be a breach of contract; and (e) recourse options available to the financial customer in the case of a dispute."
+    ]
+   ],
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": []
+  },
+  {
+   "id": "d36",
+   "raw_model_output": "I don't have a source for that.",
+   "contexts": [
+    [
+     "e5c72f5991522800eab2e4be160d28c45b198bb8388a17f894f8e99b57c84673",
+     "sarb_circular_6_2004_basel_ii_update",
+     1,
+     1,
+     "",
+     "line with the scope of application adopted by this office, and which was communicated in our consultative document ( circular 2 / 2004 ) in february this year. This position of the Basel Committee will accordingly have no material impact on banks in South Africa, except that banks wanting to adopt the advanced approaches (subject to minimum requirements being met) will only be able to do so (on a case-by-case basis) after year-end 2007, instead of the initially proposed date of year-end 2006. This Office supports the Basel Committee’s decision and believes it prudent to adopt a phased approach to the implementation of Basel II. c. The Basel Committee reached agreement on several outstanding technical issues, the details of which are attached, together with the Basel Committee’s press release."
+    ],
+    [
+     "bb2cce8c91312917deed93f48c0b56a20c787e0661e13e1d11da279f58f7373e",
+     "sarb_c1_2026_status_of_circulars",
+     2,
+     2,
+     "2.18  Banks Act Circular 4/2025",
+     "capital buffer for south africa based on the basel iii framework 2. 9 banks act circular 4 / 2016 matters relating to the implementation of the capital conservation buffer Matters of interpretation relating to the liquidity coverage ratio Matters related to specified minority interests, that is, non-controlling interests, in shares and/or instruments qualifying as capital Requirements related to a due diligence audit of the financial condition of a bank Classification of the Land and Agricultural Development Bank of South Africa (Land Bank) bills under the liquidity coverage ratio framework Disclosure of capital-related matters Matters related to the fitness and propriety assessment Eligibility of a Sukuk bond issuance the granularity for retail exposures Basel III post-crisis reforms reporting"
+    ],
+    [
+     "3c2c7747472f69a517b8a5b078fbc7ec7e2c82a08547fc91ee426d64ecfd8928",
+     "sarb_d3_2023_accounting_provisions_ifrs9",
+     2,
+     2,
+     "370 Helen Joseph Street  Pretoria  0002",
+     "ifrs 9, it was important for regulatory purposes to define which provisions should be regarded as specific provisions ( sp ) and general provisions ( gp ). Given that a distinction between GP and SP did not exist under the accounting frameworks, the Basel Committee on Banking Supervision (BCBS) recommended that regulatory authorities provide guidance to banks on how they should classify ECL provisions as either GP or SP, to ensure the consistency of categorisation by banks within their jurisdictions. 1.6 The Prudential Authority (PA), through its Directive 5/2017, provided clarity to banks conducting business in South Africa on how to classify ECL provisions as GP or SP. Further, the directive clarified the phase-in period of the day-one impact on common equity tier 1 (CET1) capital, calculated once at the point of transition, and other consequential adjustments. 1.7 The transitional arrangements were implemented to allow banks who elected such to rebuild capital resources following the initial negative impact arising from the introduction of IFRS 9 through increased impairments. These arrangements were in place for three years."
+    ],
+    [
+     "8b7c9637fc618bbd26eb0956394c427ea2a1fb491fcf18c0041805bc912c9aff",
+     "sarb_c1_2026_status_of_circulars",
+     5,
+     5,
+     "3.40 Directive 5/2022",
+     "tier 1 capital instruments that contain contingent ‘ must - pay ’ clauses externally facilitated liquidity stress simulations capital framework for south africa based on the basel iii framework Matters related to the use of credit risk models to calculate minimum required capital and reserve funds for specialised lending exposures relating to project finance portfolios Principles for the sound management of operational risk Liquidity coverage ratio: scope of application and matters related to calculation and disclosure Requirements for conducting the business of a representative office of a foreign banking institution conducting business in South Africa, and of a representative office of a South African bank conducting business outside South Africa Requirement to submit anti-money laundering and counterfinancing of terrorism risk returns to the Prudential Authority on a periodic basis Matters relating to liquidity risk"
+    ],
+    [
+     "b143b84b951ba65da4acfbfc89f3d1e427c63db5e4f45c59b765dd89e3d175f4",
+     "sarb_d8_2023_threshold_amounts",
+     1,
+     1,
+     "370 Helen Joseph Street  Pretoria  0002",
+     ", the basel committee on banking supervision ( bcbs ) has issued various new or revised frameworks or requirements during recent years for implementation by member jurisdictions. In this regard, on 7 December 2017, the BCBS issued the revised standardised approach (STA) and internal ratings-based (IRB) approach for credit risk. In September 2022 the PA issued proposed amendments to the Regulations relating to Banks (Regulations) to incorporate the respective requirements specified in the revised STA and IRB approaches for credit risk issued by the BCBS into the Regulations. The PA subsequently issued Guidance 3 of 2023 setting out the implementation dates of the outstanding regulatory reforms in South Africa. This directive must be implemented in accordance with provisions of the finalised Regulations, as and when amended. Any reference to Regulations must be interpreted as a reference to the finalised Regulations. Among other matters, the revisions to the STA and IRB approaches include new and adjusted threshold amounts used in the classification of credit risk exposures, the calculation of the minimum required capital and reserve funds, and regulatory reporting."
+    ]
+   ],
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": []
+  },
+  {
+   "id": "d37",
+   "raw_model_output": "I don't have a source for that.",
+   "contexts": [
+    [
+     "9f28eb08468614b23077c08b77826ec8ae4e81cdcf72b6a947770c0cfcf61f68",
+     "nca_regs_2006",
+     48,
+     48,
+     "-",
+     "7 ) pertaining to issues of disputed information. documents fiom the entity responsible for disputed ^ dormation ; documents pertaining to the investigation of the dispute ; (ii) (a) (b) maintained in paper or electronic format; readily accessible for a period of three years, subject to regulation 56. period of five business days after a request by the National Credit Regulator. Act (a) that appointment does not absolve that person of any responsibility to maintain the records in accordance with the Act; and that person must ensure that any records maintained by 'the third party will be available without any undue delay. (b) (5) All records must be kept for a period of three years fiom the earlier of the date on which the registrant created, signed or received the document."
+    ],
+    [
+     "0339dd60c96b2c99b5acb8ffda3feb6e1f76ba5271bffd8bae4de01df2ce3751",
+     "nca_regs_2006",
+     50,
+     51,
+     "In addition to any registers that must be kept in terms of the Act and the",
+     "d ) ( 2 ) the register must be maintained in written or electronic format, provided that the format is accessible for inspection by the national credit regulator. , No. 28864 53 (a) retain the records relating to that agent for a period of not less that 12 months fiom the date of termination of appointment; (b) Other Registers to be kept by Registrants 60. information specified in regulation 55, a registrant must maintain the following information relating to its registered activities in a register’ which register may be kept in electronic format: (1) Debt Counsellors, in respect of each consumer: (a) (b) consumer’s full names and surname; consumer’s identity number or, if the consumer does not have an identity number, passport number and date of birth; date of application for debt review; date of rejection letter issued (if applicable);"
+    ],
+    [
+     "1bb1b11c37e3c9a0f5c925c1e13da5d1e9c085a7a75a8011b050071a15de5bd5",
+     "regs_banks_2012",
+     16,
+     16,
+     "---111.11111111",
+     "statement showing the relevant deficiency(ies), for every day on which a deficiency existed, shall accompany this return.) B. DECLARATION IN RESPECT OF RELATED MATTERS We, the undersigned, hereby declare as follows: 1. INVESTMENTS BY CONTROLLING COMPANIES* (* Delete when not relevant) The abovementioned controlling company has at all times during the reporting period complied with the provisions of section 50 of the Act. 2. FINANCIAL INTELLIGENCE CENTRE ACT, 2001 (FICA) This bank/controlling company has to date complied with and will continue to comply with(I) any relevant requirement contained in the Financial Intelligence Centre Act, 2001 (Act No. 38 of 2001), as amended; and (ii) any relevant requirement contained in the Regulations that may be issued from time to time in terms of the aforesaid Act. (When the bank/controlling company failed to comply with any relevant requirement, the declaration shall be qualified, and a statement indicating the relevant details of the failure to comply shall accompany this retum.) C."
+    ],
+    [
+     "414ff4461d2e118a9c6c14a973b58a99721b72baa83e04f4f6091311718268db",
+     "nca_regs_2006",
+     14,
+     15,
+     "InJotnwion",
+     "all information in cases where no such financid statements are required by law, the statistical returns as set out in regulation 64. ( c ) No.28864 17 Description complaints Number of enquiries made on a consumer's record, including the name of the entity and a contact person if available Factual information pertaining to the payment profile of the consumer Qualitative information on consumer behaviour As per section 86 of the Act, an order 3vil court judgments including default udgment Period for which retained fiom date of commencement of the event 1 Year Until a clearance certificate is issued The earlier of rescinded by a court or 1. 2. 3. 4. Details and results of disputes lodged by consumers Enquiries Payment Profile Adverse information Retention periods for credit bureau information"
+    ],
+    [
+     "5a4ca2c12dc1a3a63e38ffcd6a40392888356809b9cd9fa9847cfc0657136e2d",
+     "nca_regs_2006",
+     46,
+     47,
+     "(i)",
+     ", whether by the national credit regulator in terms of section 140 ( 1 ) of the act or by a complainant in terms of subsection 141 ( No. 28864 49 m Records of registered activities to be retained by registranQ 1 , 55.(1) In addition to any records that must be kept in terms of the Act, a registrant must mahtab the following records relating to its registered activities, which records may be kept in electronic format, (a) Debt Counsellors, in respect of each consumer"
+    ]
+   ],
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": []
+  }
+ ]
+}

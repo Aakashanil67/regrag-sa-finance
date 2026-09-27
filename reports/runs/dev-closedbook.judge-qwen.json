@@ -1,0 +1,250 @@
+{
+ "run": "dev-closedbook.json",
+ "judge": "qwen",
+ "model": "qwen2.5:7b",
+ "summary": {
+  "answerable": 34,
+  "correct": 12,
+  "partial": 10,
+  "incorrect": 6,
+  "refused": 6,
+  "unparsed": 0,
+  "support": {
+   "supported": 0,
+   "partial": 0,
+   "unsupported": 0,
+   "unparsed": 0
+  },
+  "answered_unanswerable": 5
+ },
+ "items": [
+  {
+   "id": "d01",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately summarizes the key points from the reference answer without contradiction."
+  },
+  {
+   "id": "d02",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "The candidate misses the part about reporting to the National Credit Regulator."
+  },
+  {
+   "id": "d03",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the reference answer's key facts."
+  },
+  {
+   "id": "d04",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the key points of the reference answer."
+  },
+  {
+   "id": "d05",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer fully covers the key points mentioned in the reference answer."
+  },
+  {
+   "id": "d06",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts provided in the reference answer and provides additional relevant details."
+  },
+  {
+   "id": "d07",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "The candidate answer includes the notification requirement but specifies a time frame not mentioned in the reference answer."
+  },
+  {
+   "id": "d08",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "It mentions the National Credit Regulator’s DCS but does not specify that it is the Credit Bureau Association's platform."
+  },
+  {
+   "id": "d09",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately describes the expected credit loss model under IFRS 9 without contradiction."
+  },
+  {
+   "id": "d10",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "d11",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "Missing key details about safety and soundness, customers protection."
+  },
+  {
+   "id": "d12",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the reference answer's key facts."
+  },
+  {
+   "id": "d13",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key fact from the reference answer."
+  },
+  {
+   "id": "d14",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key fact provided in the reference answer."
+  },
+  {
+   "id": "d15",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the reference answer."
+  },
+  {
+   "id": "d16",
+   "type": "threshold",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate's range does not match the reference's range."
+  },
+  {
+   "id": "d17",
+   "type": "threshold",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer states R1 million, while the reference answer states R1.5 million."
+  },
+  {
+   "id": "d18",
+   "type": "threshold",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer states a lower minimum capital requirement than the reference answer."
+  },
+  {
+   "id": "d19",
+   "type": "status",
+   "correctness": "refused"
+  },
+  {
+   "id": "d20",
+   "type": "status",
+   "correctness": "refused"
+  },
+  {
+   "id": "d21",
+   "type": "status",
+   "correctness": "incorrect",
+   "correctness_reason": "Contradicts the reference by stating that omission from an annual status circular does not necessarily mean the circular remains effective."
+  },
+  {
+   "id": "d22",
+   "type": "status",
+   "correctness": "refused"
+  },
+  {
+   "id": "d23",
+   "type": "status",
+   "correctness": "refused"
+  },
+  {
+   "id": "d24",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "The candidate does not mention the specific time frames for the affordability check as stated in the reference answer."
+  },
+  {
+   "id": "d25",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "The candidate states the correct timeframes but adds an unnecessary total timeframe of 14 days, which is not mentioned in the reference answer."
+  },
+  {
+   "id": "d26",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately summarizes the key points from the reference answer."
+  },
+  {
+   "id": "d27",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "While the candidate mentions the correct section of the Banks Act, it incorrectly states that the directive-making power is read with the Financial Sector Regulation Act, which is not necessary for the directive under section 6(6) of the Banks Act."
+  },
+  {
+   "id": "d28",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "The candidate provides a different deadline and extension period than the reference answer."
+  },
+  {
+   "id": "d29",
+   "type": "multi",
+   "correctness": "refused"
+  },
+  {
+   "id": "d30",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "The candidate includes the correct timing for recognition but adds information about the simplified approach and the Prudential Authority's expectations, which are not in the reference answer."
+  },
+  {
+   "id": "d31",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the key facts provided in the reference answer."
+  },
+  {
+   "id": "d32",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "d33",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "d34",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "d35",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "d36",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "d37",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "d38",
+   "type": "false_premise",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer refers to Directive 8/2023, which is no longer in force according to the reference answer."
+  },
+  {
+   "id": "d39",
+   "type": "false_premise",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating the wrong compliance date."
+  },
+  {
+   "id": "d40",
+   "type": "false_premise",
+   "correctness": "partial",
+   "correctness_reason": "While it correctly states that Circular 19/2004 has been superseded, it provides additional information about Basel III standards which was not in the reference answer."
+  }
+ ]
+}

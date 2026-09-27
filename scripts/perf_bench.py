@@ -10,7 +10,7 @@ measured against the system it's supposed to speed up is just a plausible-soundi
 
 import json
 
-from src.config import CACHE_DB_PATH, GOLDEN_PATH, REPORTS_DIR
+from src.config import CACHE_DB_PATH, QUESTIONS_DEV_PATH, REPORTS_DIR
 from src.obslog import timed_answer
 
 N_QUESTIONS = 15
@@ -41,8 +41,10 @@ def _run_pass(questions: list[str]) -> dict:
 
 
 def run() -> dict:
-    golden = [json.loads(line) for line in GOLDEN_PATH.read_text(encoding="utf-8").splitlines()]
-    factual = [item for item in golden if item["type"] == "factual"][:N_QUESTIONS]
+    golden = [
+        json.loads(line) for line in QUESTIONS_DEV_PATH.read_text(encoding="utf-8").splitlines()
+    ]
+    factual = [item for item in golden if item["type"] == "single"][:N_QUESTIONS]
     questions = [item["question"] for item in factual]
 
     if CACHE_DB_PATH.exists():
@@ -78,7 +80,7 @@ def write_report(results: dict) -> None:
         "is only ever served for the literal question it was generated for, which matters for a "
         "tool whose whole premise is citation accuracy.",
     ]
-    (REPORTS_DIR / "perf.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (REPORTS_DIR / "perf.md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     print(
         f"wrote reports/perf.md — cold p50={cold['p50_ms']:.0f}ms warm p50={warm['p50_ms']:.0f}ms"
     )

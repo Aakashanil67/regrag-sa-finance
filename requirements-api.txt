@@ -1,0 +1,28 @@
+# FastAPI backend runtime: ingestion, vector store, retrieval, and generation. Everything the API
+# container actually imports at runtime — nothing evaluation- or UI-only. See DECISIONS.md for the
+# split rationale and requirements-dev.txt for local all-in-one development.
+
+# --- ingestion ---
+pymupdf==1.24.14
+tiktoken==0.8.0
+
+# --- vector store + embeddings ---
+chromadb==0.5.23
+sentence-transformers==3.3.1
+rank-bm25==0.2.2
+# numpy IS imported directly now (src/retrieve.py's exact cosine-similarity search) — still left
+# unpinned, matching whatever chromadb/sentence-transformers already resolve to rather than adding
+# a second constraint on the same transitive dependency
+
+# --- LLM providers (anthropic default; openai/ollama optional per .env) ---
+anthropic==0.69.0
+openai==1.109.1
+python-dotenv==1.1.1
+
+# --- API runtime ---
+fastapi==0.141.1
+uvicorn[standard]==0.32.1
+slowapi==0.1.9
+protobuf==7.36.0
+pydantic==2.11.9
+httpx==0.27.2

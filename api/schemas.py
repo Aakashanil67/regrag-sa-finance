@@ -13,6 +13,9 @@ class CitationOut(BaseModel):
     doc_id: str
     page: int
     verified: bool
+    title: str | None = None
+    source_url: str | None = None
+    section_ref: str | None = None
 
 
 class RetrievedChunkOut(BaseModel):
@@ -24,19 +27,39 @@ class RetrievedChunkOut(BaseModel):
     score: float
 
 
+class SourceReferenceOut(BaseModel):
+    doc_id: str
+    page: int
+
+
+class SourceNoticeOut(BaseModel):
+    kind: str
+    text: str
+    evidence: list[SourceReferenceOut] = []
+
+
 class AskResponse(BaseModel):
     answer: str
     citations: list[CitationOut]
     retrieved_chunks: list[RetrievedChunkOut]
     refused: bool
+    refusal_reason: str | None = None
     latency_ms: float
     cost_usd: float
     model: str
-    source_notices: list[str] = []
+    source_notices: list[SourceNoticeOut] = []
 
 
 class HealthResponse(BaseModel):
     status: str
+
+
+class ReadinessResponse(BaseModel):
+    ready: bool
+    manifest: str  # "ok" | "error"
+    collection: str  # "ok" | "empty" | "error"
+    chunk_count: int
+    provenance: str  # "ok" | "error"
 
 
 class StatsResponse(BaseModel):
@@ -44,3 +67,14 @@ class StatsResponse(BaseModel):
     avg_latency_ms: float
     total_cost_usd: float
     refusal_rate: float
+    content_logging_enabled: bool
+
+
+class RecentQueryOut(BaseModel):
+    timestamp: float
+    question: str | None
+    refused: bool
+    citation_count: int
+    latency_ms: float
+    cost_usd: float
+    refusal_reason: str | None

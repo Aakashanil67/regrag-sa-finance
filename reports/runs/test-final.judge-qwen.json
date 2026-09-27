@@ -1,0 +1,433 @@
+{
+ "run": "test-final.json",
+ "judge": "qwen",
+ "model": "qwen2.5:7b",
+ "summary": {
+  "answerable": 48,
+  "correct": 26,
+  "partial": 10,
+  "incorrect": 1,
+  "refused": 11,
+  "unparsed": 0,
+  "support": {
+   "supported": 35,
+   "partial": 2,
+   "unsupported": 0,
+   "unparsed": 0
+  },
+  "answered_unanswerable": 1
+ },
+ "items": [
+  {
+   "id": "t01",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "It includes an additional detail about engagement with provincial regulators as directed by the Minister, which is not in the reference answer.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the information provided in the context, mentioning the National Credit Regulator's independence and its engagement with provincial credit regulators as directed by the Minister."
+  },
+  {
+   "id": "t02",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "Extraneous details about reporting to governing body and key persons are included, which were not in the reference answer.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the content of the source, which explicitly states the bank's obligations regarding complaint information analysis and reporting."
+  },
+  {
+   "id": "t03",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "Missing long-term or short-term insurers and market infrastructures.",
+   "support": "supported",
+   "support_reason": "The answer directly quotes the definition of 'eligible financial institution' from the Financial Sector Regulation Act 9 of 2017."
+  },
+  {
+   "id": "t04",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately summarizes the key points provided in the reference answer.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that conduct standards may cover the design, suitability, implementation, monitoring and evaluation of financial education programs or other initiatives promoting financial literacy."
+  },
+  {
+   "id": "t05",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the reference answer's key facts without contradiction.",
+   "support": "supported",
+   "support_reason": "The context directly states that the Reserve Bank may designate a Deputy Registrar subject to the Minister’s approval and under the control and directions of the Registrar."
+  },
+  {
+   "id": "t06",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t07",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t08",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t09",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer matches the reference answer with minor wording differences.",
+   "support": "supported",
+   "support_reason": "The context explicitly lists the seven categories of principles for operational resilience as stated in the answer."
+  },
+  {
+   "id": "t10",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts provided in the reference answer.",
+   "support": "supported",
+   "support_reason": "The definition of a primary credit bureau is directly stated in the provided context."
+  },
+  {
+   "id": "t11",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts provided in the reference answer without any contradictions.",
+   "support": "supported",
+   "support_reason": "The statement is directly supported by the context provided, specifically from pages 2-3 of the document."
+  },
+  {
+   "id": "t12",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts provided in the reference answer.",
+   "support": "supported",
+   "support_reason": "The context directly states that the provider must warn the client in writing of the limitations to the level of client protection a categorisation as a counterparty entails and the clearing obligations that the client may be subject to."
+  },
+  {
+   "id": "t13",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the reference answer without any contradictions.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that an intermediary may not be remunerated for the same or a similar service twice."
+  },
+  {
+   "id": "t14",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts provided in the reference answer without any contradictions.",
+   "support": "supported",
+   "support_reason": "The context provided directly supports the answer by stating the conditions under which a credit provider must not unfairly discriminate."
+  },
+  {
+   "id": "t15",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the key fact provided in the reference answer.",
+   "support": "supported",
+   "support_reason": "The context explicitly states, 'Focus on customer outcomes is clearer at design stage than other parts of the product life cycle,' which directly supports the answer."
+  },
+  {
+   "id": "t16",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t17",
+   "type": "single",
+   "correctness": "partial",
+   "correctness_reason": "The candidate answer does not explicitly state that the related order for reckless credit will be made.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the content of the National Credit Act 34 of 2005, specifically sections 86(7), 83(2) or (3), and 80(1)(b)(ii), without any unsupported claims or partial statements."
+  },
+  {
+   "id": "t18",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key fact from the reference answer.",
+   "support": "supported",
+   "support_reason": "The statement is directly supported by the text in the context provided."
+  },
+  {
+   "id": "t19",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key fact from the reference answer.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that an applicant must provide the requested information within 15 business days, as found in both the 2006 and 2015 regulations."
+  },
+  {
+   "id": "t20",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the maximum period as 12 months without any contradictions.",
+   "support": "supported",
+   "support_reason": "The context explicitly states the maximum total period of limitation on the debt intervention applicant’s right to apply for credit is 12 months."
+  },
+  {
+   "id": "t21",
+   "type": "threshold",
+   "correctness": "refused"
+  },
+  {
+   "id": "t22",
+   "type": "threshold",
+   "correctness": "refused"
+  },
+  {
+   "id": "t23",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key fact from the reference answer.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that the Minister must inform the Commissioner at least three months before the end of the first term whether the Minister proposes to re-appoint them."
+  },
+  {
+   "id": "t24",
+   "type": "threshold",
+   "correctness": "refused"
+  },
+  {
+   "id": "t25",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key fact provided in the reference answer.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that IFRS 9 is effective for annual periods beginning on or after 1 January 2018."
+  },
+  {
+   "id": "t26",
+   "type": "threshold",
+   "correctness": "refused"
+  },
+  {
+   "id": "t27",
+   "type": "status",
+   "correctness": "partial",
+   "correctness_reason": "While it mentions the July 2014 version, it does not clarify that this is the final version and replaces earlier ones.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the provided context."
+  },
+  {
+   "id": "t28",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that Guidance Note 3 of 2025 replaces Guidance Note 3 of 2024, aligning with the reference answer.",
+   "support": "supported",
+   "support_reason": "The context clearly states that 'This Guidance Note replaces Guidance Note 3 of 2024.'"
+  },
+  {
+   "id": "t29",
+   "type": "status",
+   "correctness": "partial",
+   "correctness_reason": "Mentions IFRS 9 replacing IAS 39 but incorrectly states that IAS 39 is still used for hedge accounting.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that IFRS 9 permits an entity to choose IAS 39’s hedge accounting requirements over IFRS 9’s, and that IAS 39 remains effective for this reason."
+  },
+  {
+   "id": "t30",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately reflects the reference answer without adding any contradictions or missing key points.",
+   "support": "partial",
+   "support_reason": "The context mentions that the amendment is pending and the date is not determined, but it does not explicitly state that the debt intervention procedure was not in operation."
+  },
+  {
+   "id": "t31",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the reference, confirming the conduct standard was published after parliamentary approval.",
+   "support": "supported",
+   "support_reason": "The answer is fully supported by the context provided."
+  },
+  {
+   "id": "t32",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the reference answer without any contradictions.",
+   "support": "supported",
+   "support_reason": "The context explicitly states that directives remain effective until formally withdrawn in writing by the PA."
+  },
+  {
+   "id": "t33",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "The candidate mentions the correct notice period but provides incorrect information about the form for credit bureau registration.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the information provided in the context regarding the notice period for voluntary cancellation and the form application for credit bureau registration."
+  },
+  {
+   "id": "t34",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately reflects the key points from the reference answer regarding the non-charging of complainants and the conduct standards for resolving complaints.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the provided context."
+  },
+  {
+   "id": "t35",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately states the changes in IFRS 9 and how the regulator treats Stage 2 exposures as general provisions.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the context provided."
+  },
+  {
+   "id": "t36",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately captures the key points from the reference about both the derivatives conduct standard and the Retail Distribution Review regarding conflicts of interest.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the provided context."
+  },
+  {
+   "id": "t37",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "The candidate provides additional details not in the reference, such as the 20 business days timeframe and specific section reference, which are not mentioned in the reference answer.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the provided context."
+  },
+  {
+   "id": "t38",
+   "type": "multi",
+   "correctness": "refused"
+  },
+  {
+   "id": "t39",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the key facts provided in the reference answer.",
+   "support": "supported",
+   "support_reason": "Both sentences are directly supported by the provided context."
+  },
+  {
+   "id": "t40",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "The candidate provides additional information not requested in the reference answer.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the provided context."
+  },
+  {
+   "id": "t41",
+   "type": "multi",
+   "correctness": "refused"
+  },
+  {
+   "id": "t42",
+   "type": "multi",
+   "correctness": "refused"
+  },
+  {
+   "id": "t43",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately reflects the key points from the reference answer without any contradictions.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the provided context."
+  },
+  {
+   "id": "t44",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "The candidate answer provides additional details not in the reference, such as the cap being per function performed and the percentage limit.",
+   "support": "supported",
+   "support_reason": "Both the remuneration principles and the binder fee caps are explicitly stated in the provided context."
+  },
+  {
+   "id": "t45",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t46",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t47",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t48",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t49",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t50",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t51",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t52",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t53",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t54",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t55",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t56",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t57",
+   "type": "false_premise",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate's answer contradicts the reference answer.",
+   "support": "supported",
+   "support_reason": "All sentences in the answer are directly supported by the provided context."
+  },
+  {
+   "id": "t58",
+   "type": "false_premise",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the reference answer.",
+   "support": "partial",
+   "support_reason": "The context mentions that the Reserve Bank may designate a person to perform functions of the Registrar, but it does not explicitly state that the Reserve Bank may designate the Registrar of Deposit-taking Institutions."
+  },
+  {
+   "id": "t59",
+   "type": "false_premise",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer aligns with the reference answer by stating that the conduct standard for banks was published in 2020, not in 2018.",
+   "support": "supported",
+   "support_reason": "The context clearly states that the FSCA published the conduct standard for banks in 2020, and mentions that the Financial Sector Regulation Act was introduced in 2018."
+  },
+  {
+   "id": "t60",
+   "type": "false_premise",
+   "correctness": "correct",
+   "correctness_reason": "The candidate accurately reflects the reference's key points without contradiction.",
+   "support": "supported",
+   "support_reason": "Both the concern about commission without advice and the proposal for ongoing fees or commission are directly stated in the context."
+  }
+ ]
+}

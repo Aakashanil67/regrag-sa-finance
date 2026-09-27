@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RegRAG corpus manifest entry",
+  "description": "One entry per active source document. scripts/validate_manifest.py enforces this contract in Python directly (no jsonschema dependency) — this file is the published, human-readable version of the same rules.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "filename",
+    "download_url",
+    "landing_page_url",
+    "referer",
+    "sha256",
+    "publisher",
+    "issuing_authority",
+    "document_type",
+    "authority_level",
+    "publication_stage",
+    "published_date",
+    "current_status",
+    "status_as_of",
+    "status_source_url",
+    "is_third_party"
+  ],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "filename": { "type": "string", "pattern": "^[A-Za-z0-9_.-]+\\.pdf$" },
+    "download_url": { "type": "string", "pattern": "^https://" },
+    "landing_page_url": { "type": "string", "pattern": "^https://" },
+    "referer": { "type": "string", "pattern": "^https://" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "publisher": { "type": "string", "minLength": 1 },
+    "issuing_authority": { "type": "string", "minLength": 1 },
+    "document_type": { "type": "string", "minLength": 1 },
+    "authority_level": {
+      "type": "string",
+      "enum": [
+        "primary_legislation",
+        "binding_regulatory_instrument",
+        "accounting_standard",
+        "official_non_binding_guidance",
+        "official_explanatory_material",
+        "consultation_or_discussion",
+        "third_party_commentary"
+      ]
+    },
+    "publication_stage": { "type": "string", "enum": ["final", "consultation", "draft"] },
+    "published_date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "current_status": {
+      "type": "string",
+      "enum": ["current", "withdrawn", "superseded", "historical_snapshot", "unknown"]
+    },
+    "status_as_of": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "status_source_url": { "type": "string", "pattern": "^https://" },
+    "status_source_id": { "type": "string", "minLength": 1 },
+    "status_source_page": { "type": "integer", "minimum": 1 },
+    "is_third_party": { "type": "boolean" }
+  }
+}

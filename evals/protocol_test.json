@@ -1,0 +1,16 @@
+{
+  "file": "evals/questions_test.jsonl",
+  "sha256": "e1265c494d6bda359e6d3437794eff5928359ac515be7bb5f7515daa23712283",
+  "items": 60,
+  "counts": {
+    "single": 18,
+    "threshold": 8,
+    "status": 6,
+    "multi": 12,
+    "unanswerable": 12,
+    "false_premise": 4
+  },
+  "sealed_at": "2026-09-24T15:56:40+00:00",
+  "rule": "Written before any tuning. Run once per label, after the pipeline is frozen, with python -m evals.run_eval --split test. Never edited after sealing.",
+  "frozen_pipeline": "bd7f2aee18f763ac9dd7b8367eeea2a80265405ff36519b54647a920ec4c2612"
+}

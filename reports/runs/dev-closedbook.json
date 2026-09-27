@@ -1,0 +1,1159 @@
+{
+ "schema": 3,
+ "run_id": "dev-closedbook",
+ "created_at": "2026-09-26T21:07:24+00:00",
+ "split": "dev",
+ "label": "closedbook",
+ "config": "default",
+ "closed_book": true,
+ "settings": {
+  "chunk_mode": "tiktoken",
+  "chunk_target": 800,
+  "chunk_overlap": 75,
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "embedding_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "retrieval_strategy": "semantic",
+  "rerank": true,
+  "citation_repair": false,
+  "chroma_dir": "chroma",
+  "k": 5
+ },
+ "pipeline_fingerprint": null,
+ "questions_sha256": "a5239367c3d3325923a1396d82d12ed97b61e72a19092d42c15c288c15a26f8a",
+ "complete": true,
+ "metrics": {
+  "n": 40,
+  "answer_rate": {
+   "k": 28,
+   "n": 34,
+   "rate": 0.8235294117647058,
+   "ci95": [
+    0.6648593225994784,
+    0.9165114439643031
+   ]
+  },
+  "refusal_recall": {
+   "k": 1,
+   "n": 6,
+   "rate": 0.16666666666666666,
+   "ci95": [
+    0.03005258587173032,
+    0.563509436563646
+   ]
+  },
+  "task_outcome": {
+   "k": 29,
+   "n": 40,
+   "rate": 0.725,
+   "ci95": [
+    0.5716474916687543,
+    0.8389214656685692
+   ]
+  },
+  "raw_citation_precision": {
+   "k": 0,
+   "n": 0,
+   "rate": null,
+   "ci95": [
+    null,
+    null
+   ]
+  },
+  "served_citations": 0,
+  "served_unverified_citations": 0,
+  "section_ref_rate": {
+   "k": 0,
+   "n": 0,
+   "rate": null,
+   "ci95": [
+    null,
+    null
+   ]
+  },
+  "retrieval_any_hit": {
+   "k": 0,
+   "n": 34,
+   "rate": 0.0,
+   "ci95": [
+    0.0,
+    0.10151790621961015
+   ]
+  },
+  "retrieval_all_hit": {
+   "k": 0,
+   "n": 34,
+   "rate": 0.0,
+   "ci95": [
+    0.0,
+    0.10151790621961015
+   ]
+  },
+  "repairs": 0,
+  "refusal_reasons": {
+   "model_refusal": 7
+  },
+  "failed_items": 0,
+  "cost_usd": 0.0174
+ },
+ "items": [
+  {
+   "id": "d01",
+   "type": "single",
+   "question": "When is a credit agreement treated as reckless under the National Credit Act?",
+   "reference_answer": "It is reckless if the credit provider failed to carry out the required affordability assessment, or carried it out but still concluded the agreement even though the information showed the consumer did not understand the risks, costs or obligations or would become over-indebted.",
+   "evidence": [
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 54,
+     "quote": "the credit provider failed to conduct an assessment as required by section 81 (2), irrespective of what the outcome of such an assessment might have concluded at the time"
+    }
+   ],
+   "answer": "Under section 80 of South Africa’s National Credit Act, a credit agreement is reckless if the credit provider failed to conduct the required affordability assessment, or proceeded despite concluding that the consumer did not understand the risks, costs and obligations or that the agreement would make the consumer over-indebted. It is generally not reckless where the consumer materially failed to provide complete and truthful information during the assessment.",
+   "served_answer": "Under section 80 of South Africa’s National Credit Act, a credit agreement is reckless if the credit provider failed to conduct the required affordability assessment, or proceeded despite concluding that the consumer did not understand the risks, costs and obligations or that the agreement would make the consumer over-indebted. It is generally not reckless where the consumer materially failed to provide complete and truthful information during the assessment.",
+   "raw_model_output": "Under section 80 of South Africa’s National Credit Act, a credit agreement is reckless if the credit provider failed to conduct the required affordability assessment, or proceeded despite concluding that the consumer did not understand the risks, costs and obligations or that the agreement would make the consumer over-indebted. It is generally not reckless where the consumer materially failed to provide complete and truthful information during the assessment.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 63,
+    "output_tokens": 242,
+    "cost_usd": 0.000303
+   },
+   "latency_ms": 5725
+  },
+  {
+   "id": "d02",
+   "type": "single",
+   "question": "Who must a debt counsellor tell when they suspect an agreement under review was granted recklessly?",
+   "reference_answer": "The debt counsellor must report the suspected reckless credit agreement to the National Credit Regulator, or to the Magistrate's Court where the counsellor recommends a court order.",
+   "evidence": [
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 55,
+     "quote": "the debt counsellor must report that suspected reckless credit agreement to"
+    }
+   ],
+   "answer": "They must refer the matter to the magistrate’s court and recommend that the credit agreement be declared reckless. The debt counsellor cannot make that declaration themselves.",
+   "served_answer": "They must refer the matter to the magistrate’s court and recommend that the credit agreement be declared reckless. The debt counsellor cannot make that declaration themselves.",
+   "raw_model_output": "They must refer the matter to the magistrate’s court and recommend that the credit agreement be declared reckless. The debt counsellor cannot make that declaration themselves.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 68,
+    "output_tokens": 649,
+    "cost_usd": 0.0007924
+   },
+   "latency_ms": 7111
+  },
+  {
+   "id": "d03",
+   "type": "single",
+   "question": "What complaints-handling framework must a bank maintain for its customers under the banking conduct standard?",
+   "reference_answer": "A bank must establish, maintain and operate an adequate and effective complaints management framework that ensures the fair treatment of complainants.",
+   "evidence": [
+    {
+     "doc_id": "fsca_cs3_2020_banks",
+     "page": 15,
+     "quote": "A bank must establish, maintain and operate an adequate and effective complaints management framework"
+    }
+   ],
+   "answer": "A bank must maintain a documented, effective and accessible complaints-management framework that is appropriate to the nature, scale and complexity of its business. It must provide for fair, transparent and timely handling and resolution of complaints, including governance and accountability, recording and monitoring, escalation and review, remedial action, and reporting to the bank’s governing body and the regulator where required.",
+   "served_answer": "A bank must maintain a documented, effective and accessible complaints-management framework that is appropriate to the nature, scale and complexity of its business. It must provide for fair, transparent and timely handling and resolution of complaints, including governance and accountability, recording and monitoring, escalation and review, remedial action, and reporting to the bank’s governing body and the regulator where required.",
+   "raw_model_output": "A bank must maintain a documented, effective and accessible complaints-management framework that is appropriate to the nature, scale and complexity of its business. It must provide for fair, transparent and timely handling and resolution of complaints, including governance and accountability, recording and monitoring, escalation and review, remedial action, and reporting to the bank’s governing body and the regulator where required.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 67,
+    "output_tokens": 244,
+    "cost_usd": 0.00030619999999999996
+   },
+   "latency_ms": 3602
+  },
+  {
+   "id": "d04",
+   "type": "single",
+   "question": "What must banks do to check their operational resilience against international principles?",
+   "reference_answer": "Banks must assess the adequacy and robustness of their current policies, processes and practices against the BCBS principles for operational resilience.",
+   "evidence": [
+    {
+     "doc_id": "sarb_d4_2023_operational_resilience",
+     "page": 3,
+     "quote": "Banks must assess the adequacy and robustness of their current policies, processes and practices against the principles for operational resilience issued by the BCBS"
+    }
+   ],
+   "answer": "Banks should benchmark their operational-resilience framework against the Basel Committee’s principles, identify and document gaps, and report remediation plans through their governance structures. They should also test their ability to deliver critical operations during severe but plausible disruptions and continuously improve the framework based on the results.",
+   "served_answer": "Banks should benchmark their operational-resilience framework against the Basel Committee’s principles, identify and document gaps, and report remediation plans through their governance structures. They should also test their ability to deliver critical operations during severe but plausible disruptions and continuously improve the framework based on the results.",
+   "raw_model_output": "Banks should benchmark their operational-resilience framework against the Basel Committee’s principles, identify and document gaps, and report remediation plans through their governance structures. They should also test their ability to deliver critical operations during severe but plausible disruptions and continuously improve the framework based on the results.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 62,
+    "output_tokens": 332,
+    "cost_usd": 0.00041079999999999996
+   },
+   "latency_ms": 4284
+  },
+  {
+   "id": "d05",
+   "type": "single",
+   "question": "What should a bank disclose about how it uses climate scenario analysis in its strategy?",
+   "reference_answer": "Banks should disclose whether and how they use climate-related scenario analysis to inform strategic decision-making, targets and transition plans, including which scenarios and sources were used.",
+   "evidence": [
+    {
+     "doc_id": "sarb_g3_2025_climate_disclosures",
+     "page": 5,
+     "quote": "Banks should disclose whether and how the bank uses climate-related scenario analysis to inform its strategic decision-making"
+    }
+   ],
+   "answer": "A bank should explain how climate scenario analysis informs its strategy, business model, risk appetite, capital allocation, lending decisions and transition plans. It should describe the scenarios, assumptions, time horizons and methodologies used, disclose key results and identified vulnerabilities, and explain the actions taken in response, including any limitations or uncertainties.",
+   "served_answer": "A bank should explain how climate scenario analysis informs its strategy, business model, risk appetite, capital allocation, lending decisions and transition plans. It should describe the scenarios, assumptions, time horizons and methodologies used, disclose key results and identified vulnerabilities, and explain the actions taken in response, including any limitations or uncertainties.",
+   "raw_model_output": "A bank should explain how climate scenario analysis informs its strategy, business model, risk appetite, capital allocation, lending decisions and transition plans. It should describe the scenarios, assumptions, time horizons and methodologies used, disclose key results and identified vulnerabilities, and explain the actions taken in response, including any limitations or uncertainties.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 65,
+    "output_tokens": 219,
+    "cost_usd": 0.00027580000000000004
+   },
+   "latency_ms": 3254
+  },
+  {
+   "id": "d06",
+   "type": "single",
+   "question": "What payment information must credit providers keep sending to credit bureaus for consumers who are under debt review?",
+   "reference_answer": "They must keep submitting the consumer's payment profile information to the credit bureaus, as the Act requires.",
+   "evidence": [
+    {
+     "doc_id": "ncr_guideline_june_2025_credit_info",
+     "page": 2,
+     "quote": "some credit providers do not submit payment profile information of consumers who are under debt review to credit bureaus as required by the Act"
+    }
+   ],
+   "answer": "Credit providers must continue submitting the consumer’s monthly payment-profile information to all registered credit bureaus while the consumer is under debt review. This includes payments received (or missed), the payment date and amount, and the account’s current status under the debt-rearrangement agreement.",
+   "served_answer": "Credit providers must continue submitting the consumer’s monthly payment-profile information to all registered credit bureaus while the consumer is under debt review. This includes payments received (or missed), the payment date and amount, and the account’s current status under the debt-rearrangement agreement.",
+   "raw_model_output": "Credit providers must continue submitting the consumer’s monthly payment-profile information to all registered credit bureaus while the consumer is under debt review. This includes payments received (or missed), the payment date and amount, and the account’s current status under the debt-rearrangement agreement.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 69,
+    "output_tokens": 359,
+    "cost_usd": 0.0004446
+   },
+   "latency_ms": 4778
+  },
+  {
+   "id": "d07",
+   "type": "single",
+   "question": "What must a registered debt counsellor do when their business address or contact details change?",
+   "reference_answer": "The debt counsellor must notify the National Credit Regulator immediately upon any change in contact details.",
+   "evidence": [
+    {
+     "doc_id": "ncr_guideline_sept_2025_debt_counsellors",
+     "page": 2,
+     "quote": "The Debt Counsellor must notify the National Credit Regulator immediately upon any change in contact details"
+    }
+   ],
+   "answer": "A registered debt counsellor must notify the National Credit Regulator in writing of any change to their business address or contact details within 10 business days of the change.",
+   "served_answer": "A registered debt counsellor must notify the National Credit Regulator in writing of any change to their business address or contact details within 10 business days of the change.",
+   "raw_model_output": "A registered debt counsellor must notify the National Credit Regulator in writing of any change to their business address or contact details within 10 business days of the change.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 66,
+    "output_tokens": 283,
+    "cost_usd": 0.00035279999999999996
+   },
+   "latency_ms": 5000
+  },
+  {
+   "id": "d08",
+   "type": "single",
+   "question": "Through which platform do debt counsellors now file certified clearance certificates with the credit bureaus?",
+   "reference_answer": "Through the authentication platform that the Credit Bureau Association provides and maintains, which the regulator has designated for this filing.",
+   "evidence": [
+    {
+     "doc_id": "ncr_guideline_feb_2026_clearance_certificates",
+     "page": 2,
+     "quote": "has designated the Credit Bureau Association (“the CBA”) to provide and maintain an authentication platform to be used by debt counsellors for the filing of the certified clearance certificates"
+    }
+   ],
+   "answer": "Debt counsellors file them through the National Credit Regulator’s **Debt Counselling System (DCS)**, which allows credit bureaus to access the certified clearance certificates.",
+   "served_answer": "Debt counsellors file them through the National Credit Regulator’s **Debt Counselling System (DCS)**, which allows credit bureaus to access the certified clearance certificates.",
+   "raw_model_output": "Debt counsellors file them through the National Credit Regulator’s **Debt Counselling System (DCS)**, which allows credit bureaus to access the certified clearance certificates.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 67,
+    "output_tokens": 477,
+    "cost_usd": 0.0005857999999999999
+   },
+   "latency_ms": 5899
+  },
+  {
+   "id": "d09",
+   "type": "single",
+   "question": "Does a bank have to wait for a loss event before it raises a provision for credit losses under IFRS 9?",
+   "reference_answer": "No. IFRS 9 does not require a loss event before a provision is raised; the expected credit loss model uses forward-looking information.",
+   "evidence": [
+    {
+     "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+     "page": 1,
+     "quote": "IFRS 9 does not require a loss event to occur before a provision is raised"
+    }
+   ],
+   "answer": "No. Under IFRS 9’s expected credit loss model, a bank must recognize credit-loss allowances based on expected losses from initial recognition, without waiting for a loss event; it generally recognizes 12-month ECL initially and lifetime ECL when credit risk has increased significantly.",
+   "served_answer": "No. Under IFRS 9’s expected credit loss model, a bank must recognize credit-loss allowances based on expected losses from initial recognition, without waiting for a loss event; it generally recognizes 12-month ECL initially and lifetime ECL when credit risk has increased significantly.",
+   "raw_model_output": "No. Under IFRS 9’s expected credit loss model, a bank must recognize credit-loss allowances based on expected losses from initial recognition, without waiting for a loss event; it generally recognizes 12-month ECL initially and lifetime ECL when credit risk has increased significantly.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 73,
+    "output_tokens": 129,
+    "cost_usd": 0.00016939999999999997
+   },
+   "latency_ms": 2762
+  },
+  {
+   "id": "d10",
+   "type": "single",
+   "question": "How does the Financial Sector Regulation Act define financial stability?",
+   "reference_answer": "Financial stability means that financial institutions generally provide financial products and services, and market infrastructures generally perform their functions, without interruption.",
+   "evidence": [
+    {
+     "doc_id": "fsr_act_9_2017",
+     "page": 46,
+     "quote": "financial institutions generally provide financial products and financial services, and market infrastructures generally perform their functions and duties in terms of financial sector laws, without interruption"
+    }
+   ],
+   "answer": "I don't have a source for that.",
+   "served_answer": null,
+   "raw_model_output": "I don't have a source for that.",
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 60,
+    "output_tokens": 529,
+    "cost_usd": 0.0006468
+   },
+   "latency_ms": 6367
+  },
+  {
+   "id": "d11",
+   "type": "single",
+   "question": "What is the statutory objective of the prudential regulator for financial institutions in South Africa?",
+   "reference_answer": "To promote and enhance the safety and soundness of financial institutions and market infrastructures, protect financial customers against institutional failure, and assist in maintaining financial stability.",
+   "evidence": [
+    {
+     "doc_id": "fsr_act_9_2017",
+     "page": 66,
+     "quote": "promote and enhance the safety and soundness of financial institutions that provide financial products and securities services"
+    }
+   ],
+   "answer": "The statutory objective of South Africa’s Prudential Authority is to **protect and enhance financial stability in the Republic**.",
+   "served_answer": "The statutory objective of South Africa’s Prudential Authority is to **protect and enhance financial stability in the Republic**.",
+   "raw_model_output": "The statutory objective of South Africa’s Prudential Authority is to **protect and enhance financial stability in the Republic**.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 66,
+    "output_tokens": 220,
+    "cost_usd": 0.00027719999999999996
+   },
+   "latency_ms": 3892
+  },
+  {
+   "id": "d12",
+   "type": "single",
+   "question": "What general standard of conduct must providers of over-the-counter derivatives meet?",
+   "reference_answer": "A provider must at all times act honestly, fairly, with due skill, care and diligence, and in the interests of clients and counterparties.",
+   "evidence": [
+    {
+     "doc_id": "fsca_conduct_standard_otc_derivatives_2018",
+     "page": 2,
+     "quote": "A provider must – (a) at all times act honestly, fairly, with due skill, care and diligence, and in the interests of clients and counterparties"
+    }
+   ],
+   "answer": "Providers of over-the-counter derivatives must act honestly, fairly and professionally, with due skill, care and diligence, and in the best interests of their clients.",
+   "served_answer": "Providers of over-the-counter derivatives must act honestly, fairly and professionally, with due skill, care and diligence, and in the best interests of their clients.",
+   "raw_model_output": "Providers of over-the-counter derivatives must act honestly, fairly and professionally, with due skill, care and diligence, and in the best interests of their clients.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 63,
+    "output_tokens": 215,
+    "cost_usd": 0.0002706
+   },
+   "latency_ms": 3566
+  },
+  {
+   "id": "d13",
+   "type": "threshold",
+   "question": "How many business days does a debt counsellor have to notify credit providers after receiving a debt review application?",
+   "reference_answer": "Five business days, by delivering a completed Form 17.1 to the listed credit providers and every registered credit bureau.",
+   "evidence": [
+    {
+     "doc_id": "nca_regs_2006",
+     "page": 23,
+     "quote": "Within five business days after receiving an application for debt review in terms of section 86(1) of the Act"
+    }
+   ],
+   "answer": "A debt counsellor has **five business days** after receiving a debt review application to notify the relevant credit providers.",
+   "served_answer": "A debt counsellor has **five business days** after receiving a debt review application to notify the relevant credit providers.",
+   "raw_model_output": "A debt counsellor has **five business days** after receiving a debt review application to notify the relevant credit providers.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 70,
+    "output_tokens": 168,
+    "cost_usd": 0.00021559999999999998
+   },
+   "latency_ms": 2912
+  },
+  {
+   "id": "d14",
+   "type": "threshold",
+   "question": "How much notice must a credit provider give a consumer before it lists adverse information with a credit bureau?",
+   "reference_answer": "At least 20 business days' notice of its intention to submit the adverse information.",
+   "evidence": [
+    {
+     "doc_id": "nca_regs_2006",
+     "page": 19,
+     "quote": "must give the consumer at least 20 business days notice of its intention to submit the following adverse information concerning that person to a credit bureau"
+    }
+   ],
+   "answer": "A credit provider must give the consumer at least **20 business days’ written notice** before submitting adverse information to a credit bureau.",
+   "served_answer": "A credit provider must give the consumer at least **20 business days’ written notice** before submitting adverse information to a credit bureau.",
+   "raw_model_output": "A credit provider must give the consumer at least **20 business days’ written notice** before submitting adverse information to a credit bureau.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 69,
+    "output_tokens": 208,
+    "cost_usd": 0.00026339999999999995
+   },
+   "latency_ms": 3520
+  },
+  {
+   "id": "d15",
+   "type": "threshold",
+   "question": "Within how many days must a debt counsellor issue a clearance certificate once a consumer has met the re-arranged obligations?",
+   "reference_answer": "Within seven days after the consumer has satisfied the obligations under the re-arranged agreements.",
+   "evidence": [
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 47,
+     "quote": "must be issued with a clearance certificate by a debt counsellor within seven days after the consumer has"
+    }
+   ],
+   "answer": "A debt counsellor must issue the clearance certificate within **seven days** after the consumer has met the re-arranged obligations.",
+   "served_answer": "A debt counsellor must issue the clearance certificate within **seven days** after the consumer has met the re-arranged obligations.",
+   "raw_model_output": "A debt counsellor must issue the clearance certificate within **seven days** after the consumer has met the re-arranged obligations.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 73,
+    "output_tokens": 118,
+    "cost_usd": 0.0001562
+   },
+   "latency_ms": 2614
+  },
+  {
+   "id": "d16",
+   "type": "threshold",
+   "question": "For which range of group turnover does the firm-size adjustment for corporate SME exposures apply?",
+   "reference_answer": "Where the consolidated group's reported turnover or sales is greater than R60 million but less than or equal to R600 million.",
+   "evidence": [
+    {
+     "doc_id": "sarb_d8_2025_threshold_amounts",
+     "page": 3,
+     "quote": "the firm-size adjustment will apply to entities where the reported turnover or sales for the consolidated group to which the SME borrower is a member is greater than R60 million but less than or equal to R600 million"
+    }
+   ],
+   "answer": "The firm-size adjustment applies where the consolidated group’s annual turnover is between **R5 million and R50 million**.",
+   "served_answer": "The firm-size adjustment applies where the consolidated group’s annual turnover is between **R5 million and R50 million**.",
+   "raw_model_output": "The firm-size adjustment applies where the consolidated group’s annual turnover is between **R5 million and R50 million**.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 66,
+    "output_tokens": 405,
+    "cost_usd": 0.0004992
+   },
+   "latency_ms": 5627
+  },
+  {
+   "id": "d17",
+   "type": "threshold",
+   "question": "What is the largest aggregate exposure a bank may classify as qualifying retail revolving?",
+   "reference_answer": "R1.5 million, and the exposure must be to an individual.",
+   "evidence": [
+    {
+     "doc_id": "sarb_d8_2025_threshold_amounts",
+     "page": 3,
+     "quote": "the aggregate exposure amount is less than or equal to R1.5 million"
+    }
+   ],
+   "answer": "The largest aggregate exposure is **R1 million per individual counterparty** for classification as a qualifying retail revolving exposure.",
+   "served_answer": "The largest aggregate exposure is **R1 million per individual counterparty** for classification as a qualifying retail revolving exposure.",
+   "raw_model_output": "The largest aggregate exposure is **R1 million per individual counterparty** for classification as a qualifying retail revolving exposure.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 64,
+    "output_tokens": 267,
+    "cost_usd": 0.00033319999999999997
+   },
+   "latency_ms": 4671
+  },
+  {
+   "id": "d18",
+   "type": "threshold",
+   "question": "What minimum capital must an applicant have to register as a payment distribution agent?",
+   "reference_answer": "A minimum capital amount of R5 million, proved by a bank guaranteed cheque at the time of application.",
+   "evidence": [
+    {
+     "doc_id": "nca_affordability_regs_2015",
+     "page": 6,
+     "quote": "A payment distribution-agent must have a minimum capital amount of five million (R5m)"
+    }
+   ],
+   "answer": "An applicant must have minimum capital of **R2 million** to register as a payment distribution agent.",
+   "served_answer": "An applicant must have minimum capital of **R2 million** to register as a payment distribution agent.",
+   "raw_model_output": "An applicant must have minimum capital of **R2 million** to register as a payment distribution agent.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 64,
+    "output_tokens": 1014,
+    "cost_usd": 0.0012296
+   },
+   "latency_ms": 11499
+  },
+  {
+   "id": "d19",
+   "type": "status",
+   "question": "Is the 2023 directive on threshold amounts for the standardised and IRB credit risk approaches still in force?",
+   "reference_answer": "No. Directive 8 of 2023 was withdrawn by Directive 8 of 2025, which also replaces Directive 1 of 2016.",
+   "evidence": [
+    {
+     "doc_id": "sarb_d8_2025_threshold_amounts",
+     "page": 1,
+     "quote": "This Directive replaces Directive 1 of 2016 dated 12 April 2016 and withdraws Directive 8 of 2023 dated 28 September 2023."
+    }
+   ],
+   "answer": "I don't have a source for that.",
+   "served_answer": null,
+   "raw_model_output": "I don't have a source for that.",
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 72,
+    "output_tokens": 109,
+    "cost_usd": 0.00014519999999999998
+   },
+   "latency_ms": 2149
+  },
+  {
+   "id": "d20",
+   "type": "status",
+   "question": "Is the December 2021 operational resilience directive still the operative one for banks?",
+   "reference_answer": "No. Directive 4 of 2023 replaces Directive 10 of 2021.",
+   "evidence": [
+    {
+     "doc_id": "sarb_d4_2023_operational_resilience",
+     "page": 2,
+     "quote": "This directive replaces Directive 10 of 2021."
+    }
+   ],
+   "answer": "I don't have a source for that.",
+   "served_answer": null,
+   "raw_model_output": "I don't have a source for that.",
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 65,
+    "output_tokens": 134,
+    "cost_usd": 0.0001738
+   },
+   "latency_ms": 2610
+  },
+  {
+   "id": "d21",
+   "type": "status",
+   "question": "Does a Banks Act circular stay effective if it is not listed in the annual status circular?",
+   "reference_answer": "No. Circulars are deemed withdrawn, terminated or replaced unless confirmed as effective in Circular 1 of that year, whereas directives stay effective until formally withdrawn in writing.",
+   "evidence": [
+    {
+     "doc_id": "sarb_c1_2026_status_of_circulars",
+     "page": 1,
+     "quote": "All previously issued Banks Act circulars are deemed to be withdrawn, terminated or replaced, except if such a circular is to remain effective"
+    }
+   ],
+   "answer": "Yes—omission from an annual status circular does not, by itself, repeal or withdraw a Banks Act circular. It generally remains applicable unless it has been expressly withdrawn, superseded, or is otherwise inconsistent with a later law or regulatory instrument.",
+   "served_answer": "Yes—omission from an annual status circular does not, by itself, repeal or withdraw a Banks Act circular. It generally remains applicable unless it has been expressly withdrawn, superseded, or is otherwise inconsistent with a later law or regulatory instrument.",
+   "raw_model_output": "Yes—omission from an annual status circular does not, by itself, repeal or withdraw a Banks Act circular. It generally remains applicable unless it has been expressly withdrawn, superseded, or is otherwise inconsistent with a later law or regulatory instrument.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 67,
+    "output_tokens": 205,
+    "cost_usd": 0.00025939999999999996
+   },
+   "latency_ms": 3331
+  },
+  {
+   "id": "d22",
+   "type": "status",
+   "question": "What happened to the November 2017 directive on classifying impairments as general or specific?",
+   "reference_answer": "It was replaced by Directive 3 of 2023.",
+   "evidence": [
+    {
+     "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+     "page": 1,
+     "quote": "replaces Directive 5/2017 issued in November 2017"
+    }
+   ],
+   "answer": "I don't have a source for that.",
+   "served_answer": null,
+   "raw_model_output": "I don't have a source for that.",
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 68,
+    "output_tokens": 291,
+    "cost_usd": 0.00036280000000000004
+   },
+   "latency_ms": 4469
+  },
+  {
+   "id": "d23",
+   "type": "status",
+   "question": "Do the regulator's earlier instructions on how debt counsellors file clearance certificates with credit bureaus still apply?",
+   "reference_answer": "No. The February 2026 guideline rescinds any previous guidelines on this and sets a new process using the CBA debt counselling platform.",
+   "evidence": [
+    {
+     "doc_id": "ncr_guideline_feb_2026_clearance_certificates",
+     "page": 2,
+     "quote": "To rescind any previous guidelines issued in this regard and provide a new process to be followed by debt counsellors to file clearance certificates on the CBA debt counselling platform"
+    }
+   ],
+   "answer": "I don't have a source for that.",
+   "served_answer": null,
+   "raw_model_output": "I don't have a source for that.",
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 70,
+    "output_tokens": 237,
+    "cost_usd": 0.0002984
+   },
+   "latency_ms": 3696
+  },
+  {
+   "id": "d24",
+   "type": "multi",
+   "question": "What must a credit provider assess before granting credit, and how recent must the affordability information be at approval?",
+   "reference_answer": "It must take reasonable steps to assess the consumer's understanding of the risks and costs, repayment history, and existing financial means, prospects and obligations. The affordability check must be done within seven business days before initial approval or a limit increase, and within fourteen business days for mortgages.",
+   "evidence": [
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 54,
+     "quote": "A credit provider must not enter into a credit agreement without first taking reasonable steps to assess"
+    },
+    {
+     "doc_id": "nca_affordability_regs_2015",
+     "page": 16,
+     "quote": "within seven(7)business days immediately prior to the initial approval of credit or the increasing of an existing credit limit"
+    }
+   ],
+   "answer": "Before granting credit, a provider must assess the consumer’s understanding of the risks and costs, financial means and prospects, existing financial obligations, and debt-repayment history, including whether the proposed instalments are affordable. The affordability information used must generally be obtained or updated within the three months preceding the credit application/approval.",
+   "served_answer": "Before granting credit, a provider must assess the consumer’s understanding of the risks and costs, financial means and prospects, existing financial obligations, and debt-repayment history, including whether the proposed instalments are affordable. The affordability information used must generally be obtained or updated within the three months preceding the credit application/approval.",
+   "raw_model_output": "Before granting credit, a provider must assess the consumer’s understanding of the risks and costs, financial means and prospects, existing financial obligations, and debt-repayment history, including whether the proposed instalments are affordable. The affordability information used must generally be obtained or updated within the three months preceding the credit application/approval.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 70,
+    "output_tokens": 448,
+    "cost_usd": 0.0005516000000000001
+   },
+   "latency_ms": 5914
+  },
+  {
+   "id": "d25",
+   "type": "multi",
+   "question": "How fast must a debt counsellor issue a clearance certificate, and how fast must it then reach the credit bureaus?",
+   "reference_answer": "The certificate must be issued within seven days after the consumer meets the re-arrangement obligations, and a certified copy must be filed with all credit bureaus within seven days of issue.",
+   "evidence": [
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 47,
+     "quote": "must be issued with a clearance certificate by a debt counsellor within seven days after the consumer has"
+    },
+    {
+     "doc_id": "ncr_guideline_feb_2026_clearance_certificates",
+     "page": 2,
+     "quote": "requires a debt counsellor, within (7) seven days of issuing a clearance certificate, to file a certified copy thereof with all credit bureaus"
+    }
+   ],
+   "answer": "A debt counsellor must issue the clearance certificate within **seven days** after receiving the consumer’s application, provided the legal requirements have been met. The counsellor must then submit it to the **National Credit Register and all credit bureaus within a further seven days**—thus, up to **14 days in total**.",
+   "served_answer": "A debt counsellor must issue the clearance certificate within **seven days** after receiving the consumer’s application, provided the legal requirements have been met. The counsellor must then submit it to the **National Credit Register and all credit bureaus within a further seven days**—thus, up to **14 days in total**.",
+   "raw_model_output": "A debt counsellor must issue the clearance certificate within **seven days** after receiving the consumer’s application, provided the legal requirements have been met. The counsellor must then submit it to the **National Credit Register and all credit bureaus within a further seven days**—thus, up to **14 days in total**.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 73,
+    "output_tokens": 353,
+    "cost_usd": 0.00043819999999999997
+   },
+   "latency_ms": 4930
+  },
+  {
+   "id": "d26",
+   "type": "multi",
+   "question": "What must a credit provider report when it makes or amends a credit agreement, and why did the regulator single out consumers under debt review?",
+   "reference_answer": "It must report the prescribed information to the national register or a credit bureau. The regulator found providers were not submitting payment profile information for consumers under debt review, leaving them with thin credit files.",
+   "evidence": [
+    {
+     "doc_id": "nca_act_34_2005",
+     "page": 45,
+     "quote": "the credit provider must report either directly to the national register established in terms of this section, or to a credit bureau"
+    },
+    {
+     "doc_id": "ncr_guideline_june_2025_credit_info",
+     "page": 2,
+     "quote": "some credit providers do not submit payment profile information of consumers who are under debt review to credit bureaus as required by the Act"
+    }
+   ],
+   "answer": "A credit provider must submit prescribed information about every credit agreement to a registered credit bureau, including its conclusion or amendment, the parties and terms, outstanding balance and payment performance, and any change in status or termination. Consumers under debt review were singled out because their debt-review status must be accurately recorded and kept current so that their indebtedness is visible to prospective providers and they are not granted further credit while undergoing the statutory debt-relief process.",
+   "served_answer": "A credit provider must submit prescribed information about every credit agreement to a registered credit bureau, including its conclusion or amendment, the parties and terms, outstanding balance and payment performance, and any change in status or termination. Consumers under debt review were singled out because their debt-review status must be accurately recorded and kept current so that their indebtedness is visible to prospective providers and they are not granted further credit while undergoing the statutory debt-relief process.",
+   "raw_model_output": "A credit provider must submit prescribed information about every credit agreement to a registered credit bureau, including its conclusion or amendment, the parties and terms, outstanding balance and payment performance, and any change in status or termination. Consumers under debt review were singled out because their debt-review status must be accurately recorded and kept current so that their indebtedness is visible to prospective providers and they are not granted further credit while undergoing the statutory debt-relief process.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 77,
+    "output_tokens": 554,
+    "cost_usd": 0.0006801999999999999
+   },
+   "latency_ms": 7172
+  },
+  {
+   "id": "d27",
+   "type": "multi",
+   "question": "Under what power does the Prudential Authority direct banks on operational resilience, and what statutory objective does that serve?",
+   "reference_answer": "It issues the directive under section 6(6) of the Banks Act. The Prudential Authority's objective is to promote the safety and soundness of financial institutions.",
+   "evidence": [
+    {
+     "doc_id": "sarb_d4_2023_operational_resilience",
+     "page": 3,
+     "quote": "in accordance with the provisions of section 6(6) of the Banks Act 94 of 1990, banks are hereby directed as follows"
+    },
+    {
+     "doc_id": "fsr_act_9_2017",
+     "page": 66,
+     "quote": "promote and enhance the safety and soundness of financial institutions that provide financial products and securities services"
+    }
+   ],
+   "answer": "The Prudential Authority uses its directive-making power under section 6(6) of the Banks Act 94 of 1990, read with the Financial Sector Regulation Act 9 of 2017. This supports the statutory objective of protecting and enhancing financial stability.",
+   "served_answer": "The Prudential Authority uses its directive-making power under section 6(6) of the Banks Act 94 of 1990, read with the Financial Sector Regulation Act 9 of 2017. This supports the statutory objective of protecting and enhancing financial stability.",
+   "raw_model_output": "The Prudential Authority uses its directive-making power under section 6(6) of the Banks Act 94 of 1990, read with the Financial Sector Regulation Act 9 of 2017. This supports the statutory objective of protecting and enhancing financial stability.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 71,
+    "output_tokens": 574,
+    "cost_usd": 0.000703
+   },
+   "latency_ms": 7688
+  },
+  {
+   "id": "d28",
+   "type": "multi",
+   "question": "By when must banks meet the operational resilience requirements, and how does that compare with the original deadline?",
+   "reference_answer": "By 31 December 2024. The original directive gave 18 months from its publication on 14 December 2021, which translated to 30 June 2023.",
+   "evidence": [
+    {
+     "doc_id": "sarb_d4_2023_operational_resilience",
+     "page": 3,
+     "quote": "All banks must comply with the respective requirements specified in this directive on or before 31 December 2024"
+    },
+    {
+     "doc_id": "sarb_d10_2021_operational_resilience",
+     "page": 3,
+     "quote": "All banks must comply with the respective requirements specified in this Directive within 18 months of the publication date"
+    }
+   ],
+   "answer": "Banks must meet the operational-resilience requirements by **1 January 2026**. This is a **one-year extension** of the original **1 January 2025** deadline.",
+   "served_answer": "Banks must meet the operational-resilience requirements by **1 January 2026**. This is a **one-year extension** of the original **1 January 2025** deadline.",
+   "raw_model_output": "Banks must meet the operational-resilience requirements by **1 January 2026**. This is a **one-year extension** of the original **1 January 2025** deadline.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 69,
+    "output_tokens": 214,
+    "cost_usd": 0.0002706
+   },
+   "latency_ms": 3296
+  },
+  {
+   "id": "d29",
+   "type": "multi",
+   "question": "What complaint-handling duties apply to banks and to credit providers, and how quickly must a credit provider act on a complaint referred by an ombud?",
+   "reference_answer": "A bank must maintain an adequate and effective complaints management framework. A credit provider must attempt to resolve an ombud-referred complaint within fourteen business days.",
+   "evidence": [
+    {
+     "doc_id": "fsca_cs3_2020_banks",
+     "page": 15,
+     "quote": "A bank must establish, maintain and operate an adequate and effective complaints management framework"
+    },
+    {
+     "doc_id": "nca_affordability_regs_2015",
+     "page": 17,
+     "quote": "The credit provider must attempt to resolve the complaint within fourteen (14) business days after receiving notification of the complaint from the ombud"
+    }
+   ],
+   "answer": "I don't have a source for that.",
+   "served_answer": null,
+   "raw_model_output": "I don't have a source for that.",
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 79,
+    "output_tokens": 529,
+    "cost_usd": 0.0006505999999999999
+   },
+   "latency_ms": 6348
+  },
+  {
+   "id": "d30",
+   "type": "multi",
+   "question": "When must lifetime expected credit losses be recognised under IFRS 9, and how does the banking regulator want the resulting impairments classified?",
+   "reference_answer": "Lifetime expected credit losses are recognised when credit risk has increased significantly since initial recognition. The regulator directs banks to classify the impairments as either general or specific.",
+   "evidence": [
+    {
+     "doc_id": "ifrs9_issued_2021",
+     "page": 26,
+     "quote": "measure the loss allowance for a financial instrument at an amount equal to the lifetime expected credit losses if the credit risk on that financial instrument has increased significantly"
+    },
+    {
+     "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+     "page": 1,
+     "quote": "This Directive directs banks and auditors of banks regarding the classification of impairments as either general or specific under IFRS 9"
+    }
+   ],
+   "answer": "Under IFRS 9, lifetime expected credit losses must be recognised when a financial asset has experienced a significant increase in credit risk since initial recognition, and also under the simplified approach for qualifying trade receivables and contract assets (and for purchased/originated credit-impaired assets). The Prudential Authority generally expects Stage 1 and Stage 2 impairment allowances to be classified as general impairments, and Stage 3 allowances as specific impairments.",
+   "served_answer": "Under IFRS 9, lifetime expected credit losses must be recognised when a financial asset has experienced a significant increase in credit risk since initial recognition, and also under the simplified approach for qualifying trade receivables and contract assets (and for purchased/originated credit-impaired assets). The Prudential Authority generally expects Stage 1 and Stage 2 impairment allowances to be classified as general impairments, and Stage 3 allowances as specific impairments.",
+   "raw_model_output": "Under IFRS 9, lifetime expected credit losses must be recognised when a financial asset has experienced a significant increase in credit risk since initial recognition, and also under the simplified approach for qualifying trade receivables and contract assets (and for purchased/originated credit-impaired assets). The Prudential Authority generally expects Stage 1 and Stage 2 impairment allowances to be classified as general impairments, and Stage 3 allowances as specific impairments.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 76,
+    "output_tokens": 774,
+    "cost_usd": 0.000944
+   },
+   "latency_ms": 9374
+  },
+  {
+   "id": "d31",
+   "type": "multi",
+   "question": "At what shareholding must a bank list a shareholder in its returns, and above what level did the original banking statute require permission to acquire shares?",
+   "reference_answer": "Shareholders holding 1 per cent or more must be listed with their details. Under the 1990 statute, acquiring more than 10 per cent needed the Registrar's written permission, up to a ceiling of 17,5 per cent.",
+   "evidence": [
+    {
+     "doc_id": "regs_banks_2012",
+     "page": 56,
+     "quote": "shareholders holding 1 per cent or more of the total number or nominal value of"
+    },
+    {
+     "doc_id": "banks_act_94_1990",
+     "page": 24,
+     "quote": "acquire more than 10 per cent, but not exceeding 17,5 per cent, of those shares"
+    }
+   ],
+   "answer": "",
+   "served_answer": "",
+   "raw_model_output": "",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 78,
+    "output_tokens": 1024,
+    "cost_usd": 0.0012443999999999999
+   },
+   "latency_ms": 11979
+  },
+  {
+   "id": "d32",
+   "type": "unanswerable",
+   "question": "What consent does POPIA require before a bank shares a customer's credit data with a bureau?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "POPIA does not require a bank to obtain separate consent before submitting credit information to a registered credit bureau where the disclosure is required or authorised by the National Credit Act, provided the bank complies with POPIA’s other conditions for lawful processing. Consent may be required where no other lawful basis applies, while a consumer’s consent is generally relevant to a bureau’s access or use of the report—not to mandatory furnishing by the bank.",
+   "served_answer": "POPIA does not require a bank to obtain separate consent before submitting credit information to a registered credit bureau where the disclosure is required or authorised by the National Credit Act, provided the bank complies with POPIA’s other conditions for lawful processing. Consent may be required where no other lawful basis applies, while a consumer’s consent is generally relevant to a bureau’s access or use of the report—not to mandatory furnishing by the bank.",
+   "raw_model_output": "POPIA does not require a bank to obtain separate consent before submitting credit information to a registered credit bureau where the disclosure is required or authorised by the National Credit Act, provided the bank complies with POPIA’s other conditions for lawful processing. Consent may be required where no other lawful basis applies, while a consumer’s consent is generally relevant to a bureau’s access or use of the report—not to mandatory furnishing by the bank.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 67,
+    "output_tokens": 262,
+    "cost_usd": 0.00032779999999999994
+   },
+   "latency_ms": 4134
+  },
+  {
+   "id": "d33",
+   "type": "unanswerable",
+   "question": "What is the current repo rate set by the Reserve Bank's Monetary Policy Committee?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "I don't have a source for that.",
+   "served_answer": null,
+   "raw_model_output": "I don't have a source for that.",
+   "refused": true,
+   "refusal_reason": "model_refusal",
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 65,
+    "output_tokens": 130,
+    "cost_usd": 0.000169
+   },
+   "latency_ms": 2397
+  },
+  {
+   "id": "d34",
+   "type": "unanswerable",
+   "question": "How is the solvency capital requirement calculated for insurers under the SAM framework?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "Under South Africa’s SAM framework, the SCR is calibrated to the one-year 99.5% Value-at-Risk of an insurer’s basic own funds—i.e., the capital needed to absorb an adverse event occurring once in 200 years. Under the standard formula, the market, credit, life, non-life and health risk modules are aggregated using prescribed correlation matrices, then operational risk is added and the loss-absorbing capacity of technical provisions and deferred tax is deducted: **SCR = BSCR + operational-risk charge − adjustment**. An approved internal model may be used instead of the standard formula.",
+   "served_answer": "Under South Africa’s SAM framework, the SCR is calibrated to the one-year 99.5% Value-at-Risk of an insurer’s basic own funds—i.e., the capital needed to absorb an adverse event occurring once in 200 years. Under the standard formula, the market, credit, life, non-life and health risk modules are aggregated using prescribed correlation matrices, then operational risk is added and the loss-absorbing capacity of technical provisions and deferred tax is deducted: **SCR = BSCR + operational-risk charge − adjustment**. An approved internal model may be used instead of the standard formula.",
+   "raw_model_output": "Under South Africa’s SAM framework, the SCR is calibrated to the one-year 99.5% Value-at-Risk of an insurer’s basic own funds—i.e., the capital needed to absorb an adverse event occurring once in 200 years. Under the standard formula, the market, credit, life, non-life and health risk modules are aggregated using prescribed correlation matrices, then operational risk is added and the loss-absorbing capacity of technical provisions and deferred tax is deducted: **SCR = BSCR + operational-risk charge − adjustment**. An approved internal model may be used instead of the standard formula.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 64,
+    "output_tokens": 376,
+    "cost_usd": 0.000464
+   },
+   "latency_ms": 5386
+  },
+  {
+   "id": "d35",
+   "type": "unanswerable",
+   "question": "What price-sensitive information must a bank listed on the JSE disclose to the market under the listing requirements?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "A JSE-listed bank must disclose to the market without delay any non-public information that, if made public, would be likely to have a material effect on the price of its listed securities—such as material changes in financial condition or performance, earnings, dividends or capital, significant acquisitions or disposals, defaults, or major litigation. Disclosure is generally made through SENS under the JSE Listings Requirements, subject to limited exceptions where confidentiality can be maintained and withholding disclosure is justified, including applicable banking-secrecy or prudential considerations.",
+   "served_answer": "A JSE-listed bank must disclose to the market without delay any non-public information that, if made public, would be likely to have a material effect on the price of its listed securities—such as material changes in financial condition or performance, earnings, dividends or capital, significant acquisitions or disposals, defaults, or major litigation. Disclosure is generally made through SENS under the JSE Listings Requirements, subject to limited exceptions where confidentiality can be maintained and withholding disclosure is justified, including applicable banking-secrecy or prudential considerations.",
+   "raw_model_output": "A JSE-listed bank must disclose to the market without delay any non-public information that, if made public, would be likely to have a material effect on the price of its listed securities—such as material changes in financial condition or performance, earnings, dividends or capital, significant acquisitions or disposals, defaults, or major litigation. Disclosure is generally made through SENS under the JSE Listings Requirements, subject to limited exceptions where confidentiality can be maintained and withholding disclosure is justified, including applicable banking-secrecy or prudential considerations.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 70,
+    "output_tokens": 310,
+    "cost_usd": 0.000386
+   },
+   "latency_ms": 6026
+  },
+  {
+   "id": "d36",
+   "type": "unanswerable",
+   "question": "What phase-in schedule applies to the Basel III output floor for South African banks?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "South African banks phase in the Basel III output floor from **50% in 2023**, increasing by **5 percentage points annually**: **55% (2024), 60% (2025), 65% (2026), 70% (2027), and 72.5% from 2028 onward**.",
+   "served_answer": "South African banks phase in the Basel III output floor from **50% in 2023**, increasing by **5 percentage points annually**: **55% (2024), 60% (2025), 65% (2026), 70% (2027), and 72.5% from 2028 onward**.",
+   "raw_model_output": "South African banks phase in the Basel III output floor from **50% in 2023**, increasing by **5 percentage points annually**: **55% (2024), 60% (2025), 65% (2026), 70% (2027), and 72.5% from 2028 onward**.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 65,
+    "output_tokens": 202,
+    "cost_usd": 0.0002554
+   },
+   "latency_ms": 2915
+  },
+  {
+   "id": "d37",
+   "type": "unanswerable",
+   "question": "What customer due-diligence records must a bank keep under FICA, and for how long?",
+   "reference_answer": "",
+   "evidence": [],
+   "answer": "Under FICA, a bank must keep records of customer identification and verification, account files, business correspondence, and transactions, including documents showing the steps taken for customer due diligence and ongoing monitoring. Records must generally be retained for at least five years after the business relationship ends, or five years from the date of an occasional transaction; records relating to a report under FICA must be kept for five years after the report is made.",
+   "served_answer": "Under FICA, a bank must keep records of customer identification and verification, account files, business correspondence, and transactions, including documents showing the steps taken for customer due diligence and ongoing monitoring. Records must generally be retained for at least five years after the business relationship ends, or five years from the date of an occasional transaction; records relating to a report under FICA must be kept for five years after the report is made.",
+   "raw_model_output": "Under FICA, a bank must keep records of customer identification and verification, account files, business correspondence, and transactions, including documents showing the steps taken for customer due diligence and ongoing monitoring. Records must generally be retained for at least five years after the business relationship ends, or five years from the date of an occasional transaction; records relating to a report under FICA must be kept for five years after the report is made.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 69,
+    "output_tokens": 240,
+    "cost_usd": 0.0003018
+   },
+   "latency_ms": 4436
+  },
+  {
+   "id": "d38",
+   "type": "false_premise",
+   "question": "Banks still apply Directive 8/2023 for retail exposure limits, so what aggregate amount qualifies an exposure as retail?",
+   "reference_answer": "Directive 8/2023 is no longer in force because Directive 8/2025 withdrew it; the retail limit in Directive 8/2025 is an aggregate amount of R12.5 million or less.",
+   "evidence": [
+    {
+     "doc_id": "sarb_d8_2025_threshold_amounts",
+     "page": 1,
+     "quote": "This Directive replaces Directive 1 of 2016 dated 12 April 2016 and withdraws Directive 8 of 2023 dated 28 September 2023."
+    },
+    {
+     "doc_id": "sarb_d8_2025_threshold_amounts",
+     "page": 2,
+     "quote": "the aggregate amount of the said exposures is less than or equal to R12.5 million"
+    }
+   ],
+   "answer": "Under Directive 8/2023, an exposure qualifies as retail where the aggregate exposure to the individual or group of connected counterparties does not exceed **R7.5 million**.",
+   "served_answer": "Under Directive 8/2023, an exposure qualifies as retail where the aggregate exposure to the individual or group of connected counterparties does not exceed **R7.5 million**.",
+   "raw_model_output": "Under Directive 8/2023, an exposure qualifies as retail where the aggregate exposure to the individual or group of connected counterparties does not exceed **R7.5 million**.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 73,
+    "output_tokens": 457,
+    "cost_usd": 0.000563
+   },
+   "latency_ms": 5762
+  },
+  {
+   "id": "d39",
+   "type": "false_premise",
+   "question": "Do banks have until 30 June 2023 to meet the operational resilience requirements in Directive 10/2021?",
+   "reference_answer": "No. Directive 10/2021 was replaced by Directive 4/2023, which extended the compliance date to 31 December 2024.",
+   "evidence": [
+    {
+     "doc_id": "sarb_d4_2023_operational_resilience",
+     "page": 2,
+     "quote": "This directive replaces Directive 10 of 2021."
+    },
+    {
+     "doc_id": "sarb_d4_2023_operational_resilience",
+     "page": 3,
+     "quote": "All banks must comply with the respective requirements specified in this directive on or before 31 December 2024"
+    }
+   ],
+   "answer": "Yes. Directive 10/2021 gave banks until 30 June 2023 to implement its operational-resilience requirements, subject to any specific milestones or extensions communicated by the Prudential Authority.",
+   "served_answer": "Yes. Directive 10/2021 gave banks until 30 June 2023 to implement its operational-resilience requirements, subject to any specific milestones or extensions communicated by the Prudential Authority.",
+   "raw_model_output": "Yes. Directive 10/2021 gave banks until 30 June 2023 to implement its operational-resilience requirements, subject to any specific milestones or extensions communicated by the Prudential Authority.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 73,
+    "output_tokens": 291,
+    "cost_usd": 0.0003638
+   },
+   "latency_ms": 4120
+  },
+  {
+   "id": "d40",
+   "type": "false_premise",
+   "question": "Does Banks Act Circular 19/2004 still set the 10 per cent minimum capital-adequacy ratio that banks must hold?",
+   "reference_answer": "No. Circular 19/2004 is not among the circulars confirmed as effective in Circular C1/2026, so it is deemed withdrawn; it recorded the 10 per cent ratio set in 2001.",
+   "evidence": [
+    {
+     "doc_id": "sarb_c1_2026_status_of_circulars",
+     "page": 1,
+     "quote": "All previously issued Banks Act circulars are deemed to be withdrawn, terminated or replaced"
+    },
+    {
+     "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+     "page": 9,
+     "quote": "the percentage for purposes of the calculation of the minimum capital and reserve funds to be maintained by banks in terms of section 70 of the Banks Act, 1990, had to be 10 per cent"
+    }
+   ],
+   "answer": "No. Banks Act Circular 19/2004 has been superseded; the applicable capital requirements are now set under the Regulations Relating to Banks, incorporating Basel III standards, although the minimum total capital ratio is generally 10% before applicable capital buffers.",
+   "served_answer": "No. Banks Act Circular 19/2004 has been superseded; the applicable capital requirements are now set under the Regulations Relating to Banks, incorporating Basel III standards, although the minimum total capital ratio is generally 10% before applicable capital buffers.",
+   "raw_model_output": "No. Banks Act Circular 19/2004 has been superseded; the applicable capital requirements are now set under the Regulations Relating to Banks, incorporating Basel III standards, although the minimum total capital ratio is generally 10% before applicable capital buffers.",
+   "refused": false,
+   "refusal_reason": null,
+   "citations": [],
+   "contexts": [],
+   "usage": {
+    "input_tokens": 76,
+    "output_tokens": 217,
+    "cost_usd": 0.0002756
+   },
+   "latency_ms": 3802
+  }
+ ]
+}

@@ -1,37 +1,32 @@
 # Retrieval benchmark
 
-**Hit-rate@k**: fraction of questions where the source document/page appears anywhere in the top k retrieved chunks — what a user actually experiences, since the RAG layer only sees the top k.
+Split `dev`, answerable questions only, k=5. A hit means a retrieved chunk covers an evidence page.
 
-**MRR** (mean reciprocal rank): averages 1/rank of the first correct chunk across all 10 retrieved results — rewards ranking the right answer 1st over merely including it somewhere in the list.
+| config | chunks truncated at embedding | strategy | rerank | any hit | all docs hit | multi-doc all hit | MRR | p50 ms |
+|---|---|---|---|---|---|---|---|---|
+| baseline | 1606/1857 | semantic | no | 29/34 | 23/34 | 2/8 | 0.614 | 262 |
+| baseline | 1606/1857 | semantic | yes | 32/34 | 28/34 | 5/8 | 0.841 | 2398 |
+| baseline | 1606/1857 | named_balanced | no | 29/34 | 23/34 | 2/8 | 0.599 | 261 |
+| baseline | 1606/1857 | named_balanced | yes | 32/34 | 28/34 | 5/8 | 0.826 | 2397 |
+| baseline | 1606/1857 | bm25 | no | 32/34 | 27/34 | 2/8 | 0.675 | 13 |
+| baseline | 1606/1857 | bm25 | yes | 31/34 | 27/34 | 4/8 | 0.797 | 2145 |
+| baseline | 1606/1857 | hybrid | no | 33/34 | 26/34 | 2/8 | 0.681 | 287 |
+| baseline | 1606/1857 | hybrid | yes | 32/34 | 26/34 | 3/8 | 0.826 | 2472 |
+| wordpiece | 0/6152 | semantic | no | 30/34 | 24/34 | 2/8 | 0.541 | 654 |
+| wordpiece | 0/6152 | semantic | yes | 34/34 | 28/34 | 3/8 | 0.698 | 1602 |
+| wordpiece | 0/6152 | named_balanced | no | 30/34 | 24/34 | 2/8 | 0.536 | 636 |
+| wordpiece | 0/6152 | named_balanced | yes | 34/34 | 28/34 | 3/8 | 0.683 | 1625 |
+| wordpiece | 0/6152 | bm25 | no | 28/34 | 25/34 | 2/8 | 0.598 | 40 |
+| wordpiece | 0/6152 | bm25 | yes | 33/34 | 26/34 | 2/8 | 0.702 | 1029 |
+| wordpiece | 0/6152 | hybrid | no | 31/34 | 26/34 | 2/8 | 0.599 | 692 |
+| wordpiece | 0/6152 | hybrid | yes | 33/34 | 26/34 | 2/8 | 0.696 | 1711 |
+| bge | 0/3238 | semantic | no | 28/34 | 22/34 | 2/8 | 0.631 | 406 |
+| bge | 0/3238 | semantic | yes | 29/34 | 26/34 | 4/8 | 0.68 | 2470 |
+| bge | 0/3238 | named_balanced | no | 28/34 | 22/34 | 2/8 | 0.617 | 402 |
+| bge | 0/3238 | named_balanced | yes | 29/34 | 26/34 | 4/8 | 0.665 | 2515 |
+| bge | 0/3238 | bm25 | no | 29/34 | 24/34 | 1/8 | 0.575 | 22 |
+| bge | 0/3238 | bm25 | yes | 29/34 | 27/34 | 4/8 | 0.695 | 2160 |
+| bge | 0/3238 | hybrid | no | 26/34 | 24/34 | 2/8 | 0.597 | 434 |
+| bge | 0/3238 | hybrid | yes | 29/34 | 26/34 | 4/8 | 0.68 | 2509 |
 
-| metric | value |
-|---|---|
-| hit-rate@3 | 95% |
-| hit-rate@5 | 95% |
-| hit-rate@10 | 95% |
-| MRR | 0.808 |
-
-## Per-question results
-
-| id | question | expected | first hit rank |
-|---|---|---|---|
-| r01 | How many climate-related disclosure templates are attached to Guidance Note 3/2025 as Annexure 1? | sarb_g3_2025_climate_disclosures p.1 | 2 |
-| r02 | Which earlier directive does Directive D3/2023 on the regulatory treatment of accounting provisions replace? | sarb_d3_2023_accounting_provisions_ifrs9 p.1 | 1 |
-| r03 | On what date did the Basel Committee issue the revised standardised and internal ratings-based approaches for credit risk referenced in Directive D8/2023? | sarb_d8_2023_threshold_amounts p.1 | 1 |
-| r04 | What seven categories does the BCBS operational resilience paper organise its principles across, per Directive D10/2021? | sarb_d10_2021_operational_resilience p.1 | 1 |
-| r05 | By what date were comments due on the proposed amendments to hybrid debt instrument rules in Banks Act Circular 19/2004? | sarb_circular_19_2004_capital_hybrid_instruments p.1 | 1 |
-| r06 | When did the Basel Committee confirm it would publish the full text of Basel II, according to Circular 6/2004? | sarb_circular_6_2004_basel_ii_update p.1 | 1 |
-| r07 | On what date did the National Credit Act come into commencement? | nca_act_34_2005 p.1 | 3 |
-| r08 | How many business days' notice must a registrant give the National Credit Regulator before voluntarily cancelling its registration under section 58? | nca_act_34_2005 p.40 | 1 |
-| r09 | According to the Notebook on the National Credit Act, what kind of credit-marketing practices does the Act prohibit? | nca_notebook_brochure p.1 | 1 |
-| r10 | Which section of the National Credit Act gives a consumer the right to challenge the accuracy of information held about them by a credit bureau? | ncr_guideline_disputed_credit_complaints p.2 | 1 |
-| r11 | How many days does a debt counsellor have to file a certified clearance certificate with credit bureaus under section 71(4) of the NCA? | ncr_guideline_feb_2026_clearance_certificates p.2 | 1 |
-| r12 | Which sections of the National Credit Act does the June 2025 NCR guideline on consumers under debt review implement? | ncr_guideline_june_2025_credit_info p.2 | 1 |
-| r13 | What is a debt counsellor required to keep up to date with the NCR under Guideline 004/2025? | ncr_guideline_sept_2025_debt_counsellors p.2 | 3 |
-| r14 | On what date did the FSCA publish the Conduct Standard for Banks? | fsca_press_conduct_standard_banks_2020 p.1 | 1 |
-| r15 | Under which Act and section was the Conduct Standard for authorised OTC derivative providers published? | fsca_conduct_standard_otc_derivatives_2018 p.1 | 1 |
-| r16 | What did Proposal J of the Retail Distribution Review address regarding intermediation and outsourced services? | fsca_rdr_intermediary_segmentation_2019 p.2 | 2 |
-| r17 | What regulatory approach shift does the 2014 Retail Distribution Review propose, away from a purely rules-based compliance approach? | fsca_rdr_2014 p.3 | 1 |
-| r18 | What were the agenda topics of the 2011 FSB presentation on Treating Customers Fairly? | fsca_tcf_2011 p.1 | 2 |
-| r19 | What is the 'own credit' issue that IFRS 9 addresses? | ifrs9_project_summary_2014 p.1 | miss (not in top 10) |
-| r20 | How many classification categories does IFRS 9 have for financial assets, according to PwC's practical guide? | pwc_practical_guide_ifrs9 p.1 | 1 |
+The hybrid config uses the wordpiece store: with named_balanced and rerank it hit all evidence documents on 28/34 questions, against 26/34 for bge.

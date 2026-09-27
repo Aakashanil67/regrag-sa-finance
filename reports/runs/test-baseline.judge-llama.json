@@ -1,0 +1,433 @@
+{
+ "run": "test-baseline.json",
+ "judge": "llama",
+ "model": "llama3.1:8b",
+ "summary": {
+  "answerable": 48,
+  "correct": 32,
+  "partial": 1,
+  "incorrect": 4,
+  "refused": 11,
+  "unparsed": 0,
+  "support": {
+   "supported": 37,
+   "partial": 0,
+   "unsupported": 0,
+   "unparsed": 0
+  },
+  "answered_unanswerable": 1
+ },
+ "items": [
+  {
+   "id": "t01",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts without any contradictions.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the language used in section 12(1) of the National Credit Act 34 of 2005, which states that the National Credit Regulator is 'independent and subject only to the Constitution and the law'."
+  },
+  {
+   "id": "t02",
+   "type": "single",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating that the bank must 'accurately, efficiently and securely record complaints-related information', which is not mentioned in the reference as a requirement for what to do with the complaints information it records.",
+   "support": "supported",
+   "support_reason": "Every sentence of the answer is stated in the context."
+  },
+  {
+   "id": "t03",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t04",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t05",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t06",
+   "type": "single",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating that the text does not specify how the average is calculated, when in fact it does.",
+   "support": "supported",
+   "support_reason": "The returns include the daily average balance for the month in respect of interest-bearing loans and advances and interest-bearing deposits, but the cited text does not specify how that average is calculated."
+  },
+  {
+   "id": "t07",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "t08",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the specific treatment of Stage 3 exposures under IFRS 9 as specific provisions for regulatory purposes.",
+   "support": "supported",
+   "support_reason": "The answer is stated in the context of Directive 3/2023, issued by SARB Prudential Authority, which specifies that credit-impaired exposures, namely Stage 3 exposures under IFRS 9, must be treated as specific provisions (SP) for regulatory purposes."
+  },
+  {
+   "id": "t09",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the seven categories that the operational resilience principles are organised under, matching the reference's key facts.",
+   "support": "supported",
+   "support_reason": "The operational resilience principles are organised under governance; operational risk management; business continuity planning and testing; mapping of interconnections and interdependencies of critical operations; third-party dependency management; incident management; and resilient information and"
+  },
+  {
+   "id": "t10",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions.",
+   "support": "supported",
+   "support_reason": "The definition of a primary credit bureau is explicitly stated in the guideline as a registered credit bureau authorised by the National Credit Regulator to host full-file consumer credit information, including payment-profile information."
+  },
+  {
+   "id": "t11",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions.",
+   "support": "supported",
+   "support_reason": "The answer is directly stated in the context on page 1-3 of the Conduct Standard for Authorised Over-the-Counter Derivative Providers."
+  },
+  {
+   "id": "t12",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions or additional information.",
+   "support": "supported",
+   "support_reason": "The answer is stated in the context, specifically in section 4. Categorisation of clients and counterparties, where it is mentioned that if a provider determines that it is appropriate for the client to be categorised as a counterparty, the provider must warn the client in writing of the limitations"
+  },
+  {
+   "id": "t13",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions or additional incorrect information.",
+   "support": "supported",
+   "support_reason": "The proposed remuneration framework states that an intermediary may not be remunerated twice for the same or a similar service, as mentioned in the context on page 49-50."
+  },
+  {
+   "id": "t14",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts without any contradictions.",
+   "support": "supported",
+   "support_reason": "Every sentence of the answer is stated in the context, specifically in section 61 of the National Credit Act 34 of 2005."
+  },
+  {
+   "id": "t15",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts without any contradictions.",
+   "support": "supported",
+   "support_reason": "The pilot process is described in the context, and it is stated that 'Focus on customer outcomes is clearer at design stage than other parts of the product life cycle' on page 5 of the fsca_tcf_2011 presentation."
+  },
+  {
+   "id": "t16",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions.",
+   "support": "supported",
+   "support_reason": "The conduct standard was released with a document detailing its expected impact and a report on the consultation process. This is stated in the press release [fsca_press_conduct_standard_banks_2020, p.1] as 'The publication of these documents is the first step towards rolling out a comprehensive mar"
+  },
+  {
+   "id": "t17",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions.",
+   "support": "supported",
+   "support_reason": "The Tribunal may declare the credit agreement reckless and make an order contemplated in section 83(2) or (3). [nca_act_34_2005, p.61]"
+  },
+  {
+   "id": "t18",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts without any contradictions.",
+   "support": "supported",
+   "support_reason": "The terms and conditions of a Commissioner’s office may not be reduced during that person’s term of office. [fsr_act_9_2017, p.89-90]"
+  },
+  {
+   "id": "t19",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the timeframe and the delivery of the request.",
+   "support": "supported",
+   "support_reason": "The answer is directly stated in the context, specifically in section 45(2) of the Act, which requires an applicant to provide any information required by the National Credit Regulator within 15 business days after the request is delivered."
+  },
+  {
+   "id": "t20",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts, including the maximum period of 12 months, without any contradictions.",
+   "support": "supported",
+   "support_reason": "The answer is directly stated in the context, specifically in section 87A of the National Credit Act 34 of 2005, where it is mentioned that the Tribunal may limit the debt intervention applicant’s right to apply for credit for a minimum period of six months and the Tribunal may limit said right for "
+  },
+  {
+   "id": "t21",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the timeframe and the requirement to submit reasons for non-compliance.",
+   "support": "supported",
+   "support_reason": "The answer is directly stated in the context, specifically in the Regulations (2015) issued by the Minister of Trade and Industry, under the section 'Payment Distribution Fees'."
+  },
+  {
+   "id": "t22",
+   "type": "threshold",
+   "correctness": "refused"
+  },
+  {
+   "id": "t23",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions.",
+   "support": "supported",
+   "support_reason": "The Minister must inform the Commissioner at least three months before the end of the Commissioner’s first term of office whether the Minister proposes to re-appoint them. This is stated in the context on page 89-90."
+  },
+  {
+   "id": "t24",
+   "type": "threshold",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating different ceilings for binder fees, specifically mentioning 2% for entering into, varying or renewing a policy, 2% for determining policy wording, and 1% to 3% for settling claims, whereas the reference states that the total may not exceed 9%",
+   "support": "supported",
+   "support_reason": "The proposed maximum binder fees for a non-mandated intermediary were 2% of premium for entering into, varying or renewing a policy, 2% for determining policy wording, and 1% to 3% for settling claims, with the highest stated ceiling being 3% of premium for claims settlement. [fsca_rdr_2014, p.63]"
+  },
+  {
+   "id": "t25",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the effective date of IFRS 9 for annual reporting periods.",
+   "support": "supported",
+   "support_reason": "The first sentence is stated in the context of IFRS 9 Project Summary 2014, page 29-31, and Directive 3/2023, page 1."
+  },
+  {
+   "id": "t26",
+   "type": "threshold",
+   "correctness": "refused"
+  },
+  {
+   "id": "t27",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the replacement of earlier versions by the July 2014 final version and the exception for entities applying IFRS 9 before 1 February 2015.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the information provided in the context, specifically that the July 2014 final version of IFRS 9 replaced earlier versions and entities newly applying IFRS 9 from February 2015 were required to apply the July 2014 version."
+  },
+  {
+   "id": "t28",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that Guidance Note 3 of 2025 replaces Guidance Note 3 of 2024, matching the reference's key facts.",
+   "support": "supported",
+   "support_reason": "The statement that Guidance Note 3 of 2024 is not the current guidance because Guidance Note 3/2025 replaces Guidance Note 3 of 2024 is explicitly stated in the context on page 1-2."
+  },
+  {
+   "id": "t29",
+   "type": "status",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating that IAS 39 remains effective for hedge accounting, which is not mentioned in the reference.",
+   "support": "supported",
+   "support_reason": "The answer accurately states that IFRS 9 replaced IAS 39 for financial instruments accounting, and that IFRS 9 permits an entity to continue applying IAS 39's hedge-accounting requirements, which is stated in the context of IFRS 9_issued_2021, p.1."
+  },
+  {
+   "id": "t30",
+   "type": "status",
+   "correctness": "refused"
+  },
+  {
+   "id": "t31",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that the conduct standard for banks had successfully undergone the parliamentary process and was made final and available on the FSCA's website, matching the reference's key facts.",
+   "support": "supported",
+   "support_reason": "The conduct standard for banks was not still awaiting approval after the parliamentary process; the FSCA stated that it had successfully undergone that process and had been made final and made available on its website."
+  },
+  {
+   "id": "t32",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that Banks Act directives remain effective until formally withdrawn in writing by the Prudential Authority, without contradicting the reference.",
+   "support": "supported",
+   "support_reason": "The answer is directly stated in the context, specifically in the section titled 'Circular C1/2026: Status of Previously Issued Circulars'."
+  },
+  {
+   "id": "t33",
+   "type": "multi",
+   "correctness": "refused"
+  },
+  {
+   "id": "t34",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that a bank may not charge a complainant for using its complaints process and provides additional details that align with the reference's conduct standards for resolving complaints.",
+   "support": "supported",
+   "support_reason": "Every sentence of the answer is stated in the context."
+  },
+  {
+   "id": "t35",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts about IFRS 9 changing the credit-loss recognition model and the Prudential Authority's treatment of Stage 2 exposures, without any contradictions or omissions.",
+   "support": "supported",
+   "support_reason": "every sentence of the answer is stated in the context."
+  },
+  {
+   "id": "t36",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions or additional incorrect information.",
+   "support": "supported",
+   "support_reason": "The derivatives conduct standard requires authorised OTC derivative providers to manage conflicts of interest fairly between themselves and their clients and counterparties. [fsca_conduct_standard_otc_derivatives_2018, p.1-3]"
+  },
+  {
+   "id": "t37",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the steps a person may take to address inaccurate information held by a credit bureau and to submit a disputed-information complaint to the National Credit Regulator, without contradicting the reference answer.",
+   "support": "supported",
+   "support_reason": "every sentence of the answer is stated in the context."
+  },
+  {
+   "id": "t38",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "The candidate answer includes additional details about the context, comprehensiveness, consistency, organisation, form, style, vocabulary, usage, sentence structure, illustrations, examples, headings and other aids that are not mentioned in the reference.",
+   "support": "supported",
+   "support_reason": "The first sentence is directly stated in the context of the National Credit Act 34 of 2005, specifically in section 64, which deals with the right to information in plain and understandable language."
+  },
+  {
+   "id": "t39",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the effective date of IFRS 9 and the information entities must consider when determining impairments.",
+   "support": "supported",
+   "support_reason": "The first sentence is directly stated in the context, specifically in the IFRS 9 Project Summary 2014, page 29-31. The second sentence is also directly stated in the context, specifically in the Directive 3/2023, page 1-2."
+  },
+  {
+   "id": "t40",
+   "type": "multi",
+   "correctness": "refused"
+  },
+  {
+   "id": "t41",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions or additional incorrect information.",
+   "support": "supported",
+   "support_reason": "A debt counsellor applies for registration using Form 4. [nca_regs_2006, p.8-10]"
+  },
+  {
+   "id": "t42",
+   "type": "multi",
+   "correctness": "refused"
+  },
+  {
+   "id": "t43",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts about the Fair Treatment programme's place in the Twin Peaks model and the requirements for conduct standards on fair treatment of customers.",
+   "support": "supported",
+   "support_reason": "The Fair Treatment programme was intended to form part of the market-conduct “peak” in the Twin Peaks model and to complement sector-specific conduct regulation, including for banks. [fsca_tcf_2011, p.1-8]"
+  },
+  {
+   "id": "t44",
+   "type": "multi",
+   "correctness": "refused"
+  },
+  {
+   "id": "t45",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t46",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t47",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t48",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t49",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t50",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "t51",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t52",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t53",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t54",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t55",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t56",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "t57",
+   "type": "false_premise",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the role of the payment distribution agent, the required contents of the monthly statement, and the agent's obligations regarding trust accounts and distribution of funds.",
+   "support": "supported",
+   "support_reason": "The 2015 regulations require the payment distribution agent—not expressly the debt counsellor—to provide consumers with a monthly statement."
+  },
+  {
+   "id": "t58",
+   "type": "false_premise",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that the Reserve Bank designates the Registrar, subject to the Minister's approval, without contradicting the reference.",
+   "support": "supported",
+   "support_reason": "The answer accurately states that the Office for Deposit-taking Institutions is headed by a person styled the Registrar of Deposit-taking Institutions, and that the Reserve Bank may, subject to the Minister’s approval, designate a Deputy Registrar, as stated in the context on page 9-10."
+  },
+  {
+   "id": "t59",
+   "type": "false_premise",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts, including the date the conduct standard for banks was published and the introduction of the Financial Sector Regulation Act.",
+   "support": "supported",
+   "support_reason": "The FSCA press release states that the conduct standard for banks was published on 8 July 2020, which is consistent with the information provided in the press release."
+  },
+  {
+   "id": "t60",
+   "type": "false_premise",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts and does not contradict them.",
+   "support": "supported",
+   "support_reason": "The RDR proposal states that ongoing fees or commission may only be paid where ongoing advice and services are actually rendered, so it does not support collecting ongoing commission regardless of whether the customer is serviced. [fsca_rdr_2014, p.6]"
+  }
+ ]
+}

@@ -1,99 +1,181 @@
-"""Retrieval-only benchmark: hit-rate@k and MRR against a hand-checked question set.
+"""Retrieval-only benchmark: how often each config/strategy puts the evidence in the top k.
 
-Hit-rate@k asks "is the right document in the top k results at all" — the metric a user
-experiences directly, since the RAG layer only ever sees the top k chunks retrieve() returns.
-MRR (mean reciprocal rank) asks "how far down the list is it" — a system that always ranks the
-right answer 1st scores 1.0, always 3rd scores 0.33 — so two systems with identical hit-rate@10
-can still be told apart by how much of the ranking work retrieval is doing versus leaving to luck.
+    python -m evals.retrieval_bench --split dev --configs baseline,wordpiece,bge
 
-A "hit" means the retrieved chunk's doc_id matches AND the expected page falls inside that
-chunk's [page_start, page_end] span — matching the doc alone would call a hit on a chunk from
-page 40 of a document when the question is about page 1.
+Each config runs in its own subprocess because settings are read at import. No LLM is called.
+The test split is refused until the pipeline is frozen.
 """
 
+import argparse
 import json
+import statistics
+import subprocess
+import sys
+import time
+from pathlib import Path
 
-from src.config import REPORTS_DIR
-from src.retrieve import RetrievedChunk, retrieve
+from evals import configs
+from evals.metrics import evidence_hit
 
-RETRIEVAL_SET_PATH = REPORTS_DIR.parent / "evals" / "retrieval_set.json"
-K_VALUES = (3, 5, 10)
-MAX_K = max(K_VALUES)
+ROOT = Path(__file__).resolve().parent.parent
+RUNS_DIR = ROOT / "reports" / "runs"
+REPORT = ROOT / "reports" / "retrieval_bench.md"
+SPLITS = {
+    "dev": ROOT / "evals" / "questions_dev.jsonl",
+    "test": ROOT / "evals" / "questions_test.jsonl",
+}
+STRATEGIES = ("semantic", "named_balanced", "bm25", "hybrid")
 
 
-def _is_hit(chunk: RetrievedChunk, expected_doc_id: str, expected_page: int) -> bool:
-    return chunk.doc_id == expected_doc_id and chunk.page_start <= expected_page <= chunk.page_end
-
-
-def _first_hit_rank(
-    results: list[RetrievedChunk], expected_doc_id: str, expected_page: int
-) -> int | None:
-    for rank, chunk in enumerate(results, start=1):
-        if _is_hit(chunk, expected_doc_id, expected_page):
+def first_hit_rank(item: dict, contexts: list[dict]) -> int | None:
+    for rank, c in enumerate(contexts, start=1):
+        if any(
+            c["doc_id"] == e["doc_id"] and c["page_start"] <= e["page"] <= c["page_end"]
+            for e in item["evidence"]
+        ):
             return rank
     return None
 
 
-def run_benchmark() -> dict:
-    questions = json.loads(RETRIEVAL_SET_PATH.read_text(encoding="utf-8"))
+def run_one(config: str, split: str, strategies: list[str]) -> dict:
+    configs.apply(config)
+    from src.chunking import _encode_tokens, get_embedding_tokenizer
+    from src.config import RETRIEVAL_K, effective_settings
+    from src.retrieve import retrieve
+    from src.store import _get_model, get_collection
 
-    per_question = []
-    for item in questions:
-        results = retrieve(
-            item["question"], k=MAX_K, rerank=True
-        )  # matches rag.py's production default
-        rank = _first_hit_rank(results, item["doc_id"], item["page"])
-        per_question.append({**item, "first_hit_rank": rank})
-
-    hit_rates = {
-        k: sum(
-            1 for q in per_question if q["first_hit_rank"] is not None and q["first_hit_rank"] <= k
-        )
-        / len(per_question)
-        for k in K_VALUES
+    items = [
+        json.loads(line)
+        for line in SPLITS[split].read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    items = [i for i in items if i["type"] != "unanswerable"]
+    collection = get_collection()
+    rows = []
+    for strategy in strategies:
+        for rerank in (False, True):
+            anys = alls = multi_all = 0
+            rr, latency = [], []
+            for item in items:
+                start = time.perf_counter()
+                chunks = retrieve(
+                    item["question"],
+                    k=RETRIEVAL_K,
+                    rerank=rerank,
+                    strategy=strategy,
+                    collection=collection,
+                )
+                latency.append((time.perf_counter() - start) * 1000)
+                ctx = [
+                    {"doc_id": c.doc_id, "page_start": c.page_start, "page_end": c.page_end}
+                    for c in chunks
+                ]
+                a, b = evidence_hit(item, ctx)
+                anys, alls = anys + a, alls + b
+                multi_all += b and item["type"] == "multi"
+                rank = first_hit_rank(item, ctx)
+                rr.append(1 / rank if rank else 0.0)
+            rows.append(
+                {
+                    "strategy": strategy,
+                    "rerank": rerank,
+                    "n": len(items),
+                    "any_hit": anys,
+                    "all_hit": alls,
+                    "multi_all_hit": multi_all,
+                    "multi_n": sum(1 for i in items if i["type"] == "multi"),
+                    "mrr": round(statistics.mean(rr), 3),
+                    "p50_ms": round(statistics.median(latency)),
+                }
+            )
+    documents = collection.get(include=["documents"])["documents"]
+    tokenizer = get_embedding_tokenizer()
+    limit = _get_model().max_seq_length
+    lengths = [len(_encode_tokens(d, tokenizer, add_special_tokens=True)) for d in documents]
+    return {
+        "config": config,
+        "split": split,
+        "settings": effective_settings(),
+        "chunks": len(lengths),
+        "embedding_limit": limit,
+        "truncated_chunks": sum(n > limit for n in lengths),
+        "rows": rows,
     }
-    mrr = sum(1 / q["first_hit_rank"] if q["first_hit_rank"] else 0.0 for q in per_question) / len(
-        per_question
-    )
-
-    return {"per_question": per_question, "hit_rates": hit_rates, "mrr": mrr}
 
 
-def write_report(results: dict) -> None:
+def render(results: list[dict], split: str) -> str:
     lines = [
-        "# Retrieval benchmark",
+        f"Split `{split}`, answerable questions only, k=5. A hit means a retrieved chunk covers an evidence page.",
         "",
-        "**Hit-rate@k**: fraction of questions where the source document/page appears anywhere in "
-        "the top k retrieved chunks — what a user actually experiences, since the RAG layer only "
-        "sees the top k.",
-        "",
-        "**MRR** (mean reciprocal rank): averages 1/rank of the first correct chunk across all "
-        f"{MAX_K} retrieved results — rewards ranking the right answer 1st over merely including "
-        "it somewhere in the list.",
-        "",
-        "| metric | value |",
-        "|---|---|",
+        "| config | chunks truncated at embedding | strategy | rerank | any hit | all docs hit | multi-doc all hit | MRR | p50 ms |",
+        "|---|---|---|---|---|---|---|---|---|",
     ]
-    for k in K_VALUES:
-        lines.append(f"| hit-rate@{k} | {results['hit_rates'][k]:.0%} |")
-    lines.append(f"| MRR | {results['mrr']:.3f} |")
+    for r in results:
+        for row in r["rows"]:
+            lines.append(
+                f"| {r['config']} | {r['truncated_chunks']}/{r['chunks']} | {row['strategy']} | "
+                f"{'yes' if row['rerank'] else 'no'} | {row['any_hit']}/{row['n']} | {row['all_hit']}/{row['n']} | "
+                f"{row['multi_all_hit']}/{row['multi_n']} | {row['mrr']} | {row['p50_ms']} |"
+            )
+    return "\n".join(lines) + "\n"
 
-    lines += [
-        "",
-        "## Per-question results",
-        "",
-        "| id | question | expected | first hit rank |",
-        "|---|---|---|---|",
-    ]
-    for q in results["per_question"]:
-        rank = q["first_hit_rank"] if q["first_hit_rank"] else f"miss (not in top {MAX_K})"
-        lines.append(f"| {q['id']} | {q['question']} | {q['doc_id']} p.{q['page']} | {rank} |")
 
-    (REPORTS_DIR / "retrieval_bench.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(
-        f"wrote reports/retrieval_bench.md — hit-rate@5={results['hit_rates'][5]:.0%}, MRR={results['mrr']:.3f}"
+def main(argv: list[str] | None = None) -> None:
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--split", choices=sorted(SPLITS), default="dev")
+    ap.add_argument("--configs", default="baseline,wordpiece,bge")
+    ap.add_argument("--strategies", default=",".join(STRATEGIES))
+    ap.add_argument("--one")
+    args = ap.parse_args(argv)
+    strategies = args.strategies.split(",")
+    if args.split == "test":
+        protocol = json.loads((ROOT / "evals" / "protocol_test.json").read_text(encoding="utf-8"))
+        if not protocol.get("frozen_pipeline"):
+            sys.exit("the test split is only benchmarked after the pipeline is frozen")
+    if args.one:
+        print(json.dumps(run_one(args.one, args.split, strategies)))
+        return
+    results = []
+    for name in args.configs.split(","):
+        proc = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "evals.retrieval_bench",
+                "--one",
+                name,
+                "--split",
+                args.split,
+                "--strategies",
+                args.strategies,
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=True,
+        )
+        results.append(json.loads(proc.stdout.strip().splitlines()[-1]))
+    RUNS_DIR.mkdir(parents=True, exist_ok=True)
+    if args.split == "dev":
+        for r in results:
+            (RUNS_DIR / f"retrieval-{r['config']}.json").write_text(
+                json.dumps(r, indent=1) + "\n", encoding="utf-8"
+            )
+    else:
+        (RUNS_DIR / "retrieval-test.json").write_text(
+            json.dumps(results, indent=1) + "\n", encoding="utf-8"
+        )
+    title = (
+        "# Retrieval benchmark\n\n"
+        if args.split == "dev"
+        else "\n\nTest split, run once after the pipeline was frozen:\n\n"
     )
+    mode = "w" if args.split == "dev" else "a"
+    with REPORT.open(mode, encoding="utf-8") as fh:
+        fh.write(title + render(results, args.split))
+    print(render(results, args.split))
 
 
 if __name__ == "__main__":
-    write_report(run_benchmark())
+    main()

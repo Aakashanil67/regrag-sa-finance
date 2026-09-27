@@ -1,0 +1,318 @@
+{
+ "run": "dev-wordpiece.json",
+ "judge": "llama",
+ "model": "llama3.1:8b",
+ "summary": {
+  "answerable": 34,
+  "correct": 24,
+  "partial": 1,
+  "incorrect": 7,
+  "refused": 2,
+  "unparsed": 0,
+  "support": {
+   "supported": 32,
+   "partial": 0,
+   "unsupported": 0,
+   "unparsed": 0
+  },
+  "answered_unanswerable": 0
+ },
+ "items": [
+  {
+   "id": "d01",
+   "type": "single",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating that a court or Tribunal may declare a credit agreement reckless, whereas the reference states that a credit agreement is reckless if the credit provider failed to carry out the required affordability assessment or carried it out but still co",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the content of the National Credit Act 34 of 2005, specifically sections 80, 81, and 82A, which deal with reckless credit agreements."
+  },
+  {
+   "id": "d02",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts without any contradictions.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects section 82A of the National Credit Act 34 of 2005, which states that a debt counsellor must report a suspected reckless credit agreement to the National Credit Regulator or the Magistrate's Court under certain circumstances."
+  },
+  {
+   "id": "d03",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately reflects the key facts and requirements of the complaints-handling framework as stated in the reference, without any contradictions or omissions.",
+   "support": "supported",
+   "support_reason": "Every sentence of the answer is stated in the context."
+  },
+  {
+   "id": "d04",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions or additional incorrect information.",
+   "support": "supported",
+   "support_reason": "Every sentence of the answer is stated in the context."
+  },
+  {
+   "id": "d05",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions or additional information.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the content of the Guidance Note 3/2025: Climate-related Disclosures for Banks, specifically section 5.5.5 and 5.5."
+  },
+  {
+   "id": "d06",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the requirement to submit payment profile information and the prescribed manner and form.",
+   "support": "supported",
+   "support_reason": "The answer is directly stated in the context, specifically in the NCR Guideline 003/2025, page 2, section 4.1."
+  },
+  {
+   "id": "d07",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts, including the need to notify the NCR immediately and update the relevant information in the Debt Help System or complete the NCR Registrant Information Update Form if necessary.",
+   "support": "supported",
+   "support_reason": "The first sentence is directly stated in the context, specifically in ncr_guideline_sept_2025_debt_counsellors, p.2."
+  },
+  {
+   "id": "d08",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that the filing is done through the Credit Bureau Association's platform, which aligns with the reference's description of the authentication platform provided by the Credit Bureau Association.",
+   "support": "supported",
+   "support_reason": "The answer is directly stated in the context, specifically in the Guideline 001/2026: Filing of Clearance Certificates (Form 19) via the CBA Debt Counselling Platform (February 2026) on page 2."
+  },
+  {
+   "id": "d09",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the absence of a requirement for a loss event before raising a provision for credit losses under IFRS 9.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the information provided in the context, specifically from page 1 of the Directive (2023) issued by SARB Prudential Authority."
+  },
+  {
+   "id": "d10",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's definition of financial stability without adding any contradictory information.",
+   "support": "supported",
+   "support_reason": "Every sentence of the answer is stated in the context, specifically in section 4 of the Financial Sector Regulation Act 9 of 2017, page 46."
+  },
+  {
+   "id": "d11",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the statutory objective of the Prudential Authority without any contradictions or omissions.",
+   "support": "supported",
+   "support_reason": "The statutory objective of the Prudential Authority is to promote and enhance the safety and soundness of financial institutions that provide financial products and securities services, protect financial customers against the risk that those institutions may fail to meet their obligations, and assis"
+  },
+  {
+   "id": "d12",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer fully states the reference's key facts without any contradictions.",
+   "support": "supported",
+   "support_reason": "Every sentence of the answer is stated in the context."
+  },
+  {
+   "id": "d13",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the timeframe and the requirement to deliver Form 17.1 to listed credit providers and registered credit bureaus.",
+   "support": "supported",
+   "support_reason": "The answer is directly stated in the context, specifically in nca_regs_2006, p.23, subsection (2) Within five business days after receiving an application for debt review in terms of section 86(1) of the Act, a debt counsellor must deliver a completed Fonn 17.1 to all c d t providers that are listed"
+  },
+  {
+   "id": "d14",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the notice period and the source of the information.",
+   "support": "supported",
+   "support_reason": "The answer is directly stated in the context, specifically in the National Credit Regulations, 2006 (GN R489 of 31 May 2006), section 70(2) and Regulation 18(7), which requires at least 20 business days' notice before submitting adverse information to a credit bureau."
+  },
+  {
+   "id": "d15",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the timeframe of seven days, without any contradictions.",
+   "support": "supported",
+   "support_reason": "The answer is directly stated in the context, specifically in section 71 of the National Credit Act 34 of 2005, which requires a debt counsellor to issue a clearance certificate within seven days after the consumer has satisfied the obligations under every credit agreement subject to the debt-rearra"
+  },
+  {
+   "id": "d16",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions or additional incorrect information.",
+   "support": "supported",
+   "support_reason": "The firm-size adjustment for corporate SME exposures applies where the consolidated group’s reported turnover or sales is greater than R60 million but less than or equal to R600 million. This is explicitly stated in the context, specifically in [sarb_d8_2025_threshold_amounts, p.3]."
+  },
+  {
+   "id": "d17",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the threshold amount and the requirement that the exposure must be to an individual.",
+   "support": "supported",
+   "support_reason": "The answer is directly stated in the context, specifically in the Directive 8/2025: Threshold Amounts to the Revised Standardised and IRB Approaches for Credit Risk, where it is mentioned that banks are hereby directed to only classify an exposure in the QRRE asset class if the aggregate exposure am"
+  },
+  {
+   "id": "d18",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the minimum capital requirement of R5 million and mentions a bank guaranteed cheque, which is in line with the reference.",
+   "support": "supported",
+   "support_reason": "The answer is directly stated in the context, specifically in the regulation (nca_affordability_regs_2015, p.6) that a payment distribution agent must have a minimum capital amount of five million (R5m) for investment in the establishment and operation of the payment distribution agency."
+  },
+  {
+   "id": "d19",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that Directive 8/2025 withdraws Directive 8/2023, matching the reference's key facts.",
+   "support": "supported",
+   "support_reason": "The answer is directly stated in the context, specifically in the Directive 8/2025: Threshold Amounts to the Revised Standardised and IRB Approaches for Credit Risk, where it is mentioned that Directive 8/2023 is withdrawn."
+  },
+  {
+   "id": "d20",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that Directive 4 of 2023 replaces Directive 10 of 2021, matching the reference's key facts.",
+   "support": "supported",
+   "support_reason": "The answer states that Directive 4 of 2023 states that it replaces Directive 10 of 2021, which is explicitly mentioned in the context."
+  },
+  {
+   "id": "d21",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that a previously issued Banks Act circular is deemed to be withdrawn, terminated or replaced unless it is confirmed as remaining effective in the annual status circular, which aligns with the reference's key facts.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the content of the circular, specifically the first page of the document, which states that previously issued circulars are deemed to be withdrawn, terminated or replaced unless they are confirmed as remaining effective in the annual status circular."
+  },
+  {
+   "id": "d22",
+   "type": "status",
+   "correctness": "refused"
+  },
+  {
+   "id": "d23",
+   "type": "status",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the reference's key facts, including the rescinding of previous guidelines and the new process for filing clearance certificates through the CBA debt counselling platform.",
+   "support": "supported",
+   "support_reason": "The Guideline states that it rescinds previous guidelines on this matter and provides a new process for debt counsellors to file clearance certificates through the CBA debt counselling platform."
+  },
+  {
+   "id": "d24",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the required assessment of the consumer's understanding, debt-repayment history, and existing financial means, as well as the timing of the affordability assessment.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the requirements for a credit provider to assess a prospective consumer's understanding of the proposed credit's risks and costs, debt-repayment history, and existing financial means, as stated in the National Credit Act 34 of 2005."
+  },
+  {
+   "id": "d25",
+   "type": "multi",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating that the regulations do not specify an issuance deadline for the clearance certificate, whereas the reference states that it must be issued within seven days after the consumer meets the re-arrangement obligations.",
+   "support": "supported",
+   "support_reason": "The regulations state that a debt counsellor must issue a Form 19 clearance certificate when the consumer has fully satisfied all debt obligations covered by the debt-rearrangement order or agreement, but they do not specify an issuance deadline. [nca_regs_2006, p.25]"
+  },
+  {
+   "id": "d26",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the information that a credit provider must report and provides the correct reason why the regulator singled out consumers under debt review.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the information provided in the context, specifically from the NCR Guideline 003/2025, which states that credit providers must report information required by section 69(2) to the national register or credit bureau."
+  },
+  {
+   "id": "d27",
+   "type": "multi",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating that the Prudential Authority's objective includes protecting financial customers against the risk of institutional failure, which is not mentioned in the reference.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the statutory objective of the Prudential Authority as stated in the Financial Sector Regulation Act 9 of 2017, which includes promoting and enhancing the safety and soundness of financial institutions, protecting financial customers against the risk of institutional f"
+  },
+  {
+   "id": "d28",
+   "type": "multi",
+   "correctness": "refused"
+  },
+  {
+   "id": "d29",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "The candidate answer partially captures the complaint-handling duties of banks, but fails to mention the specific time frame for a credit provider to act on an ombud-referred complaint, which is the main focus of the question.",
+   "support": "supported",
+   "support_reason": "Every sentence of the answer is directly stated in the context, referencing specific sections and pages of the provided documents."
+  },
+  {
+   "id": "d30",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the conditions for recognising lifetime expected credit losses and the regulator's classification directive.",
+   "support": "supported",
+   "support_reason": "The first sentence is supported by IFRS 9 issued text 2021, p.26, which states that the objective of the impairment requirements is to recognise lifetime expected credit losses for all financial instruments for which there have been significant increases in credit risk since initial recognition."
+  },
+  {
+   "id": "d31",
+   "type": "multi",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating that the original statute required permission to acquire shares above 10% of all issued shares, whereas the reference states that it was above 10% of the total nominal value of all issued shares.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the information provided in the context, specifically that the shareholder return classifies shareholdings of less than 1% and that the original statute required prior permission to acquire shares whose total nominal value exceeded 10% of all issued shares."
+  },
+  {
+   "id": "d32",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "d33",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "d34",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "d35",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "d36",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "d37",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "d38",
+   "type": "false_premise",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer refers to Directive 8/2023, which is no longer in force according to the reference, and contradicts the reference by stating that Directive 8/2023 has a threshold amount of R12.5 million, whereas the reference states that Directive 8/2025 has this threshold amount.",
+   "support": "supported",
+   "support_reason": "The answer accurately reflects the information provided in the context, specifically in Directive 8/2023, that an exposure qualifies for classification in the retail asset class when the aggregate amount of the exposures is less than or equal to R12.5 million, subject to the other applicable criteri"
+  },
+  {
+   "id": "d39",
+   "type": "false_premise",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating that the Prudential Authority decided to extend the compliance date, when in fact it was replaced by a new directive with a new compliance date.",
+   "support": "supported",
+   "support_reason": "The answer accurately states that 30 June 2023 was the previously determined compliance date, and the Prudential Authority decided to extend it, which is explicitly mentioned in the context on page 2 of Directive 4/2023: Directive on Operational Resilience."
+  },
+  {
+   "id": "d40",
+   "type": "false_premise",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference, as it states that the circular still sets the 10 per cent minimum capital-adequacy ratio, whereas the reference states that it is deemed withdrawn and recorded the 10 per cent ratio set in 2001.",
+   "support": "supported",
+   "support_reason": "The circular explicitly states that the minimum required capital-adequacy ratio is 10 per cent on page 9."
+  }
+ ]
+}

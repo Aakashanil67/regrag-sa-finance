@@ -1,0 +1,250 @@
+{
+ "run": "dev-closedbook.json",
+ "judge": "llama",
+ "model": "llama3.1:8b",
+ "summary": {
+  "answerable": 34,
+  "correct": 16,
+  "partial": 1,
+  "incorrect": 11,
+  "refused": 6,
+  "unparsed": 0,
+  "support": {
+   "supported": 0,
+   "partial": 0,
+   "unsupported": 0,
+   "unparsed": 0
+  },
+  "answered_unanswerable": 5
+ },
+ "items": [
+  {
+   "id": "d01",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions or additional incorrect information."
+  },
+  {
+   "id": "d02",
+   "type": "single",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer states that the debt counsellor cannot make the declaration themselves, which contradicts the reference that the debt counsellor recommends a court order."
+  },
+  {
+   "id": "d03",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts of the reference answer, including the requirements for a documented, effective and accessible framework, fair and transparent handling, and governance and accountability."
+  },
+  {
+   "id": "d04",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including benchmarking against BCBS principles, identifying and documenting gaps, reporting remediation plans, testing operational resilience, and continuously improving the framework."
+  },
+  {
+   "id": "d05",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts mentioned in the reference, without any contradictions or additional information."
+  },
+  {
+   "id": "d06",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts mentioned in the reference, including the requirement to submit payment-profile information, payments received or missed, payment date and amount, and the account's current status, without any contradictions."
+  },
+  {
+   "id": "d07",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the requirement to notify the National Credit Regulator and the timeframe of 10 business days."
+  },
+  {
+   "id": "d08",
+   "type": "single",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer mentions the National Credit Regulator’s Debt Counselling System (DCS), which is not mentioned in the reference answer."
+  },
+  {
+   "id": "d09",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that IFRS 9's expected credit loss model does not require a loss event before a provision is raised, and correctly describes the initial and lifetime ECL recognition."
+  },
+  {
+   "id": "d10",
+   "type": "single",
+   "correctness": "refused"
+  },
+  {
+   "id": "d11",
+   "type": "single",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by omitting the protection of financial customers against institutional failure and the promotion of the safety and soundness of financial institutions and market infrastructures."
+  },
+  {
+   "id": "d12",
+   "type": "single",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately restates the key facts from the reference, without any contradictions or additional information."
+  },
+  {
+   "id": "d13",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, including the time frame and the method of notification."
+  },
+  {
+   "id": "d14",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer states the reference's key facts, including the notice period and the requirement for written notice, without any contradictions."
+  },
+  {
+   "id": "d15",
+   "type": "threshold",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts from the reference, without any contradictions."
+  },
+  {
+   "id": "d16",
+   "type": "threshold",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer's range of R5 million to R50 million is significantly lower than the reference's range of R60 million to R600 million."
+  },
+  {
+   "id": "d17",
+   "type": "threshold",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating R1 million, whereas the reference states R1.5 million."
+  },
+  {
+   "id": "d18",
+   "type": "threshold",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating a lower minimum capital amount of R2 million instead of R5 million."
+  },
+  {
+   "id": "d19",
+   "type": "status",
+   "correctness": "refused"
+  },
+  {
+   "id": "d20",
+   "type": "status",
+   "correctness": "refused"
+  },
+  {
+   "id": "d21",
+   "type": "status",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating that omission from an annual status circular does not repeal or withdraw a Banks Act circular, whereas the reference states that circulars are deemed withdrawn unless confirmed as effective."
+  },
+  {
+   "id": "d22",
+   "type": "status",
+   "correctness": "refused"
+  },
+  {
+   "id": "d23",
+   "type": "status",
+   "correctness": "refused"
+  },
+  {
+   "id": "d24",
+   "type": "multi",
+   "correctness": "partial",
+   "correctness_reason": "The candidate answer is mostly correct, but it states that the affordability information must be obtained or updated within three months, whereas the reference specifies seven business days for non-mortgages and fourteen business days for mortgages."
+  },
+  {
+   "id": "d25",
+   "type": "multi",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer adds an extra step of submitting to the National Credit Register, which is not mentioned in the reference, and also states a total time of 14 days, which is not in line with the reference's requirement of seven days for both issuing and submitting the certificate."
+  },
+  {
+   "id": "d26",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the key facts about what a credit provider must report and why consumers under debt review were singled out, without any contradictions or additional information."
+  },
+  {
+   "id": "d27",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the power under which the Prudential Authority directs banks on operational resilience and correctly identifies the statutory objective it serves."
+  },
+  {
+   "id": "d28",
+   "type": "multi",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating a different deadline and extension."
+  },
+  {
+   "id": "d29",
+   "type": "multi",
+   "correctness": "refused"
+  },
+  {
+   "id": "d30",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the conditions for recognising lifetime expected credit losses under IFRS 9 and the regulator's classification expectations."
+  },
+  {
+   "id": "d31",
+   "type": "multi",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states the shareholding threshold for listing a shareholder and the original banking statute's permission requirement."
+  },
+  {
+   "id": "d32",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "d33",
+   "type": "unanswerable",
+   "correctness": "refused"
+  },
+  {
+   "id": "d34",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "d35",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "d36",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "d37",
+   "type": "unanswerable",
+   "correctness": "answered_unanswerable"
+  },
+  {
+   "id": "d38",
+   "type": "false_premise",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating Directive 8/2023 is still in force and gives a different retail limit."
+  },
+  {
+   "id": "d39",
+   "type": "false_premise",
+   "correctness": "incorrect",
+   "correctness_reason": "The candidate answer contradicts the reference by stating that Directive 10/2021 gave banks until 30 June 2023, whereas the reference states that it was replaced by Directive 4/2023, which extended the compliance date to 31 December 2024."
+  },
+  {
+   "id": "d40",
+   "type": "false_premise",
+   "correctness": "correct",
+   "correctness_reason": "The candidate answer accurately states that Circular 19/2004 has been superseded and that the minimum total capital ratio is generally 10% before applicable capital buffers, without contradicting the reference."
+  }
+ ]
+}

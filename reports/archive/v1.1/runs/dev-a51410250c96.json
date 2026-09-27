@@ -1,0 +1,1688 @@
+{
+  "error": null,
+  "finished_at": "2026-09-08T22:07:05.487622+00:00",
+  "holdout_sha256": null,
+  "items": [
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": false,
+      "citations": [],
+      "id": "g01",
+      "question": "How many climate-related disclosure templates are attached to SARB Guidance Note 3/2025 as Annexure 1?",
+      "refusal_reason": "uncited_line",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "ba42e4a682024b8c0c6b49472f06b07bf398e533e0b8102dbaf815138023df19",
+        "7c11825a92ce4b54456a62857d0de1c78ccf6da2ce13f1f1198823314f6891a1",
+        "671172a7d7298a122267a5d59ce4d89fb1b43dffb84566a6e86f4dbe76be43a1",
+        "15f420ce358f309ed055af02bcf99b97a02d48f85a876971f255a3fc7d0fb0a7",
+        "52e47a54439b62b9a6a686cc597b319982f16a49584ec1c1aaade2da10db122c"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "Directive 5/2017 issued in November 2017 is replaced by Directive D3/2023. [sarb_d3_2023_accounting_provisions_ifrs9, p.1]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+          "page": 1,
+          "verified": true
+        }
+      ],
+      "id": "g02",
+      "question": "Which earlier SARB directive does Directive D3/2023 on the regulatory treatment of accounting provisions replace?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "6afb7ab4f3a5fbec5443604d68fbef5d29fe5583e551a776b50febaf8c61002f",
+        "694c32980ad0dcfed667c876e92a59f22797e6dfde75d98580c8f06a21dbea7b",
+        "cb756098c849e267a57c5af0b369bfb886f8ece45362450fda8860f43dbf0fbb",
+        "8984da0909fc2cb449b244ffeb6e2f49640a1d48f6c11045a2a99ff5490f1507",
+        "0763cd5f257b0307ffb6911bf182737c32df936b677e923b29f175dfd2bde11d"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": false,
+      "citations": [],
+      "id": "g03",
+      "question": "Why did Directive 5/2017 need to be updated, according to Directive D3/2023?",
+      "refusal_reason": "malformed_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "08ef556902f070b9c90184aaca4a74051387738c7e521ad1cf468888aa0d025e",
+        "0763cd5f257b0307ffb6911bf182737c32df936b677e923b29f175dfd2bde11d",
+        "12089f8a86c202657467792086248d2f9005e9f0580f105ddc2a3916ffd7d1a4",
+        "1e88bbeda363b4bd442be5572ad6c728e15208760a208ceaf6ee293544d4a931",
+        "14b99caaef414fe5e388544223f232e9b3611e02787133ee0f99ca0dc6d1edae"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "On 7 December 2017, the BCBS issued the revised standardised approach (STA) and internal ratings-based (IRB) approach for credit risk. [sarb_d8_2023_threshold_amounts, p.1-2]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "sarb_d8_2023_threshold_amounts",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_d8_2023_threshold_amounts",
+          "page": 2,
+          "verified": true
+        }
+      ],
+      "id": "g04",
+      "question": "On what date did the Basel Committee issue the revised standardised and internal ratings-based approaches for credit risk referenced in Directive D8/2023?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "6e586cd7af55598a75c0c301351a6b3603a824de616dc552de9c87eb694d20c8",
+        "4f08e15e791829b1a814f322e227194338687b850784ad789cf31ccac1bc7f3c",
+        "694c32980ad0dcfed667c876e92a59f22797e6dfde75d98580c8f06a21dbea7b",
+        "678ff60d55c9fb23005f343300973eb9a919ff39b87db3cd502022f81ffa0887",
+        "a586150ae1a4da50f561616fbcd27f34912b5471fe2944932f4e6e462b3f4a69"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "Directive D8/2023 was issued in terms of section 6(6) of the Banks Act 94 of 1990. [sarb_d8_2023_threshold_amounts, p.1]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "sarb_d8_2023_threshold_amounts",
+          "page": 1,
+          "verified": true
+        }
+      ],
+      "id": "g05",
+      "question": "Under which section of the Banks Act was Directive D8/2023 on threshold amounts issued?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "6e586cd7af55598a75c0c301351a6b3603a824de616dc552de9c87eb694d20c8",
+        "4f08e15e791829b1a814f322e227194338687b850784ad789cf31ccac1bc7f3c",
+        "694c32980ad0dcfed667c876e92a59f22797e6dfde75d98580c8f06a21dbea7b",
+        "1ec2c220b4eeaf6293671f466389f27ddf608e9291174489d4a269a707151a90",
+        "28ec7fadfeb35c8a01276188f2457a6c649137f6d09d95499533929875e158c3"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The BCBS operational resilience paper organises its principles across the following seven categories: governance; operational risk management; business continuity planning and testing; mapping of interconnections and interdependencies of critical operations; third-party dependency management; incident management; and resilient information and communication technology (ICT), including cyber security. [sarb_d10_2021_operational_resilience, p.1-2]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "sarb_d10_2021_operational_resilience",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_d10_2021_operational_resilience",
+          "page": 2,
+          "verified": true
+        }
+      ],
+      "id": "g06",
+      "question": "What seven categories does the BCBS operational resilience paper organise its principles across, per Directive D10/2021?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "bd78e272aa278bbf3b3abc16f83c407524109c361adf005582508720ec4c03f0",
+        "ea94c82729e4fa0c504bdf6ce2e05fc27b1bdb5e77163d9f6589b1f1f2fccbc8",
+        "5ec1321c25e6a2bcafc1b7b34bd3c906b1385024b366411df544632ca1ecbb1f",
+        "481a3df2bdd006b8972a963b6bde1ea4cb5dd1a9d95c85563340a55ef763ac53",
+        "8984da0909fc2cb449b244ffeb6e2f49640a1d48f6c11045a2a99ff5490f1507"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The Basel Committee on Banking Supervision issued its paper on principles for operational resilience in March 2021. [sarb_d10_2021_operational_resilience, p.1]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "sarb_d10_2021_operational_resilience",
+          "page": 1,
+          "verified": true
+        }
+      ],
+      "id": "g07",
+      "question": "In what month and year did the Basel Committee on Banking Supervision issue its paper on principles for operational resilience?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "5ec1321c25e6a2bcafc1b7b34bd3c906b1385024b366411df544632ca1ecbb1f",
+        "a586150ae1a4da50f561616fbcd27f34912b5471fe2944932f4e6e462b3f4a69",
+        "bd78e272aa278bbf3b3abc16f83c407524109c361adf005582508720ec4c03f0",
+        "1f40092693b0bf963649e574730671866db236e3b2e665eeef59a7aec04e108c",
+        "ea94c82729e4fa0c504bdf6ce2e05fc27b1bdb5e77163d9f6589b1f1f2fccbc8"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "Comments on the proposed amendments to hybrid capital instrument rules in Banks Act Circular 19/2004 were due by 28 February 2005. [sarb_circular_19_2004_capital_hybrid_instruments, p.1-2]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 2,
+          "verified": true
+        }
+      ],
+      "id": "g08",
+      "question": "By what date were comments due on the proposed amendments to hybrid capital instrument rules in Banks Act Circular 19/2004?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "70b60617acea49827342bcf972a1769dd11db5a8bdde6a09bf1021773e947210",
+        "c8e7d15c268a905928255cb6ba528a2f241f6bc758cf1fa75b24ef16c0519000",
+        "197e134f80b537b169855ba183cdb526f43530db07b6d86b340eb8543e2d95fd",
+        "e12e818a570b73709e5f1ef884381c1dbf476498b2b3a4b559592e1eea681163",
+        "a586150ae1a4da50f561616fbcd27f34912b5471fe2944932f4e6e462b3f4a69"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "Hybrid debt instruments combine certain features of equity instruments and debt instruments. [sarb_circular_19_2004_capital_hybrid_instruments, p.1-2]\n\nBanks issue these instruments with the objective of raising further qualifying capital for regulatory and supervisory purposes in a cost-effective manner. [sarb_circular_19_2004_capital_hybrid_instruments, p.1-2]\n\nFrom a regulatory and supervisory perspective, banks wish to demonstrate that the instruments are deeply subordinated, noncumulative and perpetual, whereas from a tax perspective, banks wish to deduct the cost relating to the instruments from tax, resulting in interest, instead of dividends, being paid. [sarb_circular_19_2004_capital_hybrid_instruments, p.1-2]\n\nThe circular also discusses other capital instruments including preference shares, redeemable cumulative preference shares, and subordinated term debt. [sarb_circular_19_2004_capital_hybrid_instruments, p.13-15]\n\nHybrid debt instruments provide investors with an option of a yield pick-up over subordinated term debt. [sarb_circular_19_2004_capital_hybrid_instruments, p.13-15]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 13,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 14,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 15,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 13,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 14,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 15,
+          "verified": true
+        }
+      ],
+      "id": "g09",
+      "question": "What kind of capital instruments does Banks Act Circular 19/2004 discuss, and why are they called 'hybrid'?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "70b60617acea49827342bcf972a1769dd11db5a8bdde6a09bf1021773e947210",
+        "e12e818a570b73709e5f1ef884381c1dbf476498b2b3a4b559592e1eea681163",
+        "197e134f80b537b169855ba183cdb526f43530db07b6d86b340eb8543e2d95fd",
+        "57f2dcc4c4a1b887fdfe9fb679e08af2e1ca2c54abfc6b2e7720f9e060236d7b",
+        "5897c9958bfaaafc8d5aca7f0ad1c77bf3d3c75a56b87267f8249afc5906a619"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The Basel Committee confirmed that it would publish the text of Basel II at the end of June 2004. [sarb_circular_6_2004_basel_ii_update, p.1-2]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "sarb_circular_6_2004_basel_ii_update",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_6_2004_basel_ii_update",
+          "page": 2,
+          "verified": true
+        }
+      ],
+      "id": "g10",
+      "question": "When did the Basel Committee confirm it would publish the full text of Basel II, according to Circular 6/2004?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "a586150ae1a4da50f561616fbcd27f34912b5471fe2944932f4e6e462b3f4a69",
+        "fcb2e8e36012d8ddb25ab50625f0a9015e565b00f94e62771753fbf6d3b4c5ab",
+        "1f40092693b0bf963649e574730671866db236e3b2e665eeef59a7aec04e108c",
+        "14b2fc8fe9561902e6372f5b0226050af817761201860cb33bccb3e22d29e584",
+        "28ec7fadfeb35c8a01276188f2457a6c649137f6d09d95499533929875e158c3"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The standardized and foundation approaches would be implemented from year-end 2006, while the most advanced approaches would be implemented at year-end 2007. [sarb_circular_6_2004_basel_ii_update, p.1-2]\n\nThe Basel Committee confirmed that one further year of impact analysis and parallel running would be needed for the most advanced approaches. [sarb_circular_6_2004_basel_ii_update, p.1-2]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "sarb_circular_6_2004_basel_ii_update",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_6_2004_basel_ii_update",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_6_2004_basel_ii_update",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_6_2004_basel_ii_update",
+          "page": 2,
+          "verified": true
+        }
+      ],
+      "id": "g11",
+      "question": "According to Circular 6/2004, when would the most advanced Basel II approaches be implemented, compared to the standardised and foundation approaches?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "a586150ae1a4da50f561616fbcd27f34912b5471fe2944932f4e6e462b3f4a69",
+        "fcb2e8e36012d8ddb25ab50625f0a9015e565b00f94e62771753fbf6d3b4c5ab",
+        "694c32980ad0dcfed667c876e92a59f22797e6dfde75d98580c8f06a21dbea7b",
+        "678ff60d55c9fb23005f343300973eb9a919ff39b87db3cd502022f81ffa0887",
+        "28ec7fadfeb35c8a01276188f2457a6c649137f6d09d95499533929875e158c3"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The National Credit Act came into commencement on 1 June, 2006. [nca_act_34_2005, p.1]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "nca_act_34_2005",
+          "page": 1,
+          "verified": true
+        }
+      ],
+      "id": "g12",
+      "question": "On what date did the National Credit Act come into commencement?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "832756d6cb0f3a5d5f9a34613dce9d99eb125a45918a2dfb94a8c9f6ab041ac3",
+        "cca4a0130f0fd02ab48fbcd02c9d5f54a134623e05add9199113189f05404674",
+        "4c0d16e5dd3cd5624671853af102002accc036a23d9bb9fa3da7856fc90172e1",
+        "aea45bf294e1277875252fcdb0cdc34dcd10382cebf89ddcc59bd227285198f7",
+        "5e6ff83d708b723b3944dceb49c263d72790845d10068f1fcd2f5a1830bc5713"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The National Credit Act repealed the Usury Act, 1968 (Act No. 73 of 1968) and the Credit Agreements Act, 1980 (Act No. 75 of 1980). [nca_act_34_2005, p.105]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "nca_act_34_2005",
+          "page": 105,
+          "verified": true
+        }
+      ],
+      "id": "g13",
+      "question": "Which two pieces of prior legislation did the National Credit Act repeal?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "50ca5bb630310ebd41edb79486cdb8f6e758ab2271727bec04b94f542fb3eb54",
+        "e4caa11dc778f7af094615c12357d821804eadda2320f2c369cf2525799e7714",
+        "f3f3d610eea663ffccb4e021a25f895b37caa0827b5c7b72a1504346105760b3",
+        "ad9a4d6eb702bf18f7d694ee38f54783ec18c1610f9fc72185a70e6691b74b1e",
+        "4c0d16e5dd3cd5624671853af102002accc036a23d9bb9fa3da7856fc90172e1"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "A registrant must give the National Credit Regulator written notice specifying a date at least five business days after the date of the notice, on which the cancellation is to take effect. [nca_act_34_2005, p.40]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "nca_act_34_2005",
+          "page": 40,
+          "verified": true
+        }
+      ],
+      "id": "g14",
+      "question": "How many business days' notice must a registrant give the National Credit Regulator before voluntarily cancelling its registration under section 58 of the NCA?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "5504eb1f61f0bf659ff22c0e8cfd214ed51d431d4dcf6a3857a119cd3dc29ec6",
+        "7614e9e9565dd9c4089693df0e6d40380927319186f4f5587873387f03e97142",
+        "cb5b38f6e7709f6d196e1b5a442f96c2badf99a344dc0137647a38b240a464b0",
+        "14b99caaef414fe5e388544223f232e9b3611e02787133ee0f99ca0dc6d1edae",
+        "6cc56d234cc41cfc5bbbd83352032bbc7390abb2e72b343e952dcbf93fdedaaa"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": false,
+      "citations": [],
+      "id": "g15",
+      "question": "Under section 58A of the NCA, what must a registrant attach to its voluntary cancellation notice besides the affidavit?",
+      "refusal_reason": "missing_citation",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "7614e9e9565dd9c4089693df0e6d40380927319186f4f5587873387f03e97142",
+        "5504eb1f61f0bf659ff22c0e8cfd214ed51d431d4dcf6a3857a119cd3dc29ec6",
+        "6ba41b1280838af8b088ee0c24b833b824d840ae342073f0bdbe4485a155a326",
+        "cb5b38f6e7709f6d196e1b5a442f96c2badf99a344dc0137647a38b240a464b0",
+        "f819a4e10dc2e0ce33feeb8b76c169b39ead8988285f42d9205659ea20c9eb76"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": false,
+      "citations": [],
+      "id": "g16",
+      "question": "According to the Notebook on the National Credit Act, what kind of credit-marketing practices does the Act prohibit?",
+      "refusal_reason": "malformed_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "ad9a4d6eb702bf18f7d694ee38f54783ec18c1610f9fc72185a70e6691b74b1e",
+        "e4caa11dc778f7af094615c12357d821804eadda2320f2c369cf2525799e7714",
+        "4c0d16e5dd3cd5624671853af102002accc036a23d9bb9fa3da7856fc90172e1",
+        "e9a416967b791e89f8ced84e5c82b2819d42a5ddd6ba0824f93ed14eb92aad24",
+        "dfa39d246501f54555532d42cdd8e7ca7ff7ae5830793337794f402963bf043b"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The National Credit Act established the National Credit Regulator and the National Consumer Tribunal. [nca_notebook_brochure, p.1-5]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "nca_notebook_brochure",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "nca_notebook_brochure",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "nca_notebook_brochure",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "nca_notebook_brochure",
+          "page": 4,
+          "verified": true
+        },
+        {
+          "doc_id": "nca_notebook_brochure",
+          "page": 5,
+          "verified": true
+        }
+      ],
+      "id": "g17",
+      "question": "What two bodies did the National Credit Act establish, according to the Notebook overview?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "ad9a4d6eb702bf18f7d694ee38f54783ec18c1610f9fc72185a70e6691b74b1e",
+        "e4caa11dc778f7af094615c12357d821804eadda2320f2c369cf2525799e7714",
+        "4c0d16e5dd3cd5624671853af102002accc036a23d9bb9fa3da7856fc90172e1",
+        "dfa39d246501f54555532d42cdd8e7ca7ff7ae5830793337794f402963bf043b",
+        "149769218af2102da8512e2388e62702b9c0968b802b22189654e7a2bdc3294e"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "Section 72(1)(c) of the National Credit Act 34 of 2005 gives every person a right to challenge the accuracy of any information concerning that person that is held by the credit bureau or national credit register, as the case may be, and require the credit bureau or National Credit Regulator to investigate the accuracy of any challenged information, without charge to the consumer. [nca_act_34_2005, p.50]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "nca_act_34_2005",
+          "page": 50,
+          "verified": true
+        }
+      ],
+      "id": "g18",
+      "question": "Which section of the National Credit Act gives a consumer the right to challenge the accuracy of information a credit bureau holds about them, without charge?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "67645368e63deaecd62fbab0f7e74d625f11c3cad5c51f6a41a7e32bac107f8f",
+        "224f650660d4f8663b7bf827425bbf27f1a811693844026533319b56ea318386",
+        "4aeed9a131d9f8d8f28a3ab3f5eb3e8f49f245ec4d49886c3b4780992cd4bd57",
+        "fbd3d1a2c083d5dc2a3b5198b9ab9bab06ab88ef45ecb1745dd435beca2da6bf",
+        "973f108d90d75febfee5a5f3572503c65ef46f3040345a78f3e55e1ea3501579"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "According to the NCR's disputed credit complaints guideline, a consumer will be considered to have challenged the accuracy of information on their credit report when it is alleged that the information is: incomplete, outdated or prescribed, factually incorrect, and/or related to fraud. [ncr_guideline_disputed_credit_complaints, p.2-3]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "ncr_guideline_disputed_credit_complaints",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_disputed_credit_complaints",
+          "page": 3,
+          "verified": true
+        }
+      ],
+      "id": "g19",
+      "question": "According to the NCR's disputed credit complaints guideline, what three grounds can make a consumer's information 'challenged' as inaccurate?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "67645368e63deaecd62fbab0f7e74d625f11c3cad5c51f6a41a7e32bac107f8f",
+        "fbd3d1a2c083d5dc2a3b5198b9ab9bab06ab88ef45ecb1745dd435beca2da6bf",
+        "224f650660d4f8663b7bf827425bbf27f1a811693844026533319b56ea318386",
+        "973f108d90d75febfee5a5f3572503c65ef46f3040345a78f3e55e1ea3501579",
+        "dfa39d246501f54555532d42cdd8e7ca7ff7ae5830793337794f402963bf043b"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "A debt counsellor must within seven days after the issuance of the clearance certificate, file a certified copy of that certificate with the national register established in terms of section 69 of the NCA and all registered credit bureaux. [nca_act_34_2005, p.48]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "nca_act_34_2005",
+          "page": 48,
+          "verified": true
+        }
+      ],
+      "id": "g20",
+      "question": "How many days does a debt counsellor have to file a certified clearance certificate with credit bureaus under section 71(4) of the NCA?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "7da176ec9f7275a36f6c4c470311baad785b673dcc733bf2dadd6653046dfb65",
+        "f37713b412182dfca3ca154715a7657d849e3c6e46dba7e5d6b52719be967c2d",
+        "523c7d856713854299ef50add769f3da4ffaf82a8bc6c8e40716c13194f62b2d",
+        "e703a983a9284ab0ad88512fe619ba511e1206312c43b739c57d219e710a962e",
+        "e3b15a60a073085ad0b188f032d8e48b072f271afded16257078790477278a8b"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The National Credit Regulator designated the Credit Bureau Association (\"the CBA\") to provide and maintain an authentication platform to be used by debt counsellors for the filing of certified clearance certificates and supporting documents. [ncr_guideline_feb_2026_clearance_certificates, p.2]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "ncr_guideline_feb_2026_clearance_certificates",
+          "page": 2,
+          "verified": true
+        }
+      ],
+      "id": "g21",
+      "question": "Which organisation did the NCR designate to provide the authentication platform for filing clearance certificates?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "7da176ec9f7275a36f6c4c470311baad785b673dcc733bf2dadd6653046dfb65",
+        "e703a983a9284ab0ad88512fe619ba511e1206312c43b739c57d219e710a962e",
+        "dfa39d246501f54555532d42cdd8e7ca7ff7ae5830793337794f402963bf043b",
+        "f37713b412182dfca3ca154715a7657d849e3c6e46dba7e5d6b52719be967c2d",
+        "8a544308661d98fcfda9530b62e1950ab53224788a3e8b6986cb8ff3aeaa468d"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The June 2025 NCR guideline on consumers under debt review implements Sections 69(2), 70(1), 70(2) and 71(5) of the National Credit Act, read with Regulation 19(13). [ncr_guideline_june_2025_credit_info, p.2-3]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "ncr_guideline_june_2025_credit_info",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_june_2025_credit_info",
+          "page": 3,
+          "verified": true
+        }
+      ],
+      "id": "g22",
+      "question": "Which sections of the National Credit Act does the June 2025 NCR guideline on consumers under debt review implement?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "dfa39d246501f54555532d42cdd8e7ca7ff7ae5830793337794f402963bf043b",
+        "13f6976a232aa4b78701587e2fcd6e5bddb4bb5bdb50e32a297873be42139945",
+        "0ac216a5f4bca72d7fdca7f7961b08d78c96ba49e437917ea3ac5f3ce8217d46",
+        "67645368e63deaecd62fbab0f7e74d625f11c3cad5c51f6a41a7e32bac107f8f",
+        "7da176ec9f7275a36f6c4c470311baad785b673dcc733bf2dadd6653046dfb65"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "Credit providers do not submit payment profile information of consumers who are under debt review to credit bureaus as required by the Act. [ncr_guideline_june_2025_credit_info, p.2-3]\n\nConsumers who are issued with clearance certificates after having completed the debt review process do not have any payment profile information recorded on their credit bureau reports. [ncr_guideline_june_2025_credit_info, p.2-3]\n\nThis makes it difficult for consumers to be considered for new credit applications, because credit providers do not have any payment profile information to enable them to conduct credit risk assessments on these consumers. [ncr_guideline_june_2025_credit_info, p.2-3]\n\nEssentially these consumers are incorrectly treated as thin file consumers by credit providers. [ncr_guideline_june_2025_credit_info, p.2-3]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "ncr_guideline_june_2025_credit_info",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_june_2025_credit_info",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_june_2025_credit_info",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_june_2025_credit_info",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_june_2025_credit_info",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_june_2025_credit_info",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_june_2025_credit_info",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_june_2025_credit_info",
+          "page": 3,
+          "verified": true
+        }
+      ],
+      "id": "g23",
+      "question": "What problem does the June 2025 NCR guideline identify with how credit providers treat consumers under debt review?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "dfa39d246501f54555532d42cdd8e7ca7ff7ae5830793337794f402963bf043b",
+        "0ac216a5f4bca72d7fdca7f7961b08d78c96ba49e437917ea3ac5f3ce8217d46",
+        "13f6976a232aa4b78701587e2fcd6e5bddb4bb5bdb50e32a297873be42139945",
+        "67645368e63deaecd62fbab0f7e74d625f11c3cad5c51f6a41a7e32bac107f8f",
+        "6fd2101dc0da34fe4aee7d78634e63881c1e538532e1e91ed3c20f67dd49c478"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "A debt counsellor must notify the NCR immediately upon any change in their contact details, including but not restricted to addresses of each business premises, or upon the occurrence of any change in the information provided at the time of registration or any other circumstances where such change is significant to the registrant's ability or eligibility to conduct the business of a debt counsellor, or ability to comply with the Act or regulations. [ncr_guideline_sept_2025_debt_counsellors, p.2-3]\n\nA debt counsellor is required to complete the NCR Registrant information update form in full to reflect updated contact details and send it to SNtimane@ncr.org.za. [ncr_guideline_sept_2025_debt_counsellors, p.3-4]\n\nEach debt counsellor is required to complete all three categories of updates available under the Debt Help System functionality, namely \"Debt Counsellors Personal Information\", \"Contact Details\" as well as \"Business Operating Address\". [ncr_guideline_sept_2025_debt_counsellors, p.3-4]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "ncr_guideline_sept_2025_debt_counsellors",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_sept_2025_debt_counsellors",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_sept_2025_debt_counsellors",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_sept_2025_debt_counsellors",
+          "page": 4,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_sept_2025_debt_counsellors",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_sept_2025_debt_counsellors",
+          "page": 4,
+          "verified": true
+        }
+      ],
+      "id": "g24",
+      "question": "What is a debt counsellor required to keep up to date with the NCR under Guideline 004/2025?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "8a544308661d98fcfda9530b62e1950ab53224788a3e8b6986cb8ff3aeaa468d",
+        "7da176ec9f7275a36f6c4c470311baad785b673dcc733bf2dadd6653046dfb65",
+        "13f6976a232aa4b78701587e2fcd6e5bddb4bb5bdb50e32a297873be42139945",
+        "0ac216a5f4bca72d7fdca7f7961b08d78c96ba49e437917ea3ac5f3ce8217d46",
+        "58798cda7d71a974b3b02b43fbef412beab179ed601b9b36178e8d4d658cb9ca"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The FSCA published the Conduct Standard for Banks on 8 July 2020. [fsca_press_conduct_standard_banks_2020, p.1]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "fsca_press_conduct_standard_banks_2020",
+          "page": 1,
+          "verified": true
+        }
+      ],
+      "id": "g25",
+      "question": "On what date did the FSCA publish the Conduct Standard for Banks?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "bf86c4c48d028dbdd7bba0ebf372c3a92aa50ed8f77ef2894456c4e2e98c583c",
+        "8bf0ca69fe48e25bba26d071d456748e8b71cce068c5740ae201eff4fff08f8a",
+        "92f47813494b994f24c667c554e10d90e8613195b098861665b7bcc16da1abd9",
+        "e3d14af469b586363b9ceb2fa8dccb6c4885879bf4dc34b68cdf43b9543c87c4",
+        "6e586cd7af55598a75c0c301351a6b3603a824de616dc552de9c87eb694d20c8"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The Financial Sector Regulation Act (FSRA) gave the FSCA its mandate to regulate how banks conduct themselves towards customers. [fsca_press_conduct_standard_banks_2020, p.1]\n\nWhen the FSRA was introduced in 2018, the FSCA was given the explicit mandate of regulating and supervising the way banking institutions conduct themselves in relation to the provision of financial products and services to customers. [fsca_press_conduct_standard_banks_2020, p.1]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "fsca_press_conduct_standard_banks_2020",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_press_conduct_standard_banks_2020",
+          "page": 1,
+          "verified": true
+        }
+      ],
+      "id": "g26",
+      "question": "Which piece of legislation gave the FSCA its mandate to regulate how banks conduct themselves towards customers?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "bf86c4c48d028dbdd7bba0ebf372c3a92aa50ed8f77ef2894456c4e2e98c583c",
+        "787a25219f3aad130bd40cfff327abf51712cf490a9b7df3d375ae1bf0bb2ddf",
+        "cae44d180db32a242643accfe58a302c138d3942b325c7d6448474b71ebf41d7",
+        "4fd07ca577cb6fcf39bbeefef610493bf520366c2e7a11fa3fccde654a80ce06",
+        "d0a3d948f0b5884d788e801320dea5c023d8bb9e5079feaaabcf599ad8e4407f"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The Conduct Standard for authorised OTC derivative providers was published under section 6(8)(b), read with sections 74 and 75, of the Financial Markets Act, 2012 (Act No. 19 of 2012). [fsca_conduct_standard_otc_derivatives_2018, p.1]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "fsca_conduct_standard_otc_derivatives_2018",
+          "page": 1,
+          "verified": true
+        }
+      ],
+      "id": "g27",
+      "question": "Under which Act and section was the Conduct Standard for authorised OTC derivative providers published?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "8bf0ca69fe48e25bba26d071d456748e8b71cce068c5740ae201eff4fff08f8a",
+        "3d83e7af35e03d3d86294d9dff802f0aa61069c09a9c035816e0f209a1d02964",
+        "9c3892ba81a3079f6189d02a4bfd8932ff1f513a2871a9d297f4bb44c8a5b917",
+        "361e371713f3db09c45609c4bf1a95e13706085502ba6beca2ca466c85205629",
+        "bf86c4c48d028dbdd7bba0ebf372c3a92aa50ed8f77ef2894456c4e2e98c583c"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": false,
+      "citations": [],
+      "id": "g28",
+      "question": "What did Proposal J of the Retail Distribution Review address regarding intermediation and outsourced services?",
+      "refusal_reason": "malformed_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "6d9f7e8785a3b305e505e36c8ee84ada3e2062571d62c3d2962cd8ec00e7d1e2",
+        "787a25219f3aad130bd40cfff327abf51712cf490a9b7df3d375ae1bf0bb2ddf",
+        "9da4617a8be8b041cef03fdb52985ebde86653f88d62c331a0637b3282e9198b",
+        "301975e4353a3765a4fadd0c6ad7ef1c83d337d25d1a448fe1bfa6f62c1acca6",
+        "0fc623ac955699644b8857c683bef18b274c6829074f82b175a3e021eae980b7"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": false,
+      "citations": [],
+      "id": "g29",
+      "question": "In what year did the FSB (the FSCA's predecessor) carry out the technical work to determine which activities intermediaries were remunerated for, as part of the activity segmentation project?",
+      "refusal_reason": "uncited_line",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "787a25219f3aad130bd40cfff327abf51712cf490a9b7df3d375ae1bf0bb2ddf",
+        "b261f03dce794855aa7bf20d4c0d38167f50be96bf78853c75878a20640fd802",
+        "bf86c4c48d028dbdd7bba0ebf372c3a92aa50ed8f77ef2894456c4e2e98c583c",
+        "f964a0d4bf7412cfdb16e7039715cfbb461245f085c2ed8e9c32be5aa30effe1",
+        "0a159f695c4f00fe46d9bb3d189d7ab6ce987cc3724acd44df40865f3771e65f"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The 2014 Retail Distribution Review proposes a shift away from a purely rules-based compliance approach to one that introduces a set of structural interventions designed to change incentives, relationships and business models in the market in a way that supports the consistent delivery of fair outcomes to customers. [fsca_rdr_2014, p.3]\n\nThe outcomes-based approach means that, where existing regulatory frameworks do not consistently support the delivery of desired outcomes, structural interventions are necessary to change incentives, relationships and business models in the market. [fsca_rdr_2014, p.10]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "fsca_rdr_2014",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_2014",
+          "page": 10,
+          "verified": true
+        }
+      ],
+      "id": "g30",
+      "question": "What regulatory approach shift does the 2014 Retail Distribution Review propose, away from a purely rules-based compliance approach?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "6d9f7e8785a3b305e505e36c8ee84ada3e2062571d62c3d2962cd8ec00e7d1e2",
+        "4fd07ca577cb6fcf39bbeefef610493bf520366c2e7a11fa3fccde654a80ce06",
+        "b7ae32c897f445f74571388994b65dc2dd95d38c915fc94f7b07f59c689213f4",
+        "fd581342658a3514e6bcc437153df6d40fe89139eaaa100640ccc837828e5b9a",
+        "787a25219f3aad130bd40cfff327abf51712cf490a9b7df3d375ae1bf0bb2ddf"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": false,
+      "citations": [],
+      "id": "g31",
+      "question": "What were the agenda topics of the 2011 FSB presentation on Treating Customers Fairly?",
+      "refusal_reason": "uncited_line",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "4fd07ca577cb6fcf39bbeefef610493bf520366c2e7a11fa3fccde654a80ce06",
+        "1927f73ba679a115c12110b34a7a9366eccf6aeb066b5be5b6dbb53fbf381ba3",
+        "1882cb6d9693ce25898a75c321b11a73f98c3a925b0e59046c698e98ffade831",
+        "6d9f7e8785a3b305e505e36c8ee84ada3e2062571d62c3d2962cd8ec00e7d1e2",
+        "c929f18c030beee28ed35a242092f33e140d84631ef7f5ac9de1df8fcbd79207"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The 'own credit' issue is whereby banks and others book gains through profit or loss as a result of the value of their own debt falling due to a decrease in credit worthiness when they have elected to measure that debt at fair value. [ifrs9_project_summary_2014, p.2-4]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "ifrs9_project_summary_2014",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "ifrs9_project_summary_2014",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "ifrs9_project_summary_2014",
+          "page": 4,
+          "verified": true
+        }
+      ],
+      "id": "g32",
+      "question": "What is the 'own credit' issue that IFRS 9 addresses?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "df6bb01a04ea583987f528d4e34ac85d38c66a6cb9581546d11d7de5734d22f1",
+        "6afb7ab4f3a5fbec5443604d68fbef5d29fe5583e551a776b50febaf8c61002f",
+        "93379b021623959e532c787890fc66f9a88cc42f11d0b5a7507ed116f72a4af2",
+        "289dda975e4e98a5f8680162397ab80265942e9945fdbf58d6eea31274719543",
+        "c651112d7d77b8dfe8d32954bbf1bb2618095153037b26449604c669d3608e1d"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The final version of IFRS 9 brings together the classification and measurement, impairment and hedge accounting phases of the IASB's project to replace IAS 39 Financial Instruments: Recognition and Measurement. [ifrs9_project_summary_2014, p.2-4]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "ifrs9_project_summary_2014",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "ifrs9_project_summary_2014",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "ifrs9_project_summary_2014",
+          "page": 4,
+          "verified": true
+        }
+      ],
+      "id": "g33",
+      "question": "What three phases of the IASB's project does the final version of IFRS 9 bring together?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "df6bb01a04ea583987f528d4e34ac85d38c66a6cb9581546d11d7de5734d22f1",
+        "777989e403288d6cc472f98c92a822a6a3bb0a735663e16fc3e132a79642ce04",
+        "45e8539bfd32aae0a07eea2e13e0c160f108bc90c655c2a32494dfd637f19efd",
+        "2fb628dee409eaf994bdc5d0a419d7b328238731940aa67b05f967adf6632de9",
+        "289dda975e4e98a5f8680162397ab80265942e9945fdbf58d6eea31274719543"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": false,
+      "citations": [],
+      "id": "g34",
+      "question": "Under the 2021 issued IFRS 9 text, what three categories does an entity classify financial assets into for subsequent measurement?",
+      "refusal_reason": "malformed_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "777989e403288d6cc472f98c92a822a6a3bb0a735663e16fc3e132a79642ce04",
+        "12089f8a86c202657467792086248d2f9005e9f0580f105ddc2a3916ffd7d1a4",
+        "cb756098c849e267a57c5af0b369bfb886f8ece45362450fda8860f43dbf0fbb",
+        "2fb628dee409eaf994bdc5d0a419d7b328238731940aa67b05f967adf6632de9",
+        "b12aea5e286f2ba79453ab7346ff81fe28cfd944cbbb30089bb1372882885dc8"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": false,
+      "citations": [],
+      "id": "g35",
+      "question": "Under the 2021 issued IFRS 9 text, at what value does an entity initially measure a financial asset or financial liability not held at fair value through profit or loss?",
+      "refusal_reason": "malformed_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "12089f8a86c202657467792086248d2f9005e9f0580f105ddc2a3916ffd7d1a4",
+        "42f7f5570561cf99769a0601ae3b2c8e4f26b9c1c1b7c652b7844436b82cf8ee",
+        "00eedf41b7aa2ac54b5aba2ca7056fc2f6aa304e685fd342dced7eaa9c1284f0",
+        "93379b021623959e532c787890fc66f9a88cc42f11d0b5a7507ed116f72a4af2",
+        "d7b050791014b7f9688a3112971df8f645840ce5440ee252ae7393a3f5ce0c7f"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The forward-looking model is called the Expected Credit Loss (ECL) model. [sarb_d3_2023_accounting_provisions_ifrs9, p.1-2] IFRS 9 requires entities to recognise expected credit losses at all times and to update the amount of expected credit losses recognised at each reporting date to reflect changes in the credit risk of financial instruments. [ifrs9_project_summary_2014, p.14-15]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "ifrs9_project_summary_2014",
+          "page": 14,
+          "verified": true
+        },
+        {
+          "doc_id": "ifrs9_project_summary_2014",
+          "page": 15,
+          "verified": true
+        }
+      ],
+      "id": "g36",
+      "question": "Both Directive D3/2023 and the IFRS 9 project summary describe a shift from an 'incurred loss' model to a forward-looking model. What is that forward-looking model called?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "cb756098c849e267a57c5af0b369bfb886f8ece45362450fda8860f43dbf0fbb",
+        "034edc47f90cf70d7c069c77f212eca5629fbed92dd1b879834b5fe50ce774f4",
+        "df6bb01a04ea583987f528d4e34ac85d38c66a6cb9581546d11d7de5734d22f1",
+        "93379b021623959e532c787890fc66f9a88cc42f11d0b5a7507ed116f72a4af2",
+        "42f7f5570561cf99769a0601ae3b2c8e4f26b9c1c1b7c652b7844436b82cf8ee"
+      ],
+      "type": "multi-doc"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": false,
+      "citations": [],
+      "id": "g37",
+      "question": "Which SARB documents were issued under section 6(5) versus section 6(6) of the Banks Act, and what is the practical difference between the two document types they represent?",
+      "refusal_reason": "malformed_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "28ec7fadfeb35c8a01276188f2457a6c649137f6d09d95499533929875e158c3",
+        "6e586cd7af55598a75c0c301351a6b3603a824de616dc552de9c87eb694d20c8",
+        "4f08e15e791829b1a814f322e227194338687b850784ad789cf31ccac1bc7f3c",
+        "694c32980ad0dcfed667c876e92a59f22797e6dfde75d98580c8f06a21dbea7b",
+        "1ec2c220b4eeaf6293671f466389f27ddf608e9291174489d4a269a707151a90"
+      ],
+      "type": "multi-doc"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": false,
+      "citations": [],
+      "id": "g38",
+      "question": "How does the National Credit Act's stated purpose, as summarised in the Notebook brochure, connect to the NCR's June 2025 guideline on consumers under debt review?",
+      "refusal_reason": "uncited_line",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "dfa39d246501f54555532d42cdd8e7ca7ff7ae5830793337794f402963bf043b",
+        "13f6976a232aa4b78701587e2fcd6e5bddb4bb5bdb50e32a297873be42139945",
+        "7da176ec9f7275a36f6c4c470311baad785b673dcc733bf2dadd6653046dfb65",
+        "67645368e63deaecd62fbab0f7e74d625f11c3cad5c51f6a41a7e32bac107f8f",
+        "ad9a4d6eb702bf18f7d694ee38f54783ec18c1610f9fc72185a70e6691b74b1e"
+      ],
+      "type": "multi-doc"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "Section 16(1)(b) of the National Credit Act 34 of 2005 empowers the National Credit Regulator to provide guidance to the credit market and industry by issuing explanatory notices on the interpretation of the Act. [ncr_guideline_june_2025_credit_info, p.2-3] [ncr_guideline_sept_2025_debt_counsellors, p.2-3]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "ncr_guideline_june_2025_credit_info",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_june_2025_credit_info",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_sept_2025_debt_counsellors",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "ncr_guideline_sept_2025_debt_counsellors",
+          "page": 3,
+          "verified": true
+        }
+      ],
+      "id": "g39",
+      "question": "What single section of the National Credit Act empowers the NCR to issue both the June 2025 and September 2025 guidelines discussed in this corpus?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "dfa39d246501f54555532d42cdd8e7ca7ff7ae5830793337794f402963bf043b",
+        "67645368e63deaecd62fbab0f7e74d625f11c3cad5c51f6a41a7e32bac107f8f",
+        "13f6976a232aa4b78701587e2fcd6e5bddb4bb5bdb50e32a297873be42139945",
+        "7da176ec9f7275a36f6c4c470311baad785b673dcc733bf2dadd6653046dfb65",
+        "e1256334dd580c783f7147bacbe17cb06050ae1ff0caf2c67f34446b449d9768"
+      ],
+      "type": "multi-doc"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The 2014 Retail Distribution Review proposed an activity-based approach to categorizing intermediary services, distinguishing between advice (a service to the customer), intermediary services (services connecting product suppliers and customers), and other services provided by advisers and intermediaries (services to product suppliers). [fsca_rdr_2014, p.3-5]\n\nThe 2019 intermediary activity segmentation update built on this foundation by developing a more granular segmentation framework that demarcates between: Advice (a service to the customer); Other services to the customer; Services that truly \"intermediate\" between the customer and the insurer; Services to the insurer (split between binder services and other outsourced services); and Other services to the insurer not explicitly provided for in the current regulatory framework. [fsca_rdr_intermediary_segmentation_2019, p.2-3]\n\nThe 2019 update operationalized the RDR's structural interventions by implementing specific regulatory measures, including the capping of maximum binder fees that an insurer may pay to a non-mandated intermediary authorized to render advice at a maximum of 9% of applicable premiums if all binder functions are performed. [fsca_rdr_intermediary_segmentation_2019, p.2-3]\n\nThe 2019 update also introduced an insurer notification process to the FSCA in respect of arrangements where an insurer intends to pay remuneration to an independent intermediary or representative for functions other than services as intermediary or binder functions, including other outsourcing arrangements. [fsca_rdr_intermediary_segmentation_2019, p.2-3]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "fsca_rdr_2014",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_2014",
+          "page": 4,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_2014",
+          "page": 5,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+          "page": 3,
+          "verified": true
+        }
+      ],
+      "id": "g40",
+      "question": "How did the FSCA's 2019 intermediary activity segmentation update build on the 2014 Retail Distribution Review?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "787a25219f3aad130bd40cfff327abf51712cf490a9b7df3d375ae1bf0bb2ddf",
+        "6d9f7e8785a3b305e505e36c8ee84ada3e2062571d62c3d2962cd8ec00e7d1e2",
+        "a4373376f0b3668e8398d709fe1cf4ecedc6accec82ad00f3c500f1d05b56f30",
+        "bf86c4c48d028dbdd7bba0ebf372c3a92aa50ed8f77ef2894456c4e2e98c583c",
+        "0fc623ac955699644b8857c683bef18b274c6829074f82b175a3e021eae980b7"
+      ],
+      "type": "multi-doc"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "The Conduct Standard for OTC Derivative Providers rests on the Financial Markets Act, 2012 (Act No. 19 of 2012). [fsca_conduct_standard_otc_derivatives_2018, p.1-3]\n\nThe Conduct Standard for Banks rests on the Financial Sector Regulation Act (FSRA), which was introduced in 2018. [fsca_press_conduct_standard_banks_2020, p.1]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "fsca_conduct_standard_otc_derivatives_2018",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_conduct_standard_otc_derivatives_2018",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_conduct_standard_otc_derivatives_2018",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "fsca_press_conduct_standard_banks_2020",
+          "page": 1,
+          "verified": true
+        }
+      ],
+      "id": "g41",
+      "question": "Both the Conduct Standard for Banks and the Conduct Standard for OTC Derivative Providers are FSCA conduct standards, but they rest on different underlying legislation. What are the two Acts?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "8bf0ca69fe48e25bba26d071d456748e8b71cce068c5740ae201eff4fff08f8a",
+        "bf86c4c48d028dbdd7bba0ebf372c3a92aa50ed8f77ef2894456c4e2e98c583c",
+        "3d83e7af35e03d3d86294d9dff802f0aa61069c09a9c035816e0f209a1d02964",
+        "92f47813494b994f24c667c554e10d90e8613195b098861665b7bcc16da1abd9",
+        "787a25219f3aad130bd40cfff327abf51712cf490a9b7df3d375ae1bf0bb2ddf"
+      ],
+      "type": "multi-doc"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "IFRS 9 replaces IAS 39 Financial Instruments: Recognition and Measurement. [ifrs9_project_summary_2014, p.2-4]\n\nIAS 39 contained requirements for the recognition and measurement of financial instruments. [ifrs9_issued_2021, p.1]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "ifrs9_project_summary_2014",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "ifrs9_project_summary_2014",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "ifrs9_project_summary_2014",
+          "page": 4,
+          "verified": true
+        },
+        {
+          "doc_id": "ifrs9_issued_2021",
+          "page": 1,
+          "verified": true
+        }
+      ],
+      "id": "g42",
+      "question": "The IFRS 9 project summary and the 2021 issued IFRS 9 text both describe IFRS 9 as replacing an earlier standard. Which standard, and for what type of accounting?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "df6bb01a04ea583987f528d4e34ac85d38c66a6cb9581546d11d7de5734d22f1",
+        "777989e403288d6cc472f98c92a822a6a3bb0a735663e16fc3e132a79642ce04",
+        "2fb628dee409eaf994bdc5d0a419d7b328238731940aa67b05f967adf6632de9",
+        "45e8539bfd32aae0a07eea2e13e0c160f108bc90c655c2a32494dfd637f19efd",
+        "f6fdf8ef1d20d500502574e855d93fc974089f2a9cd8bc700db7f7a2177b598d"
+      ],
+      "type": "multi-doc"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "Circular 6/2004 addresses developments in the Basel II capital accord framework and implementation timelines for banks. [sarb_circular_6_2004_basel_ii_update, p.1-2]\n\nCircular 19/2004 addresses the qualifying capital and reserve funds of banks, including the regulatory treatment of hybrid debt instruments that combine features of equity and debt. [sarb_circular_19_2004_capital_hybrid_instruments, p.1-2]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "sarb_circular_6_2004_basel_ii_update",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_6_2004_basel_ii_update",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+          "page": 2,
+          "verified": true
+        }
+      ],
+      "id": "g43",
+      "question": "Circular 6/2004 and Circular 19/2004 were both issued by the SARB in 2004 to banks. What distinct regulatory topics does each one address?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "70b60617acea49827342bcf972a1769dd11db5a8bdde6a09bf1021773e947210",
+        "a586150ae1a4da50f561616fbcd27f34912b5471fe2944932f4e6e462b3f4a69",
+        "c8e7d15c268a905928255cb6ba528a2f241f6bc758cf1fa75b24ef16c0519000",
+        "197e134f80b537b169855ba183cdb526f43530db07b6d86b340eb8543e2d95fd",
+        "d21697347a2858ca46116358878d7c15b761007cf53b814b174ccee986ea44c8"
+      ],
+      "type": "multi-doc"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": false,
+      "citations": [],
+      "id": "g44",
+      "question": "What common international standard-setting body do Directive D8/2023 and Directive D10/2021 both cite as the source of the principles they implement?",
+      "refusal_reason": "malformed_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "8984da0909fc2cb449b244ffeb6e2f49640a1d48f6c11045a2a99ff5490f1507",
+        "04572d9f73cf2790005982e9e4fb728aa26d5edb68353b983c4f4192616daf57",
+        "678ff60d55c9fb23005f343300973eb9a919ff39b87db3cd502022f81ffa0887",
+        "0763cd5f257b0307ffb6911bf182737c32df936b677e923b29f175dfd2bde11d",
+        "be61b1d195cb6bb9149a8687a45434e2f54ed33dd393822ad00751b391f1ddbc"
+      ],
+      "type": "multi-doc"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "One objective that appears in both sources is promoting a fair and accessible credit market. [nca_notebook_brochure, p.1-5] The National Credit Act was introduced to \"promote a fair and non-discriminatory marketplace for access to consumer credit,\" and its purposes include promoting \"a fair, transparent, competitive, sustainable, responsible, efficient, effective and accessible credit market and industry.\" [nca_notebook_brochure, p.1-5]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "nca_notebook_brochure",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "nca_notebook_brochure",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "nca_notebook_brochure",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "nca_notebook_brochure",
+          "page": 4,
+          "verified": true
+        },
+        {
+          "doc_id": "nca_notebook_brochure",
+          "page": 5,
+          "verified": true
+        },
+        {
+          "doc_id": "nca_notebook_brochure",
+          "page": 1,
+          "verified": true
+        },
+        {
+          "doc_id": "nca_notebook_brochure",
+          "page": 2,
+          "verified": true
+        },
+        {
+          "doc_id": "nca_notebook_brochure",
+          "page": 3,
+          "verified": true
+        },
+        {
+          "doc_id": "nca_notebook_brochure",
+          "page": 4,
+          "verified": true
+        },
+        {
+          "doc_id": "nca_notebook_brochure",
+          "page": 5,
+          "verified": true
+        }
+      ],
+      "id": "g45",
+      "question": "The National Credit Act itself and the NCR's Notebook brochure both describe the Act's objectives. Name one objective that appears in both sources.",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "ad9a4d6eb702bf18f7d694ee38f54783ec18c1610f9fc72185a70e6691b74b1e",
+        "67645368e63deaecd62fbab0f7e74d625f11c3cad5c51f6a41a7e32bac107f8f",
+        "dfa39d246501f54555532d42cdd8e7ca7ff7ae5830793337794f402963bf043b",
+        "13f6976a232aa4b78701587e2fcd6e5bddb4bb5bdb50e32a297873be42139945",
+        "7da176ec9f7275a36f6c4c470311baad785b673dcc733bf2dadd6653046dfb65"
+      ],
+      "type": "multi-doc"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": true,
+      "citations": [],
+      "id": "g46",
+      "question": "What is the South African Reserve Bank's current repurchase (repo) rate?",
+      "refusal_reason": "model_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "28ec7fadfeb35c8a01276188f2457a6c649137f6d09d95499533929875e158c3",
+        "2f7480b124d98cd54dca8d3ea3d919f34f33d49b50094d257629b75218df7cbb",
+        "6e586cd7af55598a75c0c301351a6b3603a824de616dc552de9c87eb694d20c8",
+        "4f08e15e791829b1a814f322e227194338687b850784ad789cf31ccac1bc7f3c",
+        "6d9a8f0092b25f96b3bfc1d8de5d2793486bd02744490d3381cb3fd8e9088a85"
+      ],
+      "type": "unanswerable"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": true,
+      "citations": [],
+      "id": "g47",
+      "question": "What are the JSE's minimum listing requirements for a company seeking a Main Board IPO?",
+      "refusal_reason": "model_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "5897c9958bfaaafc8d5aca7f0ad1c77bf3d3c75a56b87267f8249afc5906a619",
+        "9a3a36df9438b07a44de0352a91cdbbad2003dba01454b09e3c985f39b062685",
+        "de20518a5266defd3e5a19a40910750fd101631ea5e4fdc726fb7937334d669d",
+        "f1c4101a4fc24252587a7eb381faf06af95d438b04d52e623b2efb1daeeee5e6",
+        "c7e3995f860514c73de0eb90c3c92eebc8c38993554f8a5b7ec14032ce27731d"
+      ],
+      "type": "unanswerable"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": true,
+      "citations": [],
+      "id": "g48",
+      "question": "What licensing framework does the FSCA apply to cryptocurrency exchanges?",
+      "refusal_reason": "model_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "787a25219f3aad130bd40cfff327abf51712cf490a9b7df3d375ae1bf0bb2ddf",
+        "bf86c4c48d028dbdd7bba0ebf372c3a92aa50ed8f77ef2894456c4e2e98c583c",
+        "f964a0d4bf7412cfdb16e7039715cfbb461245f085c2ed8e9c32be5aa30effe1",
+        "f48f714e9d53aa87a49f2aa556c2f5e950f2f6ff38fe9eb72530444831a564b8",
+        "db8ec1d588a282d6eea711d706d839326f8b4703cbf14d1ed47576ecd2d45da4"
+      ],
+      "type": "unanswerable"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": true,
+      "citations": [],
+      "id": "g49",
+      "question": "How many retail branches did Absa operate in South Africa in 2024?",
+      "refusal_reason": "model_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "4f08e15e791829b1a814f322e227194338687b850784ad789cf31ccac1bc7f3c",
+        "6e586cd7af55598a75c0c301351a6b3603a824de616dc552de9c87eb694d20c8",
+        "6afb7ab4f3a5fbec5443604d68fbef5d29fe5583e551a776b50febaf8c61002f",
+        "b7ae32c897f445f74571388994b65dc2dd95d38c915fc94f7b07f59c689213f4",
+        "d21697347a2858ca46116358878d7c15b761007cf53b814b174ccee986ea44c8"
+      ],
+      "type": "unanswerable"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": true,
+      "citations": [],
+      "id": "g50",
+      "question": "What is the SARB Monetary Policy Committee's current inflation target range?",
+      "refusal_reason": "model_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "b729dbc16315ea55540bbf80db6a6702cd7faacc733369083e0877b1dbce6149",
+        "14b2fc8fe9561902e6372f5b0226050af817761201860cb33bccb3e22d29e584",
+        "6e586cd7af55598a75c0c301351a6b3603a824de616dc552de9c87eb694d20c8",
+        "694c32980ad0dcfed667c876e92a59f22797e6dfde75d98580c8f06a21dbea7b",
+        "678ff60d55c9fb23005f343300973eb9a919ff39b87db3cd502022f81ffa0887"
+      ],
+      "type": "unanswerable"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": true,
+      "citations": [],
+      "id": "g51",
+      "question": "What are the capital adequacy requirements for South African short-term insurers under the Solvency Assessment and Management (SAM) regime?",
+      "refusal_reason": "model_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "6d9a8f0092b25f96b3bfc1d8de5d2793486bd02744490d3381cb3fd8e9088a85",
+        "28ec7fadfeb35c8a01276188f2457a6c649137f6d09d95499533929875e158c3",
+        "6e586cd7af55598a75c0c301351a6b3603a824de616dc552de9c87eb694d20c8",
+        "80d2cd069ad7d9ed3bbd0577415b70c43c36a03a09e6e7f0343303ea1d3c9d6a",
+        "7c11825a92ce4b54456a62857d0de1c78ccf6da2ce13f1f1198823314f6891a1"
+      ],
+      "type": "unanswerable"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": true,
+      "citations": [],
+      "id": "g52",
+      "question": "What is the maximum administrative fine the Information Regulator can impose for a POPIA data breach?",
+      "refusal_reason": "malformed_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "14cbc366c13b900116c802cde7a361948eff74b9bea66776f93971d30e391546",
+        "462df0757ea1298624a45179eb80d7d1e06875911b9195f98fb859060de8c4f8",
+        "0ab18395756235adeb8ade08a7e364744f48ac79232b0a4a6478a40fd9bbe5ae",
+        "3c82001237802ffe72a1d79584e14d8e1dd3db3bd016e2d5d8f2b79dfebd351e",
+        "8d6e5c851a1d6104f1cdd183ee8cc45e53d1c2d2cb22b5e34f6f889656ac5f36"
+      ],
+      "type": "unanswerable"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": true,
+      "citations": [],
+      "id": "g53",
+      "question": "What annual management fee do South African collective investment scheme (unit trust) managers typically charge?",
+      "refusal_reason": "model_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "e178a10f4988bdfc1301837bcff794339f4ffd89bede1adac25edb0a2892c586",
+        "2a785108960427a1af6bdda5b8113489eadebd79d03183012955e0d5ca572770",
+        "2177498ee2422882120d53c5e96bdb379d99ebc6a885aed87f215ca04901efec",
+        "df7df537879f1e63c2d274a1d98dd7918a19109188d25027d6257af075f48f61",
+        "55f42253a3778e6eadca99a45c6b109439b6fefc5cf26ef98cd0ff5ce7c6ecab"
+      ],
+      "type": "unanswerable"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": true,
+      "citations": [],
+      "id": "g54",
+      "question": "What penalties apply for insider trading under the Financial Markets Act?",
+      "refusal_reason": "model_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "dd0c63c7c06b15b1e0cf5fe209ef7e293902b399a36a932f83bf5e483901b7c6",
+        "d87c52d04a8a2509c2d25aae18c6a19ead9948a1b1b997e932949ce1a1183333",
+        "6f041989d023b8303eae82980064b0bd5a284f44b8f4a9abc43130649e7884f0",
+        "edb73599c3ca1d55c3f83c7cf673b065b707ebf4f948272f01eb231bfa05f0d7",
+        "f97341933eff22478fd38091ed3fc4a825c8cd3bb5f165a2a5384e05584a10a6"
+      ],
+      "type": "unanswerable"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": true,
+      "citations": [],
+      "id": "g55",
+      "question": "What is the current prime lending rate charged by South African commercial banks?",
+      "refusal_reason": "model_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "6e586cd7af55598a75c0c301351a6b3603a824de616dc552de9c87eb694d20c8",
+        "6d9a8f0092b25f96b3bfc1d8de5d2793486bd02744490d3381cb3fd8e9088a85",
+        "4f08e15e791829b1a814f322e227194338687b850784ad789cf31ccac1bc7f3c",
+        "28ec7fadfeb35c8a01276188f2457a6c649137f6d09d95499533929875e158c3",
+        "7c11825a92ce4b54456a62857d0de1c78ccf6da2ce13f1f1198823314f6891a1"
+      ],
+      "type": "unanswerable"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "According to Circular C1/2026, all previously issued Banks Act circulars are deemed to be withdrawn, terminated or replaced if such a circular is not confirmed as effective in that year's Circular 1. [sarb_c1_2026_status_of_circulars, p.1]",
+      "citation_contract_pass": true,
+      "citations": [
+        {
+          "doc_id": "sarb_c1_2026_status_of_circulars",
+          "page": 1,
+          "verified": true
+        }
+      ],
+      "id": "g56",
+      "question": "According to Circular C1/2026, what happens to a previously issued Banks Act circular that is not confirmed as effective in that year's Circular 1?",
+      "refusal_reason": null,
+      "refused": false,
+      "retrieved_chunk_ids": [
+        "d21697347a2858ca46116358878d7c15b761007cf53b814b174ccee986ea44c8",
+        "28ec7fadfeb35c8a01276188f2457a6c649137f6d09d95499533929875e158c3",
+        "c8e7d15c268a905928255cb6ba528a2f241f6bc758cf1fa75b24ef16c0519000",
+        "a586150ae1a4da50f561616fbcd27f34912b5471fe2944932f4e6e462b3f4a69",
+        "70b60617acea49827342bcf972a1769dd11db5a8bdde6a09bf1021773e947210"
+      ],
+      "type": "factual"
+    },
+    {
+      "all_citations_verified": true,
+      "answer": "I don't have a source for that.",
+      "citation_contract_pass": false,
+      "citations": [],
+      "id": "g57",
+      "question": "Is Banks Act Circular 19/2004 listed among the effective circulars confirmed in Circular C1/2026?",
+      "refusal_reason": "malformed_refusal",
+      "refused": true,
+      "retrieved_chunk_ids": [
+        "d21697347a2858ca46116358878d7c15b761007cf53b814b174ccee986ea44c8",
+        "a586150ae1a4da50f561616fbcd27f34912b5471fe2944932f4e6e462b3f4a69",
+        "70b60617acea49827342bcf972a1769dd11db5a8bdde6a09bf1021773e947210",
+        "28ec7fadfeb35c8a01276188f2457a6c649137f6d09d95499533929875e158c3",
+        "c8e7d15c268a905928255cb6ba528a2f241f6bc758cf1fa75b24ef16c0519000"
+      ],
+      "type": "factual"
+    }
+  ],
+  "label": "corrected-corpus-baseline",
+  "manifest_sha256": "89a1c45e3b0a4606f03a89cd1d4fcfb079b5b09f44c66d4c1f512e514a857bbd",
+  "pipeline_fingerprint": "ea15e40b849356dcf13d59c4152422a5785980f1232d2c9c691b75246f000494",
+  "ragas_excluded_refusals": [
+    {
+      "id": "g01",
+      "question": "How many climate-related disclosure templates are attached to SARB Guidance Note 3/2025 as Annexure 1?"
+    },
+    {
+      "id": "g03",
+      "question": "Why did Directive 5/2017 need to be updated, according to Directive D3/2023?"
+    },
+    {
+      "id": "g15",
+      "question": "Under section 58A of the NCA, what must a registrant attach to its voluntary cancellation notice besides the affidavit?"
+    },
+    {
+      "id": "g16",
+      "question": "According to the Notebook on the National Credit Act, what kind of credit-marketing practices does the Act prohibit?"
+    },
+    {
+      "id": "g28",
+      "question": "What did Proposal J of the Retail Distribution Review address regarding intermediation and outsourced services?"
+    },
+    {
+      "id": "g29",
+      "question": "In what year did the FSB (the FSCA's predecessor) carry out the technical work to determine which activities intermediaries were remunerated for, as part of the activity segmentation project?"
+    },
+    {
+      "id": "g31",
+      "question": "What were the agenda topics of the 2011 FSB presentation on Treating Customers Fairly?"
+    },
+    {
+      "id": "g34",
+      "question": "Under the 2021 issued IFRS 9 text, what three categories does an entity classify financial assets into for subsequent measurement?"
+    },
+    {
+      "id": "g35",
+      "question": "Under the 2021 issued IFRS 9 text, at what value does an entity initially measure a financial asset or financial liability not held at fair value through profit or loss?"
+    },
+    {
+      "id": "g37",
+      "question": "Which SARB documents were issued under section 6(5) versus section 6(6) of the Banks Act, and what is the practical difference between the two document types they represent?"
+    },
+    {
+      "id": "g38",
+      "question": "How does the National Credit Act's stated purpose, as summarised in the Notebook brochure, connect to the NCR's June 2025 guideline on consumers under debt review?"
+    },
+    {
+      "id": "g44",
+      "question": "What common international standard-setting body do Directive D8/2023 and Directive D10/2021 both cite as the source of the principles they implement?"
+    },
+    {
+      "id": "g57",
+      "question": "Is Banks Act Circular 19/2004 listed among the effective circulars confirmed in Circular C1/2026?"
+    }
+  ],
+  "ragas_failures": [],
+  "ragas_means": {
+    "answer_relevancy": 0.8003300674441218,
+    "context_precision": 0.8153594770664896,
+    "context_recall": 1.0,
+    "faithfulness": 0.9374361509309607
+  },
+  "ragas_scored_count": 34,
+  "run_id": "dev-a51410250c96",
+  "split": "dev",
+  "started_at": "2026-09-08T21:54:38.564215+00:00",
+  "status": "complete",
+  "structural_metrics": {
+    "answerable_answer_rate": 0.723404255319149,
+    "answerable_answered_count": 34,
+    "answerable_count": 47,
+    "citation_contract_pass_count": 44,
+    "citation_contract_pass_rate": 0.7719298245614035,
+    "unanswerable_count": 10,
+    "unanswerable_refusal_recall": 1.0,
+    "unanswerable_refused_count": 10,
+    "verified_citation_count": 57,
+    "verified_citation_rate": 1.0
+  }
+}

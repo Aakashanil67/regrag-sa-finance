@@ -1,31 +1,27 @@
 """PDF -> cleaned text elements.
 
-PyMuPDF gives us each line's text plus its font size. That's enough to tell headings from body
-text without an ML layout model: SARB/NCR/FSCA documents number their headings ("4.2 Definitions")
-or set them in a larger font than the surrounding paragraph, almost always both. Neither signal
-alone is reliable (numbered list items aren't headings; some documents use one font size
-throughout), so `_is_heading` requires the numbering pattern OR a font size comfortably above the
-document's own body-text size, never guesses from formatting alone, and accepts that a handful of
-either false positive or false negative headings per document is the cost of not building a real
-layout model for 19 PDFs.
+PyMuPDF gives each line's text and font size, enough to tell headings from body text without a
+layout model. `_is_heading` requires a numbering pattern OR a font size well above the document's
+body size; neither signal alone is reliable, and a few misclassified headings per document is the
+accepted cost.
 
-Three cleanup passes run before chunking ever sees the text, because feeding chunking.py raw
-PyMuPDF output would silently poison retrieval:
-  1. repeated header/footer lines (address blocks, "Page X of Y") stripped by frequency across
-     pages — real content doesn't repeat verbatim on 40%+ of a document's pages, boilerplate does.
-  2. table-of-contents pages dropped by dot-leader density — a ToC entry retrieves as a false
-     positive for whatever topic it's naming, without answering anything about it.
-  3. de-hyphenated line wraps within a paragraph, so "hybrid-\ninstruments" reads as one word.
+Three cleanups run before chunking:
+  1. repeated header/footer lines are stripped by frequency across pages.
+  2. table-of-contents pages are dropped by dot-leader density.
+  3. hyphenated line wraps within a paragraph are joined.
 """
 
+import json
+import os
 import re
 from dataclasses import dataclass
+from pathlib import Path
 
 import fitz  # PyMuPDF
 
-from src.config import HEADER_FOOTER_REPEAT_FRACTION, TOC_DOT_LEADER_FRACTION
+from src.config import HEADER_FOOTER_REPEAT_FRACTION, MANIFEST_PATH, TOC_DOT_LEADER_FRACTION
 
-_HEADING_NUMBERING = re.compile(r"^(\d{1,2}(\.\d{1,2}){0,3})[\.\)]?\s+\S")
+_HEADING_NUMBERING = re.compile(r"^(\d{1,3}[A-Z]?(\.\d{1,3}){0,3})[\.\)]?\s+\S")
 # a bare "08 July 2020" satisfies _HEADING_NUMBERING too (a number, whitespace, a word) — this
 # excludes it before the numbering check runs. Caught live: this exact date, on a press release
 # with no other body text to anchor the fact, got dropped from its chunk entirely (headings carry
@@ -115,9 +111,17 @@ def _dehyphenate_join(paragraph_lines: list[str]) -> str:
     return joined
 
 
+def _manifest_entry(pdf_path) -> dict | None:
+    entries = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    return next((e for e in entries if e["filename"] == Path(pdf_path).name), None)
+
+
 def extract_elements(pdf_path) -> list[Element]:
     """Full pipeline: parse -> strip boilerplate -> drop ToC pages -> detect headings -> merge
     wrapped lines into paragraphs, de-hyphenated. Returns reading-order elements."""
+    entry = _manifest_entry(pdf_path)
+    if entry is not None and entry.get("text_layer") == "ocr":
+        return extract_ocr_elements(pdf_path, entry["id"])
     doc = fitz.open(pdf_path)
     try:
         lines = _extract_lines(doc)
@@ -169,3 +173,51 @@ def _median_font_size(lines: list[tuple[int, str, float]]) -> float:
     if not sizes:
         return 10.0
     return sizes[len(sizes) // 2]
+
+
+_TESSDATA_CANDIDATES = (
+    os.environ.get("TESSDATA_PREFIX", ""),
+    r"C:\Program Files\Tesseract-OCR\tessdata",
+    "/usr/share/tesseract-ocr/5/tessdata",
+)
+OCR_CACHE_DIR = Path(__file__).resolve().parent.parent / "corpus" / ".ocr_cache"
+
+
+def _tessdata() -> str | None:
+    return next((p for p in _TESSDATA_CANDIDATES if p and Path(p).exists()), None)
+
+
+def ocr_page_text(doc: fitz.Document, page_index: int, doc_id: str) -> str:
+    # OCR at 300 dpi takes seconds per page, so every page is cached on disk once.
+    cache = OCR_CACHE_DIR / doc_id / f"{page_index + 1}.txt"
+    if cache.exists():
+        return cache.read_text(encoding="utf-8")
+    page = doc[page_index]  # held so the textpage's weak parent reference stays alive
+    textpage = page.get_textpage_ocr(language="eng", dpi=300, full=True, tessdata=_tessdata())
+    text = page.get_text(textpage=textpage)
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    cache.write_text(text, encoding="utf-8")
+    return text
+
+
+def extract_ocr_elements(pdf_path, doc_id: str) -> list[Element]:
+    """Elements for a scanned PDF: OCR each page, split paragraphs on blank lines, and treat
+    short numbered lines as headings (font sizes from OCR are not reliable)."""
+    doc = fitz.open(pdf_path)
+    try:
+        pages = [ocr_page_text(doc, i, doc_id) for i in range(doc.page_count)]
+    finally:
+        doc.close()
+    elements: list[Element] = []
+    for page_number, text in enumerate(pages, start=1):
+        for block in re.split(r"\n\s*\n", text):
+            lines = [line.strip() for line in block.splitlines() if line.strip()]
+            if not lines:
+                continue
+            if len(lines) == 1 and len(lines[0]) < 100 and _HEADING_NUMBERING.match(lines[0]):
+                elements.append(Element(kind="heading", text=lines[0], page=page_number))
+            else:
+                elements.append(
+                    Element(kind="paragraph", text=_dehyphenate_join(lines), page=page_number)
+                )
+    return elements

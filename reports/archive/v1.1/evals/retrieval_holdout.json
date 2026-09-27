@@ -1,0 +1,194 @@
+[
+  {
+    "id": "rh01",
+    "question": "What BCBS framework and IFRS standard does Guidance Note 3/2025 say informed its climate-related disclosure requirements for banks?",
+    "doc_id": "sarb_g3_2025_climate_disclosures",
+    "page": 1
+  },
+  {
+    "id": "rh02",
+    "question": "In what year does Directive 3/2023 say banks commenced reporting under IFRS 9's new requirements?",
+    "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+    "page": 1
+  },
+  {
+    "id": "rh03",
+    "question": "What two risk frameworks does Directive 8/2023 set threshold amounts for?",
+    "doc_id": "sarb_d8_2023_threshold_amounts",
+    "page": 1
+  },
+  {
+    "id": "rh04",
+    "question": "What three risk frameworks does Directive 8/2025 set threshold amounts for?",
+    "doc_id": "sarb_d8_2025_threshold_amounts",
+    "page": 1
+  },
+  {
+    "id": "rh05",
+    "question": "What kinds of events does Directive 10/2021 cite as having demonstrated the consequences of operational failures?",
+    "doc_id": "sarb_d10_2021_operational_resilience",
+    "page": 1
+  },
+  {
+    "id": "rh06",
+    "question": "In what month and year did the Basel Committee issue the paper on principles for operational resilience referenced in Directive 4/2023?",
+    "doc_id": "sarb_d4_2023_operational_resilience",
+    "page": 1
+  },
+  {
+    "id": "rh07",
+    "question": "What date is Banks Act Circular 19/2004 dated?",
+    "doc_id": "sarb_circular_19_2004_capital_hybrid_instruments",
+    "page": 1
+  },
+  {
+    "id": "rh08",
+    "question": "What date is Banks Act Circular 6/2004 dated?",
+    "doc_id": "sarb_circular_6_2004_basel_ii_update",
+    "page": 1
+  },
+  {
+    "id": "rh09",
+    "question": "Under which section of the Banks Act is Circular C1/2026 issued?",
+    "doc_id": "sarb_c1_2026_status_of_circulars",
+    "page": 1
+  },
+  {
+    "id": "rh10",
+    "question": "On what date was the National Credit Act assented to?",
+    "doc_id": "nca_act_34_2005",
+    "page": 1
+  },
+  {
+    "id": "rh11",
+    "question": "What body does the National Credit Act establish alongside the National Credit Regulator, per its notebook explainer?",
+    "doc_id": "nca_notebook_brochure",
+    "page": 2
+  },
+  {
+    "id": "rh12",
+    "question": "What section of the National Credit Act empowers the NCR to issue explanatory notices interpreting the Act, per Guideline 003/2025?",
+    "doc_id": "ncr_guideline_june_2025_credit_info",
+    "page": 2
+  },
+  {
+    "id": "rh13",
+    "question": "How many business days are debt counsellors given to update their contact information on the DHS, per Guideline 004/2025?",
+    "doc_id": "ncr_guideline_sept_2025_debt_counsellors",
+    "page": 4
+  },
+  {
+    "id": "rh14",
+    "question": "Which organisation has the NCR designated to provide an authentication platform for filing clearance certificates, per Guideline 001/2026?",
+    "doc_id": "ncr_guideline_feb_2026_clearance_certificates",
+    "page": 2
+  },
+  {
+    "id": "rh15",
+    "question": "What form must a consumer complete to ask the NCR to investigate disputed credit information, per Guideline 005/2024?",
+    "doc_id": "ncr_guideline_disputed_credit_complaints",
+    "page": 3
+  },
+  {
+    "id": "rh16",
+    "question": "In what year was the Financial Sector Regulation Act introduced, giving the FSCA its mandate over banking conduct, per this press release?",
+    "doc_id": "fsca_press_conduct_standard_banks_2020",
+    "page": 1
+  },
+  {
+    "id": "rh17",
+    "question": "Under which Act was the Conduct Standard for OTC derivative providers published for comment?",
+    "doc_id": "fsca_conduct_standard_otc_derivatives_2018",
+    "page": 1
+  },
+  {
+    "id": "rh18",
+    "question": "In what month and year did the FSB publish the original Retail Distribution Review discussed in this 2019 update?",
+    "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+    "page": 2
+  },
+  {
+    "id": "rh19",
+    "question": "What Act does the 2014 Retail Distribution Review credit with raising intermediary professionalism, despite remaining concerns?",
+    "doc_id": "fsca_rdr_2014",
+    "page": 3
+  },
+  {
+    "id": "rh20",
+    "question": "Under which regulatory model does the 2011 TCF presentation say Treating Customers Fairly forms part of the market conduct 'peak'?",
+    "doc_id": "fsca_tcf_2011",
+    "page": 3
+  },
+  {
+    "id": "rh21",
+    "question": "What is the mandatory effective date of IFRS 9 according to the 2014 project summary?",
+    "doc_id": "ifrs9_project_summary_2014",
+    "page": 3
+  },
+  {
+    "id": "rh22",
+    "question": "How many categories does the 2021 issued IFRS 9 text classify financial assets into for subsequent measurement?",
+    "doc_id": "ifrs9_issued_2021",
+    "page": 18
+  },
+  {
+    "id": "rh23",
+    "question": "Which two SARB directives, one from 2021 and one from 2023, share the exact title 'Principles for operational resilience'?",
+    "doc_id": "sarb_d4_2023_operational_resilience",
+    "page": 1,
+    "cross_document": true,
+    "related_doc_id": "sarb_d10_2021_operational_resilience"
+  },
+  {
+    "id": "rh24",
+    "question": "Does Circular C1/2026 confirm Banks Act Circular 19/2004 as still effective?",
+    "doc_id": "sarb_c1_2026_status_of_circulars",
+    "page": 1,
+    "cross_document": true,
+    "related_doc_id": "sarb_circular_19_2004_capital_hybrid_instruments"
+  },
+  {
+    "id": "rh25",
+    "question": "Which 2025 SARB directive covers the same threshold-amounts subject as Directive 8/2023?",
+    "doc_id": "sarb_d8_2025_threshold_amounts",
+    "page": 1,
+    "cross_document": true,
+    "related_doc_id": "sarb_d8_2023_threshold_amounts"
+  },
+  {
+    "id": "rh26",
+    "question": "Which FSCA predecessor body published the original 2014 Retail Distribution Review discussed in the 2019 intermediary segmentation update?",
+    "doc_id": "fsca_rdr_intermediary_segmentation_2019",
+    "page": 2,
+    "cross_document": true,
+    "related_doc_id": "fsca_rdr_2014"
+  },
+  {
+    "id": "rh27",
+    "question": "Which earlier standard do both the IFRS 9 project summary and the 2021 issued IFRS 9 text say IFRS 9 replaces?",
+    "doc_id": "ifrs9_issued_2021",
+    "page": 1,
+    "cross_document": true,
+    "related_doc_id": "ifrs9_project_summary_2014"
+  },
+  {
+    "id": "rh28",
+    "question": "What Act number do both the National Credit Act itself and its plain-language notebook cite for the National Credit Act, 2005?",
+    "doc_id": "nca_notebook_brochure",
+    "page": 1,
+    "cross_document": true,
+    "related_doc_id": "nca_act_34_2005"
+  },
+  {
+    "id": "rh29",
+    "question": "How is a 'Primary Credit Bureau' defined in Guideline 005/2024?",
+    "doc_id": "ncr_guideline_disputed_credit_complaints",
+    "page": 2
+  },
+  {
+    "id": "rh30",
+    "question": "What does Directive 3/2023 say IFRS 9 represented for banks' accounting practice?",
+    "doc_id": "sarb_d3_2023_accounting_provisions_ifrs9",
+    "page": 1
+  }
+]
