@@ -1,61 +1,138 @@
 # regrag-sa-finance
 
-A retrieval-augmented assistant that answers questions about South African financial regulation
-(Prudential Authority directives, the National Credit Act, FSCA conduct standards, IFRS 9) for someone
-who needs a fast, citation-checked pointer into a fixed local corpus — not a substitute for reading
-the source or for legal advice.
+A retrieval-augmented question-answering system for South African banking and consumer-credit
+regulation: Prudential Authority directives, the Banks Act and its regulations, the National
+Credit Act and its regulations, FSCA conduct standards, and IFRS 9. It answers only from a fixed,
+version-pinned corpus with page citations, or refuses, so a compliance analyst checking a rule can
+trust that every sentence traces back to a document it actually retrieved.
 
-Regulatory text carries different weight depending on who issued it and whether it's still in
-force: a binding Prudential Authority directive, a non-binding guidance note, and a withdrawn circular can describe
-the same subject in similar language, and citing them interchangeably would misrepresent what the
-law actually requires. This system tracks `authority_level`, `publication_stage` and
-`current_status` per source, attaches a fixed disclosure whenever an answer cites a withdrawn
-circular or third-party commentary, and refuses outright — rather than guessing — when the
-retrieved context can't support an answer. A wrong refusal costs a user a follow-up question. A
-wrong answer, stated as if it were current law, costs more than that.
+## Demo
 
-## Historical holdout observation (reused evidence)
+![demo](assets/demo.gif)
 
-The following is the completed `v1.1.0-rc2` observation from 30 questions, originally held out
-and cryptographically sealed (`reports/archive/v1.1/evals/protocol.json`) before tuning against them. Its raw protocol,
-questions, and run artifact are preserved unchanged. It remains valid evidence about the pipeline
-recorded at that time, but it is historical/reused evidence rather than a current release test:
-later behaviour changes require a new current snapshot. The registry therefore keeps this project
-in `development` until fresh release evidence exists.
+The GIF above is the real pipeline answering locally. There's no hosted live model, because the
+free hosting tier this project runs on can't serve one. See "Run it" below to run it yourself.
+What is hosted is a static explorer of every question in the sealed test run, with the answer the
+pipeline actually served, the passages it cited, any source notices, and both judges' labels:
+[huggingface.co/spaces/Aakashanil67/regrag](https://huggingface.co/spaces/Aakashanil67/regrag).
 
-| metric | value | 95% CI |
-|---|---|---|
-| Retrieval hit-rate@5 | 28/30 (93%) | 79%–98% |
-| Answerable answer rate | 17/24 (71%) | 51%–85% |
-| Unanswerable refusal recall | 6/6 (100%) | 61%–100% |
-| Citation-contract pass rate | 23/30 (77%) | 59%–88% |
-| Verified-citation rate | 30/30 (100%) | 89%–100% |
-| RAGAS (17 answered items) | faithfulness 0.866, answer relevancy 0.681, context precision 0.894, context recall 1.000 | — |
+## Example
 
-The CI is a Wilson interval on the observed rate over 30 items, not a claim that the true rate
-equals the point estimate — a sample this size leaves real uncertainty even at 100%. Worth being
-explicit about the two different claims in the top row: **observed**, zero fabricated citations
-across all 30 items, a fact about what happened, no interval needed; **estimated**, the
-underlying failure rate this observation is consistent with is bounded at roughly 0–11% at 95%
-confidence, not at exactly zero. Both are true; only the first is the release gate, and only the
-second is what the CI column actually says.
+Question: "Which seven categories are the operational resilience principles organised under?"
 
-**The honest limitation:** two of the seven refused answerable items were multi-document questions
-(comparisons like
-"which subject do Directive 8/2023 and Directive 8/2025 both address") failed because top-k
-semantic search over the whole corpus doesn't reliably surface both named documents at once when
-they're close siblings on the same subject — one crowds the other out of the top 5. That's the
-two-item multi-document portion of the answerable shortfall, not a majority of all seven refusals;
-see `reports/failure_analysis.md` for the full per-item breakdown, including which refusals were
-retrieval gaps versus the model correctly declining to guess.
+```
+The principles are organised under governance, operational risk management, business continuity
+planning and testing, mapping of interconnections and interdependencies of critical operations,
+third-party dependency management, incident management, and resilient information and
+communication technology (ICT), including cyber security. [sarb_d10_2021_operational_resilience, p.2]
+```
 
-This is the second candidate. The first (`v1.1.0-rc1`) completed but diagnosing its failures found
-a real citation-parsing defect, which by this project's own release rule means that holdout run was
-opened and its numbers are not usable as evidence — only `rc2`'s are. Full story, including a
-second defect found and fixed in retrieval itself before either run, in `reports/failure_analysis.md`
-and `DECISIONS.md`.
+That citation carries a source notice the pipeline attaches automatically: the cited directive
+(D10/2021) is treated as superseded by a later instrument, per SARB Circular C1/2026. The answer
+is correct as a reading of the source text; the notice is what tells the analyst not to rely on
+that source as current law without checking further.
 
-## Run locally
+## Results
+
+Sealed test set, 60 questions (48 answerable, 12 unanswerable), run once against the frozen
+pipeline:
+
+| metric | closed-book GPT-5.6 Luna | v1.1 pipeline (baseline) | v1.2 pipeline (final) |
+|---|---|---|---|
+| Answerable questions answered | 42/48 | 37/48 | 37/48 |
+| Judged correct — Qwen 2.5 7B | 23/48 | 28/48 | 26/48 |
+| Judged correct — Llama 3.1 8B | 31/48 | 32/48 | 31/48 |
+| Unanswerable questions refused | 0/12 | 11/12 | 11/12 |
+| Unverified citations shown | 0/0 | 0/167 | 0/82 |
+
+On the test-split retrieval benchmark, with reranking, all-evidence-documents-in-top-k reached
+32/48 for dense search, 33/48 for BM25 and 36/48 for hybrid: hybrid scores higher here than the
+dense retrieval the pipeline ships, a reversal of the dev-set result that picked dense in the
+first place, and it stays unshipped because the selection rule was fixed before this run. No
+human has checked these 60 answers yet. The review
+was deferred, so the numbers above rest on two 7-8B local judges only, and
+`reports/review_packet_v1.2.md` is sitting ready for whoever does that check. On the 34-item dev
+set where a kappa was computed, the two judges agreed on 59-68% of graded items (kappa 0.32 on the
+RAG run, 0.51 closed-book), a real but middling agreement between two weak graders, not a ground
+truth. At n=60, the Wilson interval on "answered" is 63%-87%, wide enough that 37/48 and 42/48
+aren't confidently different from each other. The whole evaluation, dev sweeps and sealed test
+runs together, cost $0.25 in GPT-5.6 Luna calls.
+
+## How it works
+
+```mermaid
+flowchart LR
+    subgraph offline["offline, one-time"]
+        PDF[28 corpus PDFs] --> Extract["PyMuPDF extraction<br/>+ OCR fallback"]
+        Extract --> Chunk["token-aware chunking<br/>240 tok, 32 overlap"]
+        Chunk --> Embed["MiniLM embeddings"]
+        Embed --> DB[(ChromaDB<br/>6,152 chunks)]
+    end
+
+    subgraph online["per question"]
+        Q[question] --> Retrieve["named-balanced retrieval<br/>top 20 candidates"]
+        DB --> Retrieve
+        Retrieve --> Rerank["cross-encoder rerank<br/>top 5"]
+        Rerank --> LLM["GPT-5.6 Luna<br/>cited answer or refusal"]
+        LLM --> Verify["fail-closed citation check<br/>+ one-shot repair"]
+        Verify --> Answer[answer + citations + source notices]
+    end
+```
+
+`api/main.py` is a FastAPI service in front of this pipeline; `app/chat.py` is the Streamlit chat
+UI, talking to the API over HTTP instead of importing the RAG code directly.
+
+## Design decisions
+
+**The v1.1 embedder was silently truncating most of what it stored, and counting tokens on the
+wrong tokenizer is what hid it.** v1.1 cut chunks at 800 tokens by a generic tokenizer, but the
+MiniLM embedder only reads 256 wordpieces, so 614 of 795 chunks lost roughly three-quarters of
+their text before it ever reached the model. Chunking against the embedder's own wordpiece count
+(240 tokens, 32 overlap) fixed it: nothing is truncated at 6,152 chunks, and it's the single
+biggest reason the fixed pipeline retrieves more evidence documents than the old one.
+
+**BM25 and hybrid retrieval, measured, not assumed, better.** Both were built and benchmarked
+against dense semantic search on the dev set, and neither won: hybrid's all-documents-hit rate on wordpiece topped out at 26/34 against
+dense's 28/34, so dense stayed; the selection rule picks on measured task outcome, not on trying
+the newer technique. A negative result, but a measured one, not a guess.
+
+**Fail-closed citations, checked structurally, with one repair attempt.** Every citation is checked against
+the exact (document, page) pairs the model was actually shown,
+and a bad one fails the response closed rather than reaching the user. The model gets one
+attempt to repair a malformed citation line before that happens. On the sealed test run, 1 repair
+was attempted and 82 of 82 served citations verified.
+
+**Every eval question is grounded in quoted evidence.** Answerable or not, each one is written
+against a specific quoted passage the author
+checked existed in the corpus before writing the reference answer, instead of being invented and
+hoped answerable. The sealed 60-question test set was frozen and run exactly once against
+the pipeline described above; nothing was re-run to improve the number.
+
+**Exact cosine search, not ChromaDB's approximate HNSW index.** Chroma's HNSW graph rebuilds by re-inserting every embedding on each fresh
+process with a thread-pool insertion order that isn't fixed, so identical queries against an
+identical on-disk index returned different top-k results across separate launches. At this
+corpus's scale, exact search costs low milliseconds and buys a sealed run-once protocol
+reproducibility that an approximate index can't guarantee.
+
+## What doesn't work yet
+
+- The 60-answer sealed run hasn't been reviewed by a person. Only Qwen 2.5 7B and Llama 3.1 8B
+  graded it, and their dev-set kappa (0.32-0.51) says they're a cheap second opinion, not ground
+  truth. `reports/review_packet_v1.2.md` has every item ready for that review.
+- Retrieval is the main limiter on the answer rate: 8 of 48 answerable test questions retrieved no
+  evidence page at all. Three of the eleven refusals were multi-part questions where only one of
+  two named sources came back.
+- Two items went the other way: the model answered a buy-now-pay-later question from adjacent,
+  not on-point, text (t50), and went along with a false premise about debt-counsellor conduct
+  because the relevant page wasn't retrieved (t57).
+- The final FMA Conduct Standard 2 of 2018 isn't in the corpus: its current URL on the FSCA's
+  JS-rendered site couldn't be resolved for this release, and Conduct Standard 3 of 2020 (Banks)
+  is a scanned image PDF read only through OCR.
+- The sealed set is 60 items. The Wilson interval at that size is wide enough (63%-87% on
+  "answered") that small differences between pipeline versions aren't confidently distinguishable.
+- There's no authentication on the API; it's a research/demo tool, not a multi-tenant service.
+
+## Run it
 
 Requires Python 3.12.
 
@@ -65,38 +142,27 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-`requirements.txt` is a compatibility shim (`-r requirements-dev.txt`) for this one-environment
-local setup. `requirements-api.txt` and `requirements-ui.txt` are the actual, narrower dependency
-sets each Docker image installs — see the Docker section below for why the split exists.
-`chroma-hnswlib` compiles a C extension on install; on Windows this needs the Microsoft C++ Build
-Tools (Visual Studio Installer, "Desktop development with C++" workload). Linux and macOS wheels
-are usually prebuilt.
-
-Copy `.env.example` to `.env`. Three provider options, picked by `LLM_PROVIDER`.
-
-- `anthropic` (default): set `ANTHROPIC_API_KEY`. This is what generated every number above.
-- `openai`: set `OPENAI_API_KEY`. Not benchmarked here, since the eval harness assumes Claude as
-  judge.
-- `ollama`: no key, fully local, needs `ollama pull llama3.1:8b` and the daemon running. Quality
-  will differ from the benchmarked configuration, but it runs the pipeline at zero API cost.
+Copy `.env.example` to `.env` and set `OPENAI_API_KEY` (default provider, GPT-5.6 Luna) or switch
+`LLM_PROVIDER` to `anthropic` or `ollama`.
 
 ```bash
-python -m scripts.fetch_corpus       # downloads the 22 corpus PDFs, verifies pinned SHA-256
+python -m scripts.fetch_corpus       # downloads the 28 corpus PDFs, verifies pinned SHA-256
 python -m scripts.validate_manifest  # enforces the authority/stage/status schema contract
-python -m src.chunking               # chunks the corpus, writes reports/chunk_quality.md
+python -m src.chunking               # chunks the corpus
 python -m src.store --rebuild        # embeds and builds the ChromaDB collection
-python -m evals.retrieval_bench --split dev   # reports/retrieval_bench.md
-python -m evals.run_release --split dev --label local-check  # reports/eval_summary.md + eval_history.csv
 
 uvicorn api.main:app --reload
 streamlit run app/chat.py
-streamlit run app/ops.py
 ```
 
-`ruff check .`, `ruff format --check .` and `pytest -q` should all pass clean. Most of the 227
-tests run against a mocked LLM and a temporary vector store and need neither an API key nor the
-real corpus; the one exception, a cross-process retrieval-determinism check, skips itself when the
-real vector store isn't built rather than failing.
+Evals:
+
+```bash
+python -m evals.run_eval --split dev --config wordpiece --label wordpiece --max-usd 0.1
+python -m evals.retrieval_bench --split dev --configs baseline,wordpiece,bge
+```
+
+`ruff check .`, `ruff format --check .` and `pytest -q` should all pass clean.
 
 ### Docker
 
@@ -104,207 +170,12 @@ real vector store isn't built rather than failing.
 docker compose up --build
 ```
 
-Brings up the API on `127.0.0.1:8000`, the chat UI on `127.0.0.1:8501`, and the ops dashboard on
-`127.0.0.1:8502` — loopback-only by default, not reachable from another machine without
-deliberately rebinding the port mapping. The compose file bind-mounts the repo over each image's
-`/app`, so `corpus/`, `chroma/`, and the SQLite log/cache files (all gitignored, built locally by
-the commands above) are visible without a rebuild. `Dockerfile.api` installs CPU-only torch ahead
-of `requirements-api.txt` — sentence-transformers' default resolution otherwise pulls the CUDA
-build on Linux, which inflated the first version of this image to 9.73GB for two MiniLM models
-that only ever run on CPU here. The API image now measures 2.73GB; the chat and ops images, which
-install `requirements-ui.txt` and never import torch, ChromaDB, sentence-transformers, or the
-Anthropic SDK at all, measure 803MB each.
+Brings up the API on `127.0.0.1:8000` and the chat UI on `127.0.0.1:8501`, loopback-only by
+default.
 
-## Architecture
+## More detail
 
-```mermaid
-flowchart LR
-    subgraph offline["offline, one-time"]
-        PDF[22 corpus PDFs] --> Extract["PyMuPDF extraction<br/>+ heading detection"]
-        Extract --> Chunk["heading-aware chunking<br/>800 tok, 75 overlap"]
-        Chunk --> Embed["MiniLM embeddings"]
-        Embed --> DB[(ChromaDB<br/>795 chunks)]
-    end
-
-    subgraph online["per question"]
-        Q[question] --> C{cache hit?}
-        C -->|yes| Cached[cached answer]
-        C -->|no| Bi["bi-encoder search<br/>exact cosine, top 20"]
-        DB --> Bi
-        Bi --> Rerank["cross-encoder rerank<br/>top 5"]
-        Rerank --> LLM["Claude Haiku<br/>cited answer or refusal"]
-        LLM --> Verify["fail-closed citation<br/>+ source-notice check"]
-        Verify --> Log[(SQLite: query log<br/>+ response cache)]
-        Verify --> Answer[answer + citations + notices]
-    end
-```
-
-`api/main.py` is a FastAPI service (`/ask`, `/health/live`, `/health/ready`, `/stats`,
-`/recent-queries`, rate-limited, CORS-restricted to the chat UI's own origin) sitting in front of
-this pipeline. `app/chat.py` and `app/ops.py` are the Streamlit chat UI and observability
-dashboard, each a separate deployable process talking to the API over HTTP rather than importing
-the RAG code directly.
-
-## Design decisions and their trade-offs
-
-**Chunk size 800 with cross-encoder reranking, not 500 with none.** A sweep across 300/500/800
-tokens × rerank on/off found 800+rerank winning on every measure (hit-rate@5 95% vs 500's 85%,
-MRR 0.808 vs 0.654), but when I re-checked the headline RAGAS comparison for paired significance,
-only context precision survived holding the item set fixed (+0.109, p=0.06 — short of conventional
-significance on 33 items). I kept the config anyway on a narrower basis: reranking demonstrably
-bought coverage, five net refusals became answered questions, and that needs no significance test
-to stand. Full working in `DECISIONS.md`'s Eval-driven improvement section.
-
-**Exact cosine similarity for candidate search, not ChromaDB's approximate HNSW index.** Chroma's
-local HNSW segment rebuilds its graph by re-inserting every embedding on each fresh process, using
-a thread pool sized to CPU count — parallel insertion order isn't fixed, so identical queries
-against an identical on-disk index returned different top-k results across separate process
-launches — I caught this because two back-to-back holdout retrieval runs scored 93% and 90% with
-zero code changed between them, which shouldn't be possible on a frozen pipeline. At this corpus's
-scale (795 chunks), brute-force cosine similarity costs low milliseconds, so the "approximate" in
-approximate nearest neighbour bought nothing here and cost reproducibility — a sealed, run-once
-release protocol needs identical input to give identical output. This is a scale trade-off, not a
-free win: it works *because* the corpus is small. Past roughly tens of thousands of chunks, exact
-search stops being cheap and an ANN index becomes necessary again — which reintroduces the exact
-non-determinism this fix removes, and would need its own answer at that point, not an assumption
-that this fix still applies. `tests/test_retrieval_determinism.py` regression-tests the property
-directly (two separate interpreter launches, same query, same top-k) rather than trusting the
-implementation not to regress.
-
-**Structural citation verification, not trusted model output, and explicitly not semantic
-entailment.** Every citation is checked against the (doc_id, page) pairs the retrieved chunks
-actually cover — an LLM citing a page it wasn't shown is a hallucination even if the surrounding
-prose is accurate. The enforceable guarantee is exactly this: every non-empty answer line must end
-in a citation to a retrieved page, or the response fails closed. Whether the cited page actually
-*supports* the claim being made is a separate question this runtime check cannot and does not
-answer — that's measured offline by RAGAS faithfulness scoring and the manual holdout audit, not
-guaranteed on every live request.
-
-**Exact-match response cache, not semantic.** A semantic cache (embed the query, serve on
-similarity) would catch more repeat traffic, but risks serving a cached answer to a question
-that's subtly different from the one actually asked — wrong for a tool whose whole premise is
-citation accuracy. The cache key folds in provider, model, temperature, k, corpus fingerprint,
-chunking/reranking config, and the citation-contract version, so a pipeline change invalidates old
-entries instead of silently serving stale answers under a matching key — a real incident during
-the v1.1 fixes (see `DECISIONS.md`).
-
-**Split API/UI dependencies, not one requirements file baked into every image.** Neither Streamlit
-process touches the vector store or an LLM SDK directly; both call the API over HTTP. Splitting
-`requirements-api.txt` from `requirements-ui.txt` (with `requirements-dev.txt` layering the
-eval/test tooling on top for local all-in-one work) took the chat and ops Docker images from
-sharing the API's full stack down to 803MB each, with no torch, ChromaDB, sentence-transformers,
-or Anthropic SDK inside.
-
-**Privacy-by-default query logging.** `LOG_RAW_CONTENT` defaults to false — question and answer
-text are not stored unless a local user opts in explicitly. A compliance-research tool is exactly
-the kind of thing someone pastes a real account number or case detail into without thinking about
-it; the safer default is dropping the text and keeping only metrics (timings, cost, refusal
-reason, citation counts), not logging everything and hoping an operator remembers to scrub later.
-
-## Corpus authority and currency
-
-22 documents, tracked per-entry in `corpus/manifest.json` against a schema
-(`corpus/manifest.schema.json`) that requires an `authority_level`, `publication_stage`, and
-`current_status` for every source, with `status_source_url`/`status_source_id` evidence wherever
-status isn't simply "current":
-
-| authority level | current | withdrawn / superseded | historical snapshot / unknown |
-|---|---|---|---|
-| Primary legislation (1) | National Credit Act | — | — |
-| Binding regulatory instrument (6) | 3 directives | 2 directives (superseded per Circular C1/2026) | IFRS 9 issued text, 2021 edition |
-| Official non-binding guidance (8) | 6 (SARB Guidance Note, 4 NCR guidelines, Circular C1/2026 itself) | 2 (both 2004 circulars, withdrawn per C1/2026) | — |
-| Official explanatory material (5) | FSCA press release | — | NCA notebook brochure (unknown), 2019 RDR update (unknown), TCF 2011 (historical), IFRS 9 project summary 2014 (historical) |
-| Consultation / discussion draft (2) | — | — | OTC derivatives conduct standard (unknown — still an unresolved draft), 2014 RDR (historical) |
-
-Full per-document table, source URLs, and the specific 2026 corrections (a consultation draft that
-had been read as final, a withdrawn-circular status model, two superseded SARB directives, a
-mis-dated third-party IFRS 9 guide replaced with the official 2021 text) are in
-`corpus/README.md`.
-
-## Evaluation protocol
-
-Three tiers, deliberately kept apart:
-
-- **`reports/archive/v1.1/evals/golden_dev.jsonl`** (57 items) and **`reports/archive/v1.1/evals/retrieval_dev.json`** — the development
-  set, freely re-run and inspected while tuning. Numbers from this set guide decisions; they are
-  never release evidence on their own.
-- **`reports/archive/v1.1/evals/ci_subset.json`** (10 items, `python -m evals.record_fixtures`) — a frozen
-  snapshot of real model output, re-recorded only when tracked inputs change. CI
-  (`evals/test_snapshot_integrity.py`) checks that the fixture still matches current code, and
-  flags every tracked input the fixture is stale against — it proves reproducibility against a
-  past recording, not that a hosted model behaves identically today.
-- **`reports/archive/v1.1/evals/golden_holdout.jsonl`** (30 items) — sealed via `reports/archive/v1.1/evals/protocol.json`
-  (SHA-256 over the file, a pipeline fingerprint recorded at seal time, and an explicit "do not
-  edit to make a result pass" clause) before any tuning touched it. `python -m evals.run_release
-  --split holdout` is meant to run exactly once per release candidate; a partial run (a generation
-  or judge failure) blocks promotion outright rather than producing a partial number.
-  `python -m evals.render_summary <artifact>` re-renders `reports/archive/v1.1/reports/eval_summary.md` from an
-  already-saved run with no LLM call, so a formatting fix (like the CI column above) doesn't need
-  a new paid run — it refuses to render unless the artifact's own items still recompute to its
-  stored metrics. `python -m scripts.build_review_packet <artifact>` exports every item —
-  question, generated answer, the actual chunk text of every cited page, what retrieval returned,
-  the reference answer — into `reports/archive/v1.1/reports/holdout_review_packet.md`, so entailment can be checked by
-  someone who knows this domain without reading any code.
-
-## Security, privacy, and deployment boundary
-
-- **No authentication** on the API — out of scope for a research/demo assistant, not silently
-  assumed away.
-- **Loopback-only by default**; `docker-compose.yml` publishes every service on `127.0.0.1` only.
-- **CORS is an allowlist, not a substitute for auth** — stops an arbitrary web page from calling
-  the API from a visitor's browser, does nothing against a direct request from anyone who can
-  already reach the loopback address.
-- **Prompt injection**: the system prompt itself (rule 5) is the actual defense — content after
-  `Question:` is data, never instructions. `src/guardrails.py` is a pattern-based detector that
-  flags, not blocks, on the reasoning that refusing a legitimate question over a false positive is
-  worse for this domain than letting a flagged-but-harmless one through to the real defense.
-- **Query logging is off by default** (`LOG_RAW_CONTENT=false`); see Design decisions, above.
-  `LOG_RETENTION_DAYS` (default 30) bounds how long any row survives; `python -m src.obslog
-  --purge-expired` / `--scrub-content` are explicit, user-triggered operations, not automatic.
-- **Raw pre-validation model output is a separate, also-off-by-default opt-in**
-  (`LOG_RAW_MODEL_OUTPUT`), independent of `LOG_RAW_CONTENT`. It's a superset of question/answer —
-  it can contain text that was never shown to anyone, including a hallucinated citation or the
-  hedge that tripped a refusal — captured only to diagnose a refusal without re-running the live
-  API. `--scrub-content` clears both flags' content in one pass.
-- **Rate limiting** is per-process, in-memory, keyed on remote address — real protection against
-  casual abuse, trivially defeated by a distributed client or a shared NAT. Fine for a portfolio
-  demo, not a production deployment.
-
-Full reasoning in `reports/security_notes.md`.
-
-## What remains broken
-
-- **Multi-document comparison questions naming two similar sibling sources** (see Sealed holdout
-  results, above) fail more often than single-document questions. `src/agent.py`'s
-  retrieve-decide-requery loop was built and measured against this exact failure class: it fixed
-  zero of its two target cases while tripling cost, and a same-question rerun afterward flipped
-  one case from refusal to correct with identical code — pointing at LLM non-determinism moving the
-  failure point rather than a clean fix. **It is not a serving path** — the API answers every
-  request through `rag.answer_question` directly, never through the agent — kept only as a
-  documented negative result and because `tests/test_pipeline_contract.py` uses it as a second real
-  caller pinning the fail-closed gate's behaviour. Query decomposition (a separate retrieval call
-  per named document) is the more promising untried fix.
-- **The final FMA Conduct Standard 2 of 2018 and FSCA Conduct Standard 3 of 2020 (Banks)** are not
-  in the corpus. The only obtainable copy of the latter is a scanned image PDF with zero
-  extractable text; ingesting it would have silently produced zero retrievable chunks, so it was
-  rejected rather than added.
-- **Claude isn't called at temperature 0 in the sense of guaranteeing bit-identical output** —
-  even with `LLM_TEMPERATURE=0`, one holdout item's pass/fail outcome was confirmed, by direct
-  reproduction, to depend on sampling variance rather than a code defect. Retrieval is now fully
-  deterministic after the v1.1 fixes; answer generation is not, and the 71% answerable rate
-  should be read as a point estimate with that caveat, not an exactly reproducible count.
-- **RAGAS scores Claude's output using Claude as judge.** Same-family judge bias is a known,
-  unresolved limitation; `reports/failure_analysis.md` documents specific cases where the judge
-  and a manual read disagreed.
-- **The golden and holdout sets were authored by one person (me) and are not independently
-  reviewed.** A subtly wrong reference answer produces a confidently wrong score, and nothing in
-  the harness would catch it on its own. `reports/archive/v1.1/reports/holdout_review_packet.md` now exists so a domain
-  expert could check entailment on every sealed item without reading code — but no one has actually
-  done that review yet. The gap is still open; only the cost of closing it has gone down.
-
-## Further reading
-
-[`DECISIONS.md`](DECISIONS.md) is a running log of what actually happened while building this: the
-real bugs, the numbers that did not move the way expected, the dependency conflicts and how they
-were actually resolved. Kept as written at the time rather than cleaned up into a tidier
-retrospective.
+[`DECISIONS.md`](DECISIONS.md), [`reports/failure_analysis.md`](reports/failure_analysis.md),
+[`reports/runs/test-final.md`](reports/runs/test-final.md),
+[`reports/judge_agreement.md`](reports/judge_agreement.md), [`corpus/README.md`](corpus/README.md),
+[`reports/security_notes.md`](reports/security_notes.md).
