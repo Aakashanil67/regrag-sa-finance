@@ -12,6 +12,15 @@ import streamlit as st
 
 API_URL = os.environ.get("API_URL", "http://localhost:8000")
 
+# Answered at build time in the hosted demo so they come straight from the response cache.
+EXAMPLE_QUESTIONS = [
+    "Which seven categories are the operational resilience principles organised under?",
+    "What is a primary credit bureau in the context of disputed credit information?",
+    "From which date did IFRS 9 take effect for annual reporting periods?",
+    "Does IAS 39 still govern how financial instruments are accounted for now that IFRS 9 is final?",
+    "On what grounds may a credit provider not unfairly discriminate when it assesses a person's ability to meet a credit agreement?",
+]
+
 # Plain-language versions of src.rag.RefusalReason — never the raw model text, which the API
 # already discards before this UI ever sees it.
 _REFUSAL_REASON_LABELS = {
@@ -32,6 +41,11 @@ st.title("RegRAG")
 st.caption(
     "Answers South African financial regulation questions from a fixed local corpus (SARB, "
     "IFRS 9, National Credit Act, FSCA). **Educational tool — not legal advice.**"
+)
+
+st.caption(
+    "Demo model: Llama 3.2 3B on a free CPU. New questions take 1-2 minutes; the examples are "
+    "instant. The evaluated system uses GPT-5.6 Luna."
 )
 
 if "history" not in st.session_state:
@@ -102,7 +116,12 @@ for turn in st.session_state.history:
             render_source_notices(turn.get("source_notices", []))
             render_sources(turn.get("citations", []), turn.get("chunks", []))
 
-question = st.chat_input("Ask about SARB, IFRS 9, the National Credit Act, or FSCA rules...")
+clicked = None
+for index, example in enumerate(EXAMPLE_QUESTIONS):
+    if st.button(example, key=f"example_{index}"):
+        clicked = example
+
+question = st.chat_input("Ask about SARB, IFRS 9, the National Credit Act, or FSCA rules...") or clicked
 
 if question:
     st.session_state.history.append({"role": "user", "content": question})
@@ -111,7 +130,7 @@ if question:
 
     with st.chat_message("assistant"):
         try:
-            response = httpx.post(f"{API_URL}/ask", json={"question": question}, timeout=60.0)
+            response = httpx.post(f"{API_URL}/ask", json={"question": question}, timeout=300.0)
             response.raise_for_status()
             data = response.json()
         except httpx.HTTPError as exc:
