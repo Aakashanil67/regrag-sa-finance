@@ -1,19 +1,20 @@
 # regrag-sa-finance
 
-A retrieval-augmented question-answering system for South African banking and consumer-credit
-regulation: Prudential Authority directives, the Banks Act and its regulations, the National
-Credit Act and its regulations, FSCA conduct standards, and IFRS 9. It answers only from a fixed,
-version-pinned corpus with page citations, or refuses, so a compliance analyst checking a rule can
-trust that every sentence traces back to a document it actually retrieved.
+Ask a question about South African banking or consumer-credit regulation and get an answer that
+cites the page it came from, or a refusal when the documents don't cover it. The corpus is fixed
+and version-pinned: 28 documents, among them Prudential Authority directives, the Banks Act and its
+regulations, the National Credit Act and its regulations, FSCA conduct standards and IFRS 9. I
+built it for the check a compliance analyst makes before relying on a rule.
 
 ## Demo
 
 ![demo](assets/demo.gif)
 
-The GIF above is the real pipeline answering locally. There's no hosted live model, because the
-free hosting tier this project runs on can't serve one. See "Run it" below to run it yourself.
-What is hosted is a static explorer of every question in the sealed test run, with the answer the
-pipeline actually served, the passages it cited, any source notices, and both judges' labels:
+The GIF is the app running on my laptop. There is no hosted version, because free hosting can't
+run the model and the index together; [Run it](#run-it) covers running it yourself.
+
+What is online is a static explorer of the sealed test run: all 60 questions, the answer the
+pipeline served, the passages it cited, its source notices and both judges' labels. It lives at
 [huggingface.co/spaces/Aakashanil67/regrag](https://huggingface.co/spaces/Aakashanil67/regrag).
 
 ## Example
@@ -27,36 +28,44 @@ third-party dependency management, incident management, and resilient informatio
 communication technology (ICT), including cyber security. [sarb_d10_2021_operational_resilience, p.2]
 ```
 
-That citation carries a source notice the pipeline attaches automatically: the cited directive
-(D10/2021) is treated as superseded by a later instrument, per SARB Circular C1/2026. The answer
-is correct as a reading of the source text; the notice is what tells the analyst not to rely on
-that source as current law without checking further.
+The pipeline attached a notice to this answer: Directive D10/2021 is treated as superseded, per
+SARB Circular C1/2026. The answer reads the directive correctly. The notice tells the analyst that
+the directive itself is no longer the current rule.
 
 ## Results
 
-Sealed test set, 60 questions (48 answerable, 12 unanswerable), run once against the frozen
-pipeline:
+The sealed test set has 60 questions, 48 answerable from the corpus and 12 not. It was written
+before any tuning and run once, after the pipeline was frozen. Closed-book means the same model
+with no retrieval.
 
-| metric | closed-book GPT-5.6 Luna | v1.1 pipeline (baseline) | v1.2 pipeline (final) |
+| | Closed-book GPT-5.6 Luna | v1.1 pipeline | v1.2 pipeline |
 |---|---|---|---|
 | Answerable questions answered | 42/48 | 37/48 | 37/48 |
-| Judged correct — Qwen 2.5 7B | 23/48 | 28/48 | 26/48 |
-| Judged correct — Llama 3.1 8B | 31/48 | 32/48 | 31/48 |
+| Judged correct by Qwen 2.5 7B | 23/48 | 28/48 | 26/48 |
+| Judged correct by Llama 3.1 8B | 31/48 | 32/48 | 31/48 |
 | Unanswerable questions refused | 0/12 | 11/12 | 11/12 |
-| Unverified citations shown | 0/0 | 0/167 | 0/82 |
+| Unverified citations shown | n/a | 0 of 167 | 0 of 82 |
 
-On the test-split retrieval benchmark, with reranking, all-evidence-documents-in-top-k reached
-32/48 for dense search, 33/48 for BM25 and 36/48 for hybrid: hybrid scores higher here than the
-dense retrieval the pipeline ships, a reversal of the dev-set result that picked dense in the
-first place, and it stays unshipped because the selection rule was fixed before this run. The
-human review was deferred, so these 60 answers have not yet been checked by a person; the numbers
-above rest on two 7-8B local judges only, and
-`reports/review_packet_v1.2.md` is sitting ready for whoever does that check. On the 34-item dev
-set where a kappa was computed, the two judges agreed on 59-68% of graded items (kappa 0.32 on the
-RAG run, 0.51 closed-book), a real but middling agreement between two weak graders, not a ground
-truth. At n=60, the Wilson interval on "answered" is 63%-87%, wide enough that 37/48 and 42/48
-aren't confidently different from each other. The whole evaluation, dev sweeps and sealed test
-runs together, cost $0.25 in GPT-5.6 Luna calls.
+v1.2 is not more accurate than v1.1. The retrieval changes described below altered which chunks
+come back, but correctness moved by one or two answers either way. At this size that is noise: the
+95% Wilson interval on 37 of 48 answered runs from 63% to 87%.
+
+What retrieval does buy is refusal. Given 12 questions the documents can't answer, Luna on its own
+answered all 12. The pipeline refused 11, and every citation it showed pointed at a page it had
+actually retrieved.
+
+These answers have not yet been checked by a person. The correctness rows come from two local
+models of 7 to 8 billion parameters. On the dev set they agreed on 59% of the RAG answers both
+graded (kappa 0.32) and 68% of the closed-book ones (kappa 0.51), so I read them as a rough second
+opinion. The packet for a human review is ready in
+[`reports/review_packet_v1.2.md`](reports/review_packet_v1.2.md).
+
+On retrieval alone, with reranking, the shipped search found every evidence document for 32 of the
+48 answerable test questions. BM25 found 33 and hybrid search 36. Hybrid had lost on the dev set,
+so it wasn't selected, and I left that choice alone after seeing the test numbers.
+
+Everything above, including dev runs and smoke tests, cost $0.25 in GPT-5.6 Luna calls. Grading ran
+locally.
 
 ## How it works
 
@@ -79,56 +88,64 @@ flowchart LR
     end
 ```
 
-`api/main.py` is a FastAPI service in front of this pipeline; `app/chat.py` is the Streamlit chat
-UI, talking to the API over HTTP instead of importing the RAG code directly.
+A FastAPI service (`api/main.py`) wraps the pipeline. The Streamlit chat app (`app/chat.py`) calls
+that API over HTTP.
 
 ## Design decisions
 
-**Truncation, hiding in the wrong tokenizer.** v1.1 cut chunks at 800 tokens by a generic
-tokenizer, but the MiniLM embedder only reads 256 wordpieces, so 614 of 795 chunks lost roughly
-three-quarters of their text before it ever reached the model. Chunking against the embedder's own
-wordpiece count (240 tokens, 32 overlap) fixed it: nothing is truncated at 6,152 chunks, and it's
-the single biggest reason the fixed pipeline retrieves more evidence documents than the old one.
+### Chunks sized to what the embedder reads
 
-**BM25 and hybrid retrieval, measured, not assumed, better.** Both were built and benchmarked
-against dense semantic search on the dev set, and neither won: hybrid's all-documents-hit rate on wordpiece topped out at 26/34 against
-dense's 28/34, so dense stayed; the selection rule picks on measured task outcome, not on trying
-the newer technique. A negative result, but a measured one, not a guess.
+v1.1 cut chunks at 800 tokens using a general-purpose tokenizer, but the MiniLM embedder reads only
+the first 256 wordpieces of its input. 614 of the 795 v1.1 chunks were longer than that, and the
+rest of their text was never embedded. Chunks are now sized with the embedder's own tokenizer (240
+wordpieces, 32 overlap), which gives 6,152 chunks with none truncated. On the dev set this raised
+correct outcomes (answered when answerable, refused when not) from 36 to 38 of 40. On the sealed
+test it made no difference to accuracy.
 
-**Fail-closed citations, checked structurally, with one repair attempt.** Every citation is checked against
-the exact (document, page) pairs the model was actually shown,
-and a bad one fails the response closed rather than reaching the user. The model gets one
-attempt to repair a malformed citation line before that happens. On the sealed test run, 1 repair
-was attempted and 82 of 82 served citations verified.
+### Exact search over ChromaDB's HNSW index
 
-**Every eval question is grounded in quoted evidence.** Answerable or not, each one is written
-against a specific quoted passage the author
-checked existed in the corpus before writing the reference answer, instead of being invented and
-hoped answerable. The sealed 60-question test set was frozen and run exactly once against
-the pipeline described above; nothing was re-run to improve the number.
+ChromaDB rebuilds its approximate HNSW index each time a process starts, and the insertion order
+isn't fixed. The same query against the same stored data could return a different top 5 from one
+launch to the next. At 6,152 chunks, exact cosine search in numpy is cheap and always returns the
+same result, which a test set that runs once depends on. A regression test starts two separate
+interpreters and checks they agree.
 
-**Exact cosine search, not ChromaDB's approximate HNSW index.** Chroma's HNSW graph rebuilds by re-inserting every embedding on each fresh
-process with a thread-pool insertion order that isn't fixed, so identical queries against an
-identical on-disk index returned different top-k results across separate launches. At this
-corpus's scale, exact search costs low milliseconds and buys a sealed run-once protocol
-reproducibility that an approximate index can't guarantee.
+### BM25 and hybrid search, tested and not adopted
+
+Regulatory questions often name an instrument number that dense embeddings blur, so I built BM25
+and a reciprocal-rank-fusion hybrid. On the dev set neither beat dense search. Hybrid found every
+evidence document for 26 of 34 questions against 28 for dense, and answered 30 against 32 end to
+end. The sealed test later favoured hybrid, 36 against 32 of 48. Both results are reported; the
+selection made before the test stands.
+
+### Citations that fail closed
+
+Every citation is checked against the document pages the model was shown. If any line of an answer
+lacks a valid citation, the whole answer becomes a refusal. An answer whose only fault is the
+citation format gets one retry, which happened once on the sealed test. This check proves that a
+citation points at a retrieved page. Whether the page supports the sentence is for the judges and
+the pending human review.
+
+### Questions tied to quoted evidence
+
+Each answerable question carries a quote copied from its source page, and a script rejects any
+question whose quote isn't on that page. The unanswerable questions cover topics inside South
+African financial regulation that the corpus doesn't hold. The test set was sealed with a SHA-256
+hash before any tuning.
 
 ## What doesn't work yet
 
-- The 60-answer sealed run hasn't been reviewed by a person. Only Qwen 2.5 7B and Llama 3.1 8B
-  graded it, and their dev-set kappa (0.32-0.51) says they're a cheap second opinion, not ground
-  truth. `reports/review_packet_v1.2.md` has every item ready for that review.
-- Retrieval is the main limiter on the answer rate: 8 of 48 answerable test questions retrieved no
-  evidence page at all, and three of the eleven refusals were multi-part questions where only one
-  of two named sources came back. Two items went the other way: the model answered a
-  buy-now-pay-later question from adjacent, not on-point, text (t50), and went along with a false
-  premise about debt-counsellor conduct because the relevant page wasn't retrieved (t57).
-- The final FMA Conduct Standard 2 of 2018 isn't in the corpus: its current URL on the FSCA's
-  JS-rendered site couldn't be resolved for this release, and Conduct Standard 3 of 2020 (Banks)
-  is a scanned image PDF read only through OCR.
-- The sealed set is 60 items. The Wilson interval at that size is wide enough (63%-87% on
-  "answered") that small differences between pipeline versions aren't confidently distinguishable.
-- There's no authentication on the API; it's a research/demo tool, not a multi-tenant service.
+- No person has reviewed the sealed answers. Until someone does, the correctness figures rest on
+  two small local judges that only partly agree.
+- Retrieval limits the answer rate. 8 of the 48 answerable test questions retrieved no evidence
+  page, and in 3 of the 11 refusals one of two needed sources was missing.
+- Two answers went wrong in ways the citation check can't catch. t50 answered a buy-now-pay-later
+  question from nearby National Credit Act text, and t57 accepted a false premise about debt
+  counsellors because the page that contradicts it wasn't retrieved.
+- The corpus has gaps. FMA Conduct Standard 2 of 2018 is missing because I couldn't find a working
+  official link, and Conduct Standard 3 of 2020 (Banks) exists only as a scan, so it is read through
+  OCR ([`reports/ocr_check.md`](reports/ocr_check.md)).
+- The API has no authentication. It is meant to run on your own machine.
 
 ## Run it
 
@@ -140,8 +157,8 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-Copy `.env.example` to `.env` and set `OPENAI_API_KEY` (default provider, GPT-5.6 Luna) or switch
-`LLM_PROVIDER` to `anthropic` or `ollama`.
+Copy `.env.example` to `.env` and set `OPENAI_API_KEY`; GPT-5.6 Luna is the default. Setting
+`LLM_PROVIDER` to `anthropic` or `ollama` also works, and `ollama` runs a free local model.
 
 ```bash
 python -m scripts.fetch_corpus       # downloads the 28 corpus PDFs, verifies pinned SHA-256
@@ -153,27 +170,26 @@ uvicorn api.main:app --reload
 streamlit run app/chat.py
 ```
 
-Evals:
+Evaluation:
 
 ```bash
 python -m evals.run_eval --split dev --config wordpiece --label wordpiece --max-usd 0.1
 python -m evals.retrieval_bench --split dev --configs baseline,wordpiece,bge
 ```
 
-`ruff check .`, `ruff format --check .` and `pytest -q` should all pass clean.
+`ruff check .`, `ruff format --check .` and `pytest -q` should all pass.
 
-### Docker
-
-```bash
-docker compose up --build
-```
-
-Brings up the API on `127.0.0.1:8000` and the chat UI on `127.0.0.1:8501`, loopback-only by
-default.
+With Docker, `docker compose up --build` starts the API on `127.0.0.1:8000` and the chat app on
+`127.0.0.1:8501`, reachable only from your own machine.
 
 ## More detail
 
-[`DECISIONS.md`](DECISIONS.md), [`reports/failure_analysis.md`](reports/failure_analysis.md),
-[`reports/runs/test-final.md`](reports/runs/test-final.md),
-[`reports/judge_agreement.md`](reports/judge_agreement.md), [`corpus/README.md`](corpus/README.md),
-[`reports/security_notes.md`](reports/security_notes.md).
+- [`DECISIONS.md`](DECISIONS.md): why the code looks the way it does, including what didn't work.
+- [`reports/failure_analysis.md`](reports/failure_analysis.md): every refused or wrong answer from
+  the sealed run.
+- [`reports/runs/test-final.md`](reports/runs/test-final.md): full metrics for the sealed run.
+- [`reports/judge_agreement.md`](reports/judge_agreement.md): where the two judges agree and
+  disagree.
+- [`corpus/README.md`](corpus/README.md): each document, its source and its current status.
+- [`reports/security_notes.md`](reports/security_notes.md): privacy defaults and what the API does
+  not protect against.
