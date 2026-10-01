@@ -1,5 +1,5 @@
 """Runs a fixed set of real questions end to end (retrieval + live LLM call) and writes a
-transcript for manual review — the point isn't automated pass/fail, it's a human spot-checking
+transcript for manual review, the point isn't automated pass/fail, it's a human spot-checking
 that citations actually point at the right pages before any eval harness gets built on top of
 this. Every question is logged through obslog.timed_answer, so it also seeds the SQLite log and
 the response cache with real traffic.
@@ -18,8 +18,8 @@ QUESTIONS = [
     "What is the National Credit Act's stated purpose?",
     "Under which Act was the Conduct Standard for OTC derivative providers published?",
     "What did the 2014 Retail Distribution Review propose about intermediary remuneration?",
-    "What is the current South African repo rate?",  # unanswerable — not in this corpus
-    "What are the JSE's main board listing requirements?",  # unanswerable — not in this corpus
+    "What is the current South African repo rate?",  # unanswerable, not in this corpus
+    "What are the JSE's main board listing requirements?",  # unanswerable, not in this corpus
     "How many climate-related disclosure templates does Guidance Note 3/2025 include?",
 ]
 

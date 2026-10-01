@@ -1,9 +1,6 @@
-"""FastAPI backend: POST /ask, GET /health/live, GET /health/ready, GET /stats.
+"""FastAPI endpoints for answers, health and query metrics.
 
-Every /ask call goes through obslog.timed_answer(), so it's logged to SQLite by construction —
-there's no code path that answers a question without also recording it, which is what lets
-/stats and the ops dashboard trust the log as a complete picture of usage rather than a sample.
-"""
+Every answer passes through obslog.timed_answer(), which records its usage in SQLite."""
 
 import json
 import logging
@@ -39,7 +36,6 @@ logger = logging.getLogger("regrag.api")
 
 @lru_cache(maxsize=1)
 def _manifest_records() -> dict[str, dict]:
-    """Return curated manifest records used to label and link served citations."""
     try:
         entries = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
     except (OSError, ValueError):
@@ -74,10 +70,10 @@ app = FastAPI(title="RegRAG API")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# No authentication anywhere in this stack — CORS is the only thing standing between this API and
+# No authentication anywhere in this stack, CORS is the only thing standing between this API and
 # any page in the user's browser that decides to call it. Defaults to the local chat origin only;
 # widen via CORS_ALLOWED_ORIGINS (comma-separated) for a different local setup, never for a
-# public deployment (see README's deployment-boundary section — this stack must stay loopback-only).
+# public deployment (see README's deployment-boundary section, this stack must stay loopback-only).
 _cors_origins = [
     origin.strip()
     for origin in os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:8501").split(",")
@@ -93,16 +89,14 @@ app.add_middleware(
 
 @app.get("/health/live", response_model=HealthResponse)
 def health_live() -> HealthResponse:
-    """Proves the process is running and can serve a response — nothing more. No file I/O, no
-    Chroma, no model. A readiness failure must never make this fail too, or an orchestrator that
-    only checks liveness would restart a container that's merely waiting on the vector store."""
+    """Liveness stays healthy while the vector store is unavailable."""
     return HealthResponse(status="ok")
 
 
 @app.get("/health/ready", response_model=None)
 def health_ready() -> ReadinessResponse | JSONResponse:
     """Checks manifest validity, Chroma availability, a non-empty collection, and that the active
-    pipeline's provenance matches what the store was built from — deliberately never a paid LLM
+    pipeline's provenance matches what the store was built from, deliberately never a paid LLM
     call, since readiness is meant to be cheap and pollable, not something that racks up API cost
     every time an orchestrator checks it."""
     from scripts.validate_manifest import ManifestValidationError, validate_manifest
@@ -148,7 +142,7 @@ def stats() -> StatsResponse:
 
 @app.get("/recent-queries", response_model=list[RecentQueryOut])
 def recent_queries_endpoint(limit: int = 100) -> list[RecentQueryOut]:
-    """The ops dashboard's only path to the query log — it must never import src.obslog or open
+    """The ops dashboard's only path to the query log, it must never import src.obslog or open
     the SQLite file directly, so the API stays the one place that decides what's safe to surface
     (this is already respected upstream: `question` is null here whenever LOG_RAW_CONTENT is off,
     since that's what's actually stored)."""
@@ -172,9 +166,7 @@ def ask(request: Request, body: AskRequest) -> AskResponse | JSONResponse:
     try:
         timed = timed_answer(body.question)
     except Exception as exc:
-        # the HTTP boundary: anything from here down (Anthropic API error, chroma I/O, a bad
-        # regex) becomes a clean 502 instead of a raw traceback reaching the client. Logged, not
-        # swallowed — inner code still raises specific exceptions where it can act on them.
+        # Return 502 for pipeline failures. Log the exception class without private content.
         request_id = uuid.uuid4().hex
         logger.error(
             "answer_question failed request_id=%s error_type=%s",

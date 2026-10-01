@@ -2,8 +2,7 @@
 
 Runs the same 15 questions through obslog.timed_answer() twice: once cold (cache empty, every
 call hits real retrieval + the live API) and once warm (every call is a cache hit). p50/p95
-latency and mean cost per query, cold vs warm, go to reports/perf.md — a cache that isn't
-measured against the system it's supposed to speed up is just a plausible-sounding line item.
+latency and mean cost per query, cold vs warm, go to reports/perf.md.
 
     python -m scripts.perf_bench
 """
@@ -48,7 +47,7 @@ def run() -> dict:
     questions = [item["question"] for item in factual]
 
     if CACHE_DB_PATH.exists():
-        CACHE_DB_PATH.unlink()  # start cold — a warm cache would silently skip the "cold" pass
+        CACHE_DB_PATH.unlink()  # start cold, a warm cache would silently skip the "cold" pass
 
     cold = _run_pass(questions)
     warm = _run_pass(questions)
@@ -60,9 +59,9 @@ def write_report(results: dict) -> None:
     lines = [
         "# Performance: response cache impact",
         "",
-        f"{results['n']} factual golden-set questions, run once cold (cache empty, every call "
-        "hits real retrieval + the live Anthropic API) and once warm (same questions, every call "
-        "a cache hit) via `obslog.timed_answer()`.",
+        f"{results['n']} factual questions, run once with an empty cache and once with a warm "
+        "cache via `obslog.timed_answer()`. The cold pass calls retrieval and the model. "
+        "The table records the cache hits in each pass.",
         "",
         "| | p50 latency | p95 latency | mean cost/query | cache hits |",
         "|---|---|---|---|---|",
@@ -71,14 +70,11 @@ def write_report(results: dict) -> None:
         f"| warm | {warm['p50_ms']:.0f} ms | {warm['p95_ms']:.0f} ms | "
         f"${warm['mean_cost_usd']:.5f} | {warm['cache_hits']}/{warm['n']} |",
         "",
-        "A cache hit skips retrieval and the LLM call entirely, so `RAGResult.retrieved_chunks`"
-        ' is empty on a hit — the API\'s "what was retrieved" debug view has nothing to show for'
-        " a cached response, which is a real trade-off of exact-match caching, not a bug.",
+        "A cache hit skips retrieval and generation. `RAGResult.retrieved_chunks` is empty, "
+        "so the API's retrieval debug view has no chunks to show.",
         "",
-        "Cache is exact-match on normalised question text (see `src/cache.py`), not semantic — "
-        "a rephrased question is a miss. Traded hit rate for the guarantee that a cached answer "
-        "is only ever served for the literal question it was generated for, which matters for a "
-        "tool whose whole premise is citation accuracy.",
+        "The cache matches normalised question text (`src/cache.py`). A rephrased question "
+        "is a miss. Pipeline settings also form part of the cache key.",
     ]
     (REPORTS_DIR / "perf.md").write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     print(

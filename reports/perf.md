@@ -1,12 +1,12 @@
 # Performance: response cache impact
 
-15 factual golden-set questions, run once cold (cache empty, every call hits real retrieval + the live Anthropic API) and once warm (same questions, every call a cache hit) via `obslog.timed_answer()`.
+15 factual questions, run once with an empty cache and once with a warm cache via `obslog.timed_answer()`. The cold pass calls retrieval and the model. The table records the cache hits in each pass.
 
 | | p50 latency | p95 latency | mean cost/query | cache hits |
 |---|---|---|---|---|
 | cold | 4767 ms | 22603 ms | $0.00396 | 0/15 |
 | warm | 2 ms | 3 ms | $0.00000 | 15/15 |
 
-A cache hit skips retrieval and the LLM call entirely, so `RAGResult.retrieved_chunks` is empty on a hit — the API's "what was retrieved" debug view has nothing to show for a cached response, which is a real trade-off of exact-match caching, not a bug.
+A cache hit skips retrieval and generation. `RAGResult.retrieved_chunks` is empty, so the API's retrieval debug view has no chunks to show.
 
-Cache is exact-match on normalised question text (see `src/cache.py`), not semantic — a rephrased question is a miss. Traded hit rate for the guarantee that a cached answer is only ever served for the literal question it was generated for, which matters for a tool whose whole premise is citation accuracy.
+The cache matches normalised question text (`src/cache.py`). A rephrased question is a miss. Pipeline settings also form part of the cache key.

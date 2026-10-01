@@ -1,4 +1,4 @@
-"""Request/response models for the API — the contract the Streamlit UI and any other client
+"""Request/response models for the API, the contract the Streamlit UI and any other client
 codes against, kept separate from src/rag.py's internal dataclasses so a change to the RAG
 pipeline's internals doesn't silently change the wire format."""
 

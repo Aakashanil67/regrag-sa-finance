@@ -3,7 +3,7 @@
 These guard the two failure modes the audit actually found: a manifest entry with a field the
 schema wouldn't catch (a made-up status value, a relative URL, a truncated checksum), and a
 manifest entry whose *content* is wrong even though its shape is fine (an anachronistic issuer, a
-consultation draft with no stage marker). Schema tests use synthetic entries; regression tests read
+consultation draft with no stage marker). Schema tests use synthetic entries. Regression tests read
 the real, committed manifest.
 """
 
@@ -158,14 +158,14 @@ def test_the_conduct_standard_press_release_is_not_labelled_as_the_standard_itse
 
 
 def test_the_outdated_pwc_guide_is_not_active(manifest):
-    # the manifest claimed 2017; the PDF's own creation-date metadata says 2011-01-06, and its
-    # text describes the pre-2014 two-category IFRS 9 model — replaced by the official 2021 text
+    # the manifest claimed 2017. The PDF's own creation-date metadata says 2011-01-06, and its
+    # text describes the pre-2014 two-category IFRS 9 model, replaced by the official 2021 text
     assert "pwc_practical_guide_ifrs9" not in manifest
 
 
 def test_the_2004_circulars_are_withdrawn_per_c1_2026(manifest):
     # C1/2026 deems every previously issued circular withdrawn/terminated/replaced unless
-    # confirmed in that year's circular (para 1.1); neither 2004 circular appears in its list
+    # confirmed in that year's circular (para 1.1). Neither 2004 circular appears in its list
     for doc_id in (
         "sarb_circular_19_2004_capital_hybrid_instruments",
         "sarb_circular_6_2004_basel_ii_update",

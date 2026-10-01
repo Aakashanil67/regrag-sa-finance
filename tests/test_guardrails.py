@@ -1,4 +1,4 @@
-"""Pattern-based prompt-injection detection — flags, never blocks (see guardrails.py docstring
+"""Pattern-based prompt-injection detection, flags, never blocks (see guardrails.py docstring
 for why blocking outright would be the wrong trade-off here)."""
 
 import pytest

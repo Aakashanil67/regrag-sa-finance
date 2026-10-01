@@ -1,14 +1,9 @@
-"""Validates corpus/manifest.json against the source-governance contract described in
-corpus/manifest.schema.json, without adding a jsonschema dependency for one small manifest.
+"""Validate the corpus manifest against its schema.
 
-Deliberately stricter than "does it parse": authority_level/publication_stage/current_status are
-controlled vocabularies precisely because free-text status fields are how the OTC-derivatives
-consultation draft ended up looking citable as a final standard in the first place (see
-corpus/README.md and DECISIONS.md) — a typo in a status field should fail loudly here, at fetch/
-ingestion/CI time, not silently degrade a citation's authority weight downstream.
+This checks fields and relationships, not whether the document authority or status claims are
+true. Those need a review of the sources.
 
-    python -m scripts.validate_manifest
-"""
+    python -m scripts.validate_manifest"""
 
 import json
 import re
@@ -60,7 +55,7 @@ _FILENAME_PATTERN = re.compile(r"^[A-Za-z0-9_.-]+\.pdf$")
 
 
 class ManifestValidationError(ValueError):
-    """Raised with every error found across the manifest, not just the first — a fetch or CI run
+    """Raised with every error found across the manifest, not just the first, a fetch or CI run
     that stops at the first bad entry hides every other one behind it."""
 
 

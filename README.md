@@ -11,7 +11,7 @@ built it for the check a compliance analyst makes before relying on a rule.
 ![demo](assets/demo.gif)
 
 The GIF is the app running on my laptop. There is no hosted version, because free hosting can't
-run the model and the index together; [Run it](#run-it) covers running it yourself.
+run the model and the index together. [Run it](#run-it) covers running it yourself.
 
 What is online is a static explorer of the sealed test run: all 60 questions, the answer the
 pipeline served, the passages it cited, its source notices and both judges' labels. It lives at
@@ -115,7 +115,7 @@ interpreters and checks they agree.
 Regulatory questions often name an instrument number that dense embeddings blur, so I built BM25
 and a reciprocal-rank-fusion hybrid. On the dev set neither beat dense search. Hybrid found every
 evidence document for 26 of 34 questions against 28 for dense, and answered 30 against 32 end to
-end. The sealed test later favoured hybrid, 36 against 32 of 48. Both results are reported; the
+end. The sealed test later favoured hybrid, 36 against 32 of 48. Both results are reported. The
 selection made before the test stands.
 
 ### Citations that fail closed
@@ -157,7 +157,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-Copy `.env.example` to `.env` and set `OPENAI_API_KEY`; GPT-5.6 Luna is the default. Setting
+Copy `.env.example` to `.env` and set `OPENAI_API_KEY`. GPT-5.6 Luna is the default. Setting
 `LLM_PROVIDER` to `anthropic` or `ollama` also works, and `ollama` runs a free local model.
 
 ```bash

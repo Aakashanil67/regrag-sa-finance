@@ -1,4 +1,4 @@
-"""retrieve.py's reranking logic, against mocked candidates and a mocked cross-encoder — no real
+"""retrieve.py's reranking logic, against mocked candidates and a mocked cross-encoder, no real
 chromadb collection or embedding model needed to test the reordering behaviour itself."""
 
 from src import retrieve as retrieve_module
@@ -130,7 +130,7 @@ def test_rerank_true_on_empty_candidates_returns_empty(monkeypatch):
 
 
 def test_fetch_candidates_ranks_by_exact_cosine_similarity(monkeypatch):
-    # "b" points the same direction as the query; "a" is orthogonal; "c" points opposite —
+    # "b" points the same direction as the query; "a" is orthogonal; "c" points opposite,
     # cosine similarity must rank b > a > c regardless of each vector's raw magnitude.
     collection = _FakeCollection(
         ids=["a", "b", "c"],
@@ -150,7 +150,7 @@ def test_fetch_candidates_ranks_by_exact_cosine_similarity(monkeypatch):
 
 
 def test_fetch_candidates_is_exact_not_approximate(monkeypatch):
-    # a larger candidate set than any plausible approximate search width — exact search must
+    # a larger candidate set than any plausible approximate search width, exact search must
     # still find the single best match, unlike an ANN index tuned for a smaller corpus
     embeddings = [[0.0, 1.0]] * 50 + [[1.0, 0.0]]
     collection = _FakeCollection(
@@ -200,7 +200,7 @@ def test_fetch_document_page_returns_only_chunks_covering_that_page():
 
 
 def test_fetch_document_page_cannot_regress_to_last_chunk_wins():
-    # several chunks from the same document, requested page only covered by an earlier one —
+    # several chunks from the same document, requested page only covered by an earlier one,
     # this exact bug once made a citation check keep only the last chunk's page range
     collection = _FakeCollection(
         ids=["c1", "c2", "c3"],

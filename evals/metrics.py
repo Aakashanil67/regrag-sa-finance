@@ -1,4 +1,4 @@
-"""Run metrics. Every rate keeps its own numerator and denominator; nothing is pooled."""
+"""Run metrics. Every rate keeps its own numerator and denominator. Nothing is pooled."""
 
 import re
 from collections import Counter

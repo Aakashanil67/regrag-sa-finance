@@ -1,5 +1,5 @@
 """Every input that changes what an answer would be must change pipeline_fingerprint(), or a
-cache/store/report keyed on it silently serves output from a different configuration — see
+cache/store/report keyed on it silently serves output from a different configuration, see
 src/cache.py's docstring for the incident that made this the rule. These tests prove each
 individual input is actually wired in, one at a time, rather than trusting the payload shape.
 """

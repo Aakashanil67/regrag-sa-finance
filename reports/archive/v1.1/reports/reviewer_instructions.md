@@ -1,6 +1,6 @@
-# Independent reviewer instructions — fresh test preparation
+# Independent reviewer instructions, fresh test preparation
 
-Status: `awaiting_external_review`. This document prepares the review; it is not evidence that a
+Status: `awaiting_external_review`. This document prepares the review. It is not evidence that a
 review happened. No fresh questions, answers, references, reviewer names, credentials, dates, or
 scores are included here.
 
@@ -15,7 +15,7 @@ Please provide, after the development candidate is fixed:
 3. For every unanswerable item, the corpus gap or unsupported portion that makes a refusal correct.
 4. A reviewer identity, relevant financial-regulation experience, review scope, review date, and
    any conflict or limitation. The reviewer may be a domain practitioner or an appropriately
-   qualified regulatory researcher; the claim must match the actual experience.
+   qualified regulatory researcher. The claim must match the actual experience.
 5. A completed reference review that records page-level disagreements, corrections, adjudication,
    and unresolved reference issues. Do not silently edit an item after it has been run.
 
@@ -38,12 +38,12 @@ do not use a later answer to replace a weak one.
 
 For answered items, score:
 
-- correctness: `supported`, `partially_supported`, `unsupported`, or `not_assessable`;
-- completeness against the question and reference;
-- citation entailment for every cited source/page;
+- correctness: `supported`, `partially_supported`, `unsupported`, or `not_assessable`.
+- completeness against the question and reference.
+- citation entailment for every cited source/page.
 - authority and status handling, including withdrawn, superseded, draft, press, and historical
-  materials;
-- material error severity: `none`, `minor`, `material`, or `critical`;
+  materials.
+- material error severity: `none`, `minor`, `material`, or `critical`.
 - a concise rationale linked to item IDs and source evidence.
 
 For refusals, distinguish a true corpus gap, a retrieval miss, a contract/validator failure, or an
@@ -53,10 +53,10 @@ unjustified refusal. Record whether the refusal was justified and why.
 
 These are acceptance targets, not statistical guarantees or a legal/financial certification:
 
-- zero observed material unsupported or misleading answered claims in human review;
-- at least 34/42 answerable items answered with fully supported responses;
-- at least 17/18 unanswerable items refused;
-- zero structurally invalid served citations;
+- zero observed material unsupported or misleading answered claims in human review.
+- at least 34/42 answerable items answered with fully supported responses.
+- at least 17/18 unanswerable items refused.
+- zero structurally invalid served citations.
 - required source warnings present whenever the saved evidence requires them.
 
 If review is partial, report reviewed/total counts and keep release readiness pending. Do not score

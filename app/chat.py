@@ -1,9 +1,6 @@
-"""Streamlit chat UI. Talks to the FastAPI backend over HTTP — it never imports src.rag directly
-— so the UI and the API stay two genuinely separate deployable pieces, matching the
-docker-compose split rather than a UI that happens to also contain the RAG logic.
+"""Streamlit chat UI. Calls the FastAPI backend over HTTP.
 
-    streamlit run app/chat.py
-"""
+streamlit run app/chat.py"""
 
 import os
 
@@ -21,7 +18,7 @@ EXAMPLE_QUESTIONS = [
     "On what grounds may a credit provider not unfairly discriminate when it assesses a person's ability to meet a credit agreement?",
 ]
 
-# Plain-language versions of src.rag.RefusalReason — never the raw model text, which the API
+# Plain-language versions of src.rag.RefusalReason, never the raw model text, which the API
 # already discards before this UI ever sees it.
 _REFUSAL_REASON_LABELS = {
     "no_context": "Refused because nothing relevant was retrieved from the corpus.",
@@ -56,10 +53,10 @@ if "history" not in st.session_state:
 
 def render_source_notices(notices: list[dict]) -> None:
     # deterministic, code-generated disclosures (third-party source, withdrawn/superseded/draft
-    # status — see src/rag.py's _source_notices) rendered separately from the model's own answer
+    # status, see src/rag.py's _source_notices) rendered separately from the model's own answer
     # text, on purpose: they're never part of what the eval harness grades as "the answer".
-    # Ordinary historical context (e.g. a dated snapshot) uses info styling; withdrawn/superseded/
-    # non-final sources get warning styling — a strong colour reserved for the cases that matter.
+    # Ordinary historical context (e.g. a dated snapshot) uses info styling. Withdrawn/superseded/
+    # non-final sources get warning styling, a strong colour reserved for the cases that matter.
     strong_warning_kinds = {"withdrawn_source", "superseded_source", "non_final_source"}
     for notice in notices:
         label = "Source status: " + notice["text"]

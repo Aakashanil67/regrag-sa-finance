@@ -2,9 +2,9 @@
 
 Candidate search is exact in-process cosine similarity, not ChromaDB's HNSW `.query()`. HNSW
 rebuilds its graph on each fresh process with threaded insertion, so identical data gave different
-top-k results across launches. Brute force costs milliseconds at a few thousand chunks; past tens
+top-k results across launches. Brute force costs milliseconds at a few thousand chunks. Past tens
 of thousands it needs revisiting. `RetrievedChunk.score` is cosine similarity, or the
-cross-encoder's score when reranking is on; higher is more relevant either way.
+cross-encoder's score when reranking is on. Higher is more relevant either way.
 Reranking is two-stage: the bi-encoder searches everything, then the slower cross-encoder reranks
 only the top `RERANK_CANDIDATE_POOL_SIZE` candidates.
 
@@ -77,7 +77,7 @@ def _fetch_candidates(
 ) -> list[RetrievedChunk]:
     # collection is injectable so scripts/sweep_chunk_size.py can run this exact retrieval logic
     # (reranking included) against a throwaway experimental collection instead of the production
-    # one — the alternative, a second hand-rolled copy of this query logic for experiments, risks
+    # one, the alternative, a second hand-rolled copy of this query logic for experiments, risks
     # the experiment silently testing different code than what actually ships.
     if collection is None:
         collection = get_collection()
@@ -244,7 +244,7 @@ def _named_balanced(
 
 
 _BM25_TOKEN = re.compile(r"[a-z0-9]+(?:[/.][a-z0-9]+)*")
-RRF_K = 60  # the usual constant from Cormack et al. (2009); not tuned here
+RRF_K = 60  # the usual constant from Cormack et al. (2009). Not tuned here
 HYBRID_POOL = 50
 _bm25_cache: dict[tuple[str, int], tuple] = {}
 
@@ -344,7 +344,7 @@ def retrieve(
 
 
 def fetch_document_page(doc_id: str, page: int, collection=None) -> list[RetrievedChunk]:
-    """Exact, deterministic lookup of every chunk covering one page of one document — used to
+    """Exact, deterministic lookup of every chunk covering one page of one document, used to
     attach status-evidence text (e.g. the page of a circular naming it withdrawn) to generation
     context, independent of whatever the semantic top-k search would have surfaced for the
     question actually asked. Chunks are sorted by page then chunk_id so multiple chunks covering

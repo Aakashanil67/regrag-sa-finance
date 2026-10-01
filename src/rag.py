@@ -1,15 +1,8 @@
-"""Retrieve -> prompt -> cited answer, with a refusal path when the context can't support one.
+"""Retrieve context, generate a cited answer, and refuse answers that fail citation validation.
 
-The system prompt requires an inline `[doc_id, p.X]` citation on every factual claim and gives
-refusal an exact phrase (`INSUFFICIENT_CONTEXT_PHRASE`) that downstream code and the eval harness
-can detect. `_extract_citations` checks each citation against the (doc_id, page) pairs the
-retrieved chunks cover and flags the rest as unverified.
-
-The corpus mixes legislation, binding directives and non-binding guidance, so `_format_context`
-prints each block's source type and year, and `_source_notices` adds a fixed sentence when a
-third-party source or a Circular was cited. `RAGResult.source_notices` stays separate from `answer`
-because the faithfulness metric would score a generated disclaimer as unsupported.
-"""
+The validator checks document IDs and pages against the retrieved chunks. It does not establish
+whether a source supports a claim. Source authority and status notices come from the manifest
+and stay separate from the answer text graded by the evaluation judges."""
 
 import json
 import re
@@ -64,18 +57,18 @@ the (doc_id, p.X) body text below it, never the metadata line itself, as your so
 """
 
 # the trailing (?:,[^\]]*)? tolerates a section reference the model sometimes appends after the
-# page (e.g. "[doc_id, p.11-12, 1.4.1]") — real holdout output the prompt's exact-form rule doesn't
+# page (e.g. "[doc_id, p.11-12, 1.4.1]"), real holdout output the prompt's exact-form rule doesn't
 # ask for, but that doesn't make the citation any less real or verifiable
 _CITATION_TOKEN = r"\[[\w\-\.]+,\s*p\.\d+(?:-\d+)?(?:,[^\]]*)?\]"
 _CITATION_PATTERN = re.compile(r"\[([\w\-\.]+),\s*p\.(\d+)(?:-(\d+))?(?:,[^\]]*)?\]")
 _LINE_ENDS_IN_CITATION_PATTERN = re.compile(rf"(?:{_CITATION_TOKEN}\s*)+$")
 
 # Deliberately looser than _CITATION_PATTERN, and used ONLY to choose a refusal label, never to
-# extract a citation — feeding a permissive match into _extract_citations would accept answers the
+# extract a citation, feeding a permissive match into _extract_citations would accept answers the
 # strict contract is designed to reject, exactly the behaviour change CITATION_CONTRACT_VERSION
 # exists to gate. This exists to distinguish "the model tried to cite and got the form wrong"
 # (real holdout near-misses: a space after "p.", no comma, "page" instead of "p.", parentheses
-# instead of brackets) from "the model wrote no citation at all" — both currently collapse into the
+# instead of brackets) from "the model wrote no citation at all", both currently collapse into the
 # same MISSING_CITATION reason, indistinguishable in logs or eval artifacts. The bounded lazy
 # quantifier over a negated class keeps this linear-time regardless of input length.
 _CITATION_SHAPED_PATTERN = re.compile(r"[\[(][^\])\n]{0,160}?p+[\s.]{0,3}\d", re.IGNORECASE)
@@ -128,7 +121,7 @@ class RAGResult:
     source_notices: list[SourceNotice] = field(default_factory=list)
     refusal_reason: RefusalReason | None = None
     # Exact formatted context supplied to generation. Kept internal and optional so cached and
-    # synthetic results remain compatible; schema-2 evaluation artifacts persist it when present.
+    # synthetic results remain compatible. Schema-2 evaluation artifacts persist it when present.
     formatted_context: str | None = None
     retrieval_coverage: dict = field(default_factory=dict)
     repair_attempted: bool = False
@@ -148,21 +141,19 @@ def _doc_metadata() -> dict[str, dict]:
     """doc_id -> full manifest entry (document_type, published_date, issuing_authority,
     is_third_party, authority_level, current_status, ...), from corpus/manifest.json.
 
-    Loaded once and cached: this is committed, static, repo metadata (unlike the corpus PDFs
-    themselves, which are gitignored), so there's nothing here that changes between calls within
-    a process. A missing doc_id (manifest and vector store drift apart) degrades to an empty dict
-    rather than raising — a citation header/notice simply omits, rather than crashes retrieval.
+    Cached for the process lifetime. Missing IDs return an empty dict so a missing
+    citation label or notice does not interrupt retrieval.
     """
     entries = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
     return {e["id"]: e for e in entries}
 
 
 def _format_context(chunks: list[RetrievedChunk]) -> str:
-    # No numbered block index (no leading "[1]") — a live multi-document answer once cited "[1,
+    # No numbered block index (no leading "[1]"), a live multi-document answer once cited "[1,
     # p.2]" and "[2, p.3]" verbatim, copying the block's position instead of its doc_id, because a
     # bracketed index sitting right next to a bracketed citation format is exactly the confusion
-    # an LLM would make. The header carries only what the citation format actually needs; the
-    # source-type line is deliberately a separate, unbracketed sentence for the same reason — it
+    # an LLM would make. The header carries only what the citation format actually needs. The
+    # source-type line is deliberately a separate, unbracketed sentence for the same reason, it
     # must not resemble the [doc_id, p.X] shape closely enough for the model to copy fields from it
     # into a citation.
     meta = _doc_metadata()
@@ -176,7 +167,7 @@ def _format_context(chunks: list[RetrievedChunk]) -> str:
         header = f"({chunk.doc_id}, {pages}{f', {chunk.section}' if chunk.section else ''})"
         doc = meta.get(chunk.doc_id)
         # title is included alongside type/year/issuer because a document's own official number
-        # (e.g. "Guideline 004/2025") lives only in its title, nowhere else in the pipeline — a
+        # (e.g. "Guideline 004/2025") lives only in its title, nowhere else in the pipeline, a
         # real live failure (see failure_analysis.md, g24) had the model identify a document by a
         # *different* document's chunk that happened to mention that number in passing, because
         # nothing else in the retrieved text stated the correct document's own number back to it
@@ -194,10 +185,10 @@ def _format_context(chunks: list[RetrievedChunk]) -> str:
 
 
 def _status_notice(doc_id: str, doc: dict, meta: dict[str, dict]) -> SourceNotice:
-    """A non-current source gets a notice that names its own evidence — the specific document and
-    page that support the status claim — rather than a generic disclaimer. When the manifest
+    """A non-current source gets a notice that names its own evidence, the specific document and
+    page that support the status claim, rather than a generic disclaimer. When the manifest
     records no corpus document as evidence (status_source_id unset), the notice says so plainly
-    instead of inventing a successor; see corpus/manifest.json's status_source_url for the
+    instead of inventing a successor. See corpus/manifest.json's status_source_url for the
     (external, non-corpus) evidence in that case.
     """
     status = doc["current_status"]
@@ -224,17 +215,10 @@ def _status_notice(doc_id: str, doc: dict, meta: dict[str, dict]) -> SourceNotic
 
 
 def _source_notices(citations: list[Citation]) -> list[SourceNotice]:
-    """Fixed, code-generated disclosure notices for any cited source that needs one — same
-    philosophy as INSUFFICIENT_CONTEXT_PHRASE being an exact string rather than trusting free-text
-    phrasing: a disclosure that matters for a compliance tool shouldn't depend on the model
-    choosing to mention it on any given call. Kept structurally separate from `answer` — see the
-    module docstring for why these must never be concatenated into the text RAGAS grades.
+    """Build source notices from the manifest authority and status fields.
 
-    Driven entirely by corpus/manifest.json's reviewed authority fields, not by a document-type
-    heuristic — a prior version of this function assumed every "Circular" was superseded by newer
-    SARB instrument types "as a category", which was never true and this corpus never had evidence
-    for. Status claims now come only from a manifest field with its own recorded evidence.
-    """
+    Keep notices separate from the graded answer. Status claims need recorded evidence. Document
+    type alone does not establish that an instrument was superseded."""
     meta = _doc_metadata()
     cited_doc_ids = sorted({c.doc_id for c in citations})
     notices = []
@@ -274,7 +258,7 @@ def _source_notices(citations: list[Citation]) -> list[SourceNotice]:
 
 def _extract_citations(answer: str, chunks: list[RetrievedChunk]) -> list[Citation]:
     # a dict comprehension keyed on doc_id would silently overwrite the page range for every
-    # chunk but the last from the same document — and a query commonly retrieves several chunks
+    # chunk but the last from the same document, and a query commonly retrieves several chunks
     # from one document, which made this flag correct citations as unverified whenever the
     # matching chunk wasn't the last one in the list. Union pages per document instead.
     covered_pages: dict[str, set[int]] = {}
@@ -315,13 +299,10 @@ def _refuse(reason: RefusalReason) -> AnswerValidation:
 
 
 def validate_generated_answer(answer: str, chunks: list[RetrievedChunk]) -> AnswerValidation:
-    """The single fail-closed gate both src.rag and src.agent generate their final answer through.
+    """Validate citations for both the RAG and agent pipelines.
 
-    Structural verification only: it proves the model's citation points at a (doc_id, page) it was
-    actually shown, not that the cited page supports the claim being made. That second question —
-    semantic entailment — is what offline RAGAS faithfulness scoring and the manual holdout audit
-    exist for; this function can't and doesn't answer it. See the module docstring.
-    """
+    A passing answer cites only retrieved pages. Support for each claim is checked separately by
+    the evaluation judges and human reviewers."""
     stripped = answer.strip()
 
     if stripped == INSUFFICIENT_CONTEXT_PHRASE:

@@ -1,15 +1,9 @@
-"""Observability dashboard: eval-score history, query volume/latency/cost, retrieval benchmark.
+"""Usage dashboard. Reads live metrics from the API and saved evaluation reports locally.
 
-Usage data comes from the API over HTTP (`/stats`, `/recent-queries`), not by importing
-src.obslog or opening the SQLite log directly — this is the boundary that lets the UI image drop
-Chroma, Torch, sentence-transformers, and the Anthropic/eval packages entirely (see
-requirements-ui.txt), and it means this dashboard can never see more than the API is willing to
-serve, including the privacy default that keeps raw question text out of the response. Eval
-history and the retrieval benchmark are still read directly from the report files the eval
-pipeline writes, since those are static local artefacts, not live query data.
+HTTP access keeps the UI independent of the vector store and model packages. The API controls
+which query fields are exposed.
 
-    streamlit run app/ops.py
-"""
+    streamlit run app/ops.py"""
 
 import os
 import sys
@@ -74,7 +68,7 @@ if stats is not None:
                 "cost_usd",
             ]
         else:
-            # question is null by default (see src/obslog.py) — showing the column would just be
+            # question is null by default (see src/obslog.py), showing the column would just be
             # a column of blanks, which reads as a bug rather than a deliberate privacy default
             columns = ["timestamp", "refused", "citation_count", "latency_ms", "cost_usd"]
         st.dataframe(queries_df[columns], use_container_width=True)

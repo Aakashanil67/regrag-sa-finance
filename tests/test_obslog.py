@@ -1,4 +1,4 @@
-"""obslog.py against a throwaway SQLite file — never the real regrag_log.sqlite3."""
+"""obslog.py against a throwaway SQLite file, never the real regrag_log.sqlite3."""
 
 import sqlite3
 
@@ -70,7 +70,7 @@ def test_stats_summary_on_empty_log_does_not_divide_by_zero(tmp_path, monkeypatc
 
 def test_log_query_migrates_a_table_created_before_later_columns_existed(tmp_path, monkeypatch):
     # CREATE TABLE IF NOT EXISTS is a no-op against a table that already exists on disk with an
-    # older schema — this reproduces exactly the table this project's own dev log file had after
+    # older schema, this reproduces exactly the table this project's own dev log file had after
     # flagged_injection/cache_hit were added in later commits, and confirms logging against it
     # doesn't crash with "table queries has no column named ..." the way it did once already.
     db_path = tmp_path / "old_schema.sqlite3"
@@ -119,7 +119,7 @@ def test_timed_answer_skips_the_rag_pipeline_on_a_cache_hit(tmp_path, monkeypatc
 
 def test_injection_is_still_flagged_when_the_answer_comes_from_cache(tmp_path, monkeypatch):
     # the cache stores an answer, not a verdict about the question, and get_cached used to return
-    # flagged_injection=False unconditionally — so the second and every subsequent send of the
+    # flagged_injection=False unconditionally, so the second and every subsequent send of the
     # same injection attempt logged as clean, which is precisely the traffic pattern a probing
     # attacker produces. Guards the recompute in timed_answer.
     monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "test_log.sqlite3")
@@ -234,7 +234,7 @@ def test_a_cache_hit_records_no_raw_model_output_because_it_never_produced_any(
     tmp_path, monkeypatch
 ):
     # on a hit, llm_response.text is cache.get_cached's reconstructed *validated* answer, not raw
-    # model output — storing it under this column would be an indistinguishable lie, so a cache
+    # model output, storing it under this column would be an indistinguishable lie, so a cache
     # hit must always record NULL here even with the flag on, distinguishably from "capture off"
     monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "test_log.sqlite3")
     monkeypatch.setenv("LOG_RAW_MODEL_OUTPUT", "true")
@@ -249,13 +249,13 @@ def test_a_cache_hit_records_no_raw_model_output_because_it_never_produced_any(
 
     row = recent_queries(limit=1)[0]
     assert row["raw_model_output"] is None
-    assert row["raw_output_logged"] == 1  # capture was on — just nothing to capture on a hit
+    assert row["raw_output_logged"] == 1  # capture was on, just nothing to capture on a hit
 
 
 def test_scrub_content_removes_raw_model_output_even_when_question_text_was_never_logged(
     tmp_path, monkeypatch
 ):
-    # LOG_RAW_MODEL_OUTPUT on, LOG_RAW_CONTENT off — content_logged stays 0 while
+    # LOG_RAW_MODEL_OUTPUT on, LOG_RAW_CONTENT off, content_logged stays 0 while
     # raw_output_logged is 1, so scrub_content must key off either flag, not just content_logged
     monkeypatch.setattr(obslog, "DB_PATH", tmp_path / "test_log.sqlite3")
     monkeypatch.delenv("LOG_RAW_CONTENT", raising=False)

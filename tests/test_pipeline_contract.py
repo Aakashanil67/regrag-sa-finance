@@ -1,4 +1,4 @@
-"""rag.py and agent.py must fail closed identically — both call src.rag.validate_generated_answer,
+"""rag.py and agent.py must fail closed identically, both call src.rag.validate_generated_answer,
 so a citation contract violation can't slip through one path just because it was fixed in the
 other. These tests exercise validate_generated_answer directly, then confirm each pipeline surface
 actually delegates to it rather than re-implementing its own (drifting) copy of the same rules.
@@ -44,7 +44,7 @@ def test_validator_refuses_missing_citation():
 
 
 def test_validator_distinguishes_a_citation_shaped_near_miss_from_no_citation_at_all():
-    # a real holdout near-miss: a space after "p." that the strict regex doesn't accept — the
+    # a real holdout near-miss: a space after "p." that the strict regex doesn't accept, the
     # model tried to cite, and got the form wrong, which is a different failure than writing no
     # citation at all and should carry a distinct, more informative refusal reason
     text = "Banks must comply. [sarb_d3_2023, p. 1]"
@@ -62,7 +62,7 @@ def test_validator_still_calls_it_missing_citation_when_nothing_looks_like_one()
 
 
 def test_a_permissive_citation_match_is_never_accepted_as_a_real_citation():
-    # the near-miss detector must only ever choose a refusal *label* — feeding a permissive match
+    # the near-miss detector must only ever choose a refusal *label*, feeding a permissive match
     # into citation extraction would silently accept answers the strict contract is designed to
     # reject, which is exactly the behaviour change CITATION_CONTRACT_VERSION exists to gate
     text = "Banks must comply. [sarb_d3_2023, p. 1]"
@@ -74,7 +74,7 @@ def test_a_permissive_citation_match_is_never_accepted_as_a_real_citation():
 
 def test_labelling_a_near_miss_does_not_change_which_answers_refuse():
     # the neutrality guarantee this whole feature depends on: adding MALFORMED_CITATION must not
-    # move a single case across the refused/accepted line — only the reason label may change
+    # move a single case across the refused/accepted line, only the reason label may change
     cases = [
         ("Banks must comply. [sarb_d3_2023, p.1]", False),  # exact match: unaffected, accepted
         ("The Act requires disclosure.", True),  # no citation shape at all: still refused

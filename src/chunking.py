@@ -5,7 +5,7 @@ only once a chunk already holds a reasonable amount, so short numbered clauses d
 near-empty chunks. Consecutive chunks share `CHUNK_OVERLAP_TOKENS` of overlap. A paragraph larger
 than the whole budget is split on sentence boundaries.
 
-Token counts use tiktoken's cl100k_base as a cheap proxy; it is not the embedding model's tokenizer.
+Token counts use tiktoken's cl100k_base as a cheap proxy. It is not the embedding model's tokenizer.
 """
 
 import hashlib
@@ -74,7 +74,7 @@ def _token_count(text: str, tokenizer=None) -> int:
 
 
 def _packing_token_count(text: str, tokenizer=None) -> int:
-    """Count content tokens for packing; a tokenizer-aware chunk adds specials once at flush."""
+    """Count content tokens for packing. A tokenizer-aware chunk adds specials once at flush."""
     return len(_encode_tokens(text, tokenizer, add_special_tokens=False))
 
 
@@ -121,10 +121,10 @@ class Chunk:
 def _hard_split_by_tokens(
     text: str, *, tokenizer=None, target_tokens: int, overlap_tokens: int
 ) -> list[str]:
-    """Last-resort token-window split for a single sentence that alone busts the chunk budget —
+    """Split a sentence into token windows when it exceeds the chunk budget.
     legislative text (the NCA is the case that surfaced this) routinely runs a "provided that..."
     proviso for hundreds of words with no terminal punctuation, so sentence-level packing alone
-    can't bound it. Not sentence-aware, so it can cut mid-clause; that's the accepted cost of
+    can't bound it. Not sentence-aware, so it can cut mid-clause. That's the accepted cost of
     keeping every chunk within roughly one embedding's worth of text."""
     tokens = _encode_tokens(text, tokenizer, add_special_tokens=False)
     special_tokens = _special_token_count(tokenizer) if tokenizer is not None else 0
@@ -266,7 +266,7 @@ def chunk_document(
         if chunks and chunks[-1].text == text:
             # current_parts is sometimes seeded verbatim from the previous chunk's own text (a
             # short chunk's "overlap tail" is the whole chunk, since _overlap_tail only trims
-            # when there's something to trim) — if nothing new gets appended before the next
+            # when there's something to trim), if nothing new gets appended before the next
             # flush, that seed would otherwise re-emit as a byte-identical duplicate chunk.
             current_parts, current_tokens = [], 0
             return
@@ -299,7 +299,7 @@ def chunk_document(
         if paragraph_tokens > body_budget:
             flush()
             # flush() just reseeded current_parts with an overlap tail meant for normal
-            # packing continuity — irrelevant here, since the oversized paragraph's pieces are
+            # packing continuity, irrelevant here, since the oversized paragraph's pieces are
             # appended directly below, bypassing current_parts entirely. Left in place, that
             # stale seed would surface as a spurious near-duplicate mini-chunk the next time
             # flush() runs (this bit two or more oversized paragraphs in a row in the NCA, whose

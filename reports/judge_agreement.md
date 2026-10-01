@@ -1,6 +1,6 @@
 # Judge agreement on the dev runs
 
-Every answer is graded against the reference answer as `correct`, `partial` or `incorrect`, and RAG answers are also graded against the retrieved context as `supported`, `partial` or `unsupported`. The same rubric is used by the human reviewer later. Both judges run locally through Ollama, so they cost nothing and cannot be swayed by the generator: Qwen 2.5 7B and Llama 3.1 8B come from different families than GPT-5.6 Luna and from each other. Refused answers and refused unanswerable questions are not graded; they are counted from the run itself.
+Every answer is graded against the reference answer as `correct`, `partial` or `incorrect`, and RAG answers are also graded against the retrieved context as `supported`, `partial` or `unsupported`. The same rubric is used by the human reviewer later. Both judges run locally through Ollama. Qwen 2.5 7B and Llama 3.1 8B come from different model families than GPT-5.6 Luna and from each other. That choice does not establish that their errors are independent. Refused answers and refused unanswerable questions are not graded. They are counted from the run itself.
 
 ## Correctness counts (34 answerable dev questions)
 

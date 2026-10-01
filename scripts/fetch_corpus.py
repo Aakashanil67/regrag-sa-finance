@@ -3,7 +3,7 @@
 Idempotent: a file already present with a matching SHA-256 is left alone, so re-running after a
 partial fetch only downloads what's missing. Every source is a real regulator/publisher URL that
 returns a hard 200+text/html rejection when curl-style requests lack browser-shaped headers (SARB,
-NCR and FSCA all sit behind a WAF that blocks bare user agents) — see `_HEADERS` below.
+NCR and FSCA all sit behind a WAF that blocks bare user agents), see `_HEADERS` below.
 
     python -m scripts.fetch_corpus            # fetch anything missing or mismatched
     python -m scripts.fetch_corpus --force     # redownload everything regardless of checksum

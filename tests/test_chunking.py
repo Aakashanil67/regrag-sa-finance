@@ -6,7 +6,7 @@ from src.ingest import Element
 
 
 def _words(n: int, word: str = "regulation") -> str:
-    """n copies of a common word, space-separated — under cl100k_base each is one token, so this
+    """n copies of a common word, space-separated, under cl100k_base each is one token, so this
     gives an approximately-known token count without depending on tiktoken internals directly."""
     return " ".join([word] * n)
 
@@ -23,7 +23,7 @@ def test_oversized_paragraph_splits_under_the_chunk_budget(monkeypatch):
     monkeypatch.setattr(chunking, "CHUNK_TARGET_TOKENS", 20)
     monkeypatch.setattr(chunking, "CHUNK_OVERLAP_TOKENS", 5)
 
-    # one paragraph, no sentence breaks near the token budget — five long "sentences"
+    # one paragraph, no sentence breaks near the token budget, five long "sentences"
     text = ". ".join([_words(15) for _ in range(5)]) + "."
     elements = [Element(kind="paragraph", text=text, page=3)]
 
@@ -31,7 +31,7 @@ def test_oversized_paragraph_splits_under_the_chunk_budget(monkeypatch):
 
     assert len(chunks) > 1
     # a little slack: the overlap carryover from the previous piece plus one more sentence can
-    # push a piece slightly past the budget — it must never approach the full unsplit paragraph
+    # push a piece slightly past the budget, it must never approach the full unsplit paragraph
     for chunk in chunks:
         assert chunk.token_count < chunking.CHUNK_TARGET_TOKENS * 2
 
@@ -58,11 +58,11 @@ def test_two_oversized_paragraphs_in_a_row_do_not_leak_a_stale_overlap_chunk(mon
     monkeypatch.setattr(chunking, "CHUNK_TARGET_TOKENS", 20)
     monkeypatch.setattr(chunking, "CHUNK_OVERLAP_TOKENS", 5)
 
-    # a normal paragraph, then two back-to-back oversized ones — the shape that produced a
+    # a normal paragraph, then two back-to-back oversized ones, the shape that produced a
     # spurious near-duplicate mini-chunk before this was fixed: flush() reseeds current_parts
     # with an overlap tail meant for normal packing, but the oversized-paragraph branch bypassed
     # current_parts entirely, leaving that seed (here, trailing "alpha" words) to resurface
-    # untouched — and out of order — the next time flush() ran, i.e. right after paragraph 2.
+    # untouched, and out of order, the next time flush() ran, i.e. right after paragraph 2.
     elements = [
         Element(kind="paragraph", text=_words(10, word="alpha"), page=1),
         Element(

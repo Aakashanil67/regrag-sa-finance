@@ -26,11 +26,11 @@ from src.rag import RAGResult
 
 DB_PATH = ROOT / "regrag_log.sqlite3"
 
-# (column, full column definition) — used for both CREATE TABLE and, for anything added after the
+# (column, full column definition), used for both CREATE TABLE and, for anything added after the
 # table already existed on disk, an ALTER TABLE migration. `flagged_injection` and `cache_hit`
-# were added in later commits than the original table; without this, CREATE TABLE IF NOT EXISTS
+# were added in later commits than the original table. Without this, CREATE TABLE IF NOT EXISTS
 # silently no-ops against an older on-disk schema and every insert starts failing at runtime
-# instead of at startup — the failure mode this project's own log file hit once already.
+# instead of at startup, the failure mode this project's own log file hit once already.
 _COLUMNS = [
     ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
     ("timestamp", "REAL NOT NULL"),
@@ -66,9 +66,9 @@ def _has_not_null_content_columns(conn: sqlite3.Connection) -> bool:
 
 
 def _migrate_to_nullable_content(conn: sqlite3.Connection) -> None:
-    """SQLite can't drop a NOT NULL constraint with ALTER TABLE — the only way to relax `question`/
+    """SQLite can't drop a NOT NULL constraint with ALTER TABLE, the only way to relax `question`/
     `answer` to nullable is to rebuild the table under a new schema and copy the old rows across.
-    Existing content is preserved as-is; nulling it out is a separate, explicit scrub operation
+    Existing content is preserved as-is. Nulling it out is a separate, explicit scrub operation
     (`scrub_content`), never an automatic side effect of this migration."""
     old_columns = {row[1] for row in conn.execute("PRAGMA table_info(queries)")}
     conn.execute("ALTER TABLE queries RENAME TO queries_v1")
@@ -106,9 +106,7 @@ def _normalize(question: str) -> str:
 
 @dataclass
 class TimedRAGResult:
-    """Wraps a RAGResult with the wall-clock time it took and whether it came from the response
-    cache — rag.py itself doesn't measure latency or cache, since both are observability/
-    performance concerns layered on top of the RAG pipeline, not part of it."""
+    """A pipeline result with elapsed time and cache status."""
 
     result: RAGResult
     latency_ms: float
@@ -134,7 +132,7 @@ def log_query(timed: TimedRAGResult) -> None:
         else None
     )
     # a cache hit never calls the model, so llm_response.text is the *validated* answer
-    # reconstructed by cache.get_cached, not raw model output — storing it under this column would
+    # reconstructed by cache.get_cached, not raw model output, storing it under this column would
     # be indistinguishable from a real capture. `or None` folds NO_CONTEXT's empty string to NULL.
     raw_model_output = (
         (result.llm_response.text or None) if (log_raw_output and not timed.cache_hit) else None
@@ -172,8 +170,7 @@ def log_query(timed: TimedRAGResult) -> None:
 
 
 def purge_expired(retention_days: int | None = None, now: float | None = None) -> int:
-    """Deletes rows older than the retention window entirely — not a scrub, a real deletion,
-    matching LOG_RETENTION_DAYS's promise that data doesn't accumulate forever by default."""
+    """Remove rows older than LOG_RETENTION_DAYS."""
     if retention_days is None:
         retention_days = int(os.environ.get("LOG_RETENTION_DAYS", "30"))
     cutoff = (now if now is not None else time.time()) - retention_days * 86400
@@ -183,9 +180,9 @@ def purge_expired(retention_days: int | None = None, now: float | None = None) -
 
 
 def scrub_content() -> int:
-    """Explicit, one-time removal of raw text from rows that logged it — for a local user who ran
+    """Explicit, one-time removal of raw text from rows that logged it, for a local user who ran
     with LOG_RAW_CONTENT and/or LOG_RAW_MODEL_OUTPUT true and changed their mind. Nulls content
-    only; aggregate metrics (timings, refusal reason, citation counts) are untouched, since those
+    only. Aggregate metrics (timings, refusal reason, citation counts) are untouched, since those
     were never the privacy concern. Both flags are scrubbed together, in one statement: a row can
     have raw_output_logged=1 with content_logged=0 (LOG_RAW_MODEL_OUTPUT on, LOG_RAW_CONTENT off),
     and scrubbing only rows matching one flag would silently leave the other's text behind."""
@@ -207,12 +204,7 @@ def timed_answer(question: str, k: int = 5) -> TimedRAGResult:
 
     cached = get_cached(question, k=k)
     if cached is not None:
-        # recomputed here, not read back from the cache: injection detection is a property of the
-        # question text, and rag.answer_question (where it normally runs) is skipped entirely on a
-        # hit. Left to the cache, the *second* time anyone sent the same injection attempt it
-        # logged as unflagged — so a probing attacker, who by definition repeats attempts, would
-        # show up in the ops dashboard exactly once and then go quiet. That silently falsified the
-        # observability claim reports/security_notes.md makes for this detector.
+        # Cache hits skip rag.answer_question, so detect repeated injection attempts here too.
         cached.flagged_injection = contains_injection_attempt(question)
         timed = TimedRAGResult(
             result=cached, latency_ms=(time.perf_counter() - start) * 1000, cache_hit=True
@@ -233,7 +225,7 @@ def recent_queries(limit: int = 50) -> list[dict]:
         conn.row_factory = sqlite3.Row
         rows = conn.execute(
             # id, not timestamp: two inserts landing in the same time.time() tick (a real
-            # occurrence on a fast filesystem/clock) make timestamp DESC an unstable order —
+            # occurrence on a fast filesystem/clock) make timestamp DESC an unstable order,
             # id is monotonically increasing and always reflects actual insert order
             "SELECT * FROM queries ORDER BY id DESC LIMIT ?",
             (limit,),

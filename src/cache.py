@@ -2,7 +2,7 @@
 
 The cache is deliberately exact-match, not semantic: a rephrased question is a miss, which avoids
 serving an answer to a subtly different request. Persistent storage is disabled by default. When
-enabled, only the versioned v2 table is read or written; legacy ``response_cache`` rows remain
+enabled, only the versioned v2 table is read or written. Legacy ``response_cache`` rows remain
 untouched until an explicit scrub command.
 """
 
@@ -129,7 +129,7 @@ def set_cached(question: str, result: RAGResult, *, k: int) -> None:
 
 
 def purge_expired(*, now: float | None = None, dry_run: bool = False) -> int:
-    """Count or remove expired v2 rows; disabled caching does not open the database."""
+    """Count or remove expired v2 rows. Disabled caching does not open the database."""
     if not privacy_settings().cache_enabled:
         return 0
     effective_now = time.time() if now is None else now

@@ -1,4 +1,4 @@
-"""agent.py against a mocked LLM and mocked retrieval — no API key, no vector store needed."""
+"""agent.py against a mocked LLM and mocked retrieval, no API key, no vector store needed."""
 
 from src import agent
 from src.llm import LLMResponse
@@ -35,7 +35,7 @@ def test_sufficient_context_answers_after_a_single_retrieval(monkeypatch):
 
     result = agent.answer_question("A question")
 
-    assert len(result.steps) == 2  # retrieve, answer — no requery
+    assert len(result.steps) == 2  # retrieve, answer, no requery
     assert result.steps[0].action == "retrieve"
     assert result.steps[1].action == "answer"
     assert result.citations == [agent.Citation(doc_id="doc_a", page=1, verified=True)]
@@ -66,7 +66,7 @@ def test_insufficient_context_triggers_exactly_one_requery(monkeypatch):
 
 
 def test_requerying_never_exceeds_max_steps(monkeypatch):
-    # every decision says INSUFFICIENT — the loop must still terminate and answer, not spin
+    # every decision says INSUFFICIENT, the loop must still terminate and answer, not spin
     monkeypatch.setattr(agent, "retrieve", lambda q, k=5, rerank=False: [_chunk("c1", "doc_a")])
     monkeypatch.setattr(
         agent,
@@ -74,8 +74,8 @@ def test_requerying_never_exceeds_max_steps(monkeypatch):
         _llm_queue(
             [
                 "INSUFFICIENT: more on doc_a",
-                "INSUFFICIENT: even more",  # both consumed — MAX_STEPS-1 decision points always
-                "Final answer regardless. [doc_a, p.1]",  # run; the loop just stops asking after
+                "INSUFFICIENT: even more",  # both consumed, MAX_STEPS-1 decision points always
+                "Final answer regardless. [doc_a, p.1]",  # run. The loop just stops asking after
             ]
         ),
     )

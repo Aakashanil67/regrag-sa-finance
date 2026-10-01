@@ -6,6 +6,21 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .claude/
+.codex/
+.agents/
+.cursor/
+.windsurf/
+.aider*
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+NOTES.md
+mcp.json
+.mcp.json
+docs/superpowers/
+regrag-release-hardening-plan.md
+regrag-release-hardening-spec.md
+Project 4 - AUTOPILOT - RegRAG (RAG + Evals).md
 corpus/*.pdf
 chroma/
 *.sqlite3

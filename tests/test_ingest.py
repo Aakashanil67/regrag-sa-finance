@@ -1,4 +1,4 @@
-"""The three cleanup heuristics in ingest.py, tested directly against their inputs — no real PDF
+"""The three cleanup heuristics in ingest.py, tested directly against their inputs, no real PDF
 needed, since each is a pure function over (page, text, font_size) tuples. One exception at the
 bottom: a regression test against the real corpus PDF that surfaced a live extraction bug."""
 
@@ -72,8 +72,8 @@ def test_numbered_heading_is_detected_regardless_of_font_size():
 
 
 def test_a_bare_date_is_not_mistaken_for_a_numbered_heading():
-    # "08 July 2020" satisfies the same numbering pattern as "08 Introduction" would — a number,
-    # whitespace, a word — and was silently dropped from a real chunk's text because of it (a
+    # "08 July 2020" satisfies the same numbering pattern as "08 Introduction" would, a number,
+    # whitespace, a word, and was silently dropped from a real chunk's text because of it (a
     # heading's own text never makes it into chunking.py's output, only its section metadata).
     assert _is_heading("08 July 2020", font_size=10.0, body_font_size=10.0) is False
     assert _is_heading("8 January 2024", font_size=10.0, body_font_size=10.0) is False
@@ -82,7 +82,7 @@ def test_a_bare_date_is_not_mistaken_for_a_numbered_heading():
 def test_a_sentence_ending_date_with_a_full_stop_is_not_a_heading_either():
     # same failure mode one document over: a comment deadline extracted as "28 February 2005."
     # (the sentence's own full stop still attached) slipped past the first version of this check,
-    # which only matched a bare date with no trailing punctuation — found via a golden-set item
+    # which only matched a bare date with no trailing punctuation, found via a golden-set item
     # that refused because the deadline had been split off into a heading, leaving only "by not
     # later than" in the paragraph text.
     assert _is_heading("28 February 2005.", font_size=10.0, body_font_size=10.0) is False

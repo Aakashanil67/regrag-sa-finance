@@ -1,4 +1,4 @@
-"""rag.py against a mocked LLM and mocked retrieval — no API key, no vector store needed."""
+"""rag.py against a mocked LLM and mocked retrieval, no API key, no vector store needed."""
 
 from src import rag
 from src.llm import LLMResponse
@@ -137,7 +137,7 @@ def test_page_range_citation_expands_to_every_covered_page(monkeypatch):
 
 
 def test_citation_with_a_trailing_section_reference_is_still_extracted(monkeypatch):
-    # a real holdout run had the model write [doc_id, p.11-12, 1.4.1] — a well-sourced, correct
+    # a real holdout run had the model write [doc_id, p.11-12, 1.4.1], a well-sourced, correct
     # citation with a bonus section number the prompt's exact-form rule doesn't ask for. The old
     # regex required the bracket to close right after the page, so this whole line silently
     # extracted zero citations and the answer wrongly refused as MISSING_CITATION.
@@ -158,7 +158,7 @@ def test_citation_with_a_trailing_section_reference_is_still_extracted(monkeypat
 def test_citation_verified_against_any_of_several_chunks_from_the_same_document(monkeypatch):
     # a dict comprehension keyed on doc_id previously kept only the *last* chunk's page range for
     # a document, so a citation to an earlier chunk's page was wrongly flagged unverified whenever
-    # more than one retrieved chunk came from the same doc — a common case, not an edge case
+    # more than one retrieved chunk came from the same doc, a common case, not an edge case
     monkeypatch.setattr(
         rag,
         "retrieve",
@@ -187,7 +187,7 @@ def test_injection_attempt_is_flagged_but_still_answered(monkeypatch):
 
 
 def test_format_context_includes_source_type_for_a_known_document(monkeypatch):
-    # real manifest.json entries, not mocks — this is also a regression check that the manifest's
+    # real manifest.json entries, not mocks, this is also a regression check that the manifest's
     # own document_type/year/issuer classification hasn't drifted
     context = rag._format_context([_chunk(doc_id="sarb_d8_2023_threshold_amounts")])
 

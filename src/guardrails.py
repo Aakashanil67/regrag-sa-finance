@@ -1,14 +1,7 @@
-"""Prompt-injection detection: observability, not a block.
+"""Flag possible prompt injection in user questions for the usage log.
 
-This is deliberately a detector, not a gate — flagging a question doesn't stop it from being
-answered. The domain is narrow (SA financial regulation Q&A), so a legitimate question is
-extremely unlikely to trip these patterns, but "extremely unlikely" isn't zero, and refusing a
-real user's question because it contains the word "ignore" is a worse failure than letting a
-flagged-but-harmless one through. The actual defense against an injected instruction doing
-anything is the system prompt in rag.py (answer only from context, never adopt a different
-persona) — this module exists so an attempt shows up in the query log for review, which a silent
-system prompt defense alone doesn't give you.
-"""
+Pattern matches do not block a request. Domain questions can contain the same phrases, so the
+system prompt and citation validator still decide whether an answer can be served."""
 
 import re
 

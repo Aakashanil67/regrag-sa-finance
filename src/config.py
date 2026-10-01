@@ -24,8 +24,8 @@ def _env(name: str, default: str) -> str:
     return os.environ.get(f"REGRAG_{name}", default)
 
 
-# tiktoken's cl100k_base isn't the tokenizer either Claude or the embedding model actually uses —
-# there's no free, dependency-light tokenizer for either — but it's a stable, fast proxy for
+# tiktoken's cl100k_base isn't the tokenizer either Claude or the embedding model actually uses,
+# there's no free, dependency-light tokenizer for either, but it's a stable, fast proxy for
 # "roughly how big is this chunk", which is all the chunk-size budget needs.
 TOKENIZER_ENCODING = "cl100k_base"
 # 800 tokens plus reranking won the v1.0 chunk-size sweep (reports/archive/v1.0-audit/improvement_log.md)
@@ -74,14 +74,14 @@ TOC_DOT_LEADER_FRACTION = 0.3
 # --- vector store ---
 COLLECTION_NAME = "regrag_chunks"
 # The serving path remains the legacy tiktoken configuration until a retrieval variant is
-# selected. These explicit values are the tokenizer-aware experiment defaults; they are kept
+# selected. These explicit values are the tokenizer-aware experiment defaults. They are kept
 # separate so an audit or isolated store cannot silently change serving behaviour.
 EMBEDDING_TOKENIZER_NAME = EMBEDDING_MODEL_NAME
 EMBEDDING_TOKENIZER_REVISION = EMBEDDING_MODEL_REVISION
 TOKENIZER_AWARE_CHUNK_TARGET_TOKENS = 240
 TOKENIZER_AWARE_CHUNK_OVERLAP_TOKENS = 32
 # Chroma still owns document/metadata storage, but candidate search itself is exact cosine
-# similarity computed in retrieve.py, not Chroma's own approximate HNSW `.query()` — see
+# similarity computed in retrieve.py, not Chroma's own approximate HNSW `.query()`, see
 # retrieve.py's module docstring for why (raising hnsw:search_ef was tried and did not fix it:
 # collection.modify() updates the collection's own metadata row, not the segment's, so the running
 # HNSW index never actually saw the new value).
@@ -99,8 +99,8 @@ DEFAULT_OLLAMA_MODEL = "llama3.1:8b"
 DEFAULT_OLLAMA_HOST = "http://localhost:11434"
 RAG_MAX_ANSWER_TOKENS = 1024
 
-# $ per 1M tokens (input, output) — approximate for OpenAI/Ollama, exact for Anthropic at time of
-# writing; used only for the cost-estimate column in reports/logs, never billed against directly.
+# $ per 1M tokens (input, output), approximate for OpenAI/Ollama, exact for Anthropic at time of
+# writing. Used only for the cost-estimate column in reports/logs, never billed against directly.
 PRICING_PER_MILLION_TOKENS = {
     "claude-haiku-4-5": (1.00, 5.00),
     "claude-opus-5": (5.00, 25.00),

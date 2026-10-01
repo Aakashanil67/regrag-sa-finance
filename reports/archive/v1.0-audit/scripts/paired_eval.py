@@ -1,18 +1,18 @@
 """Paired before/after comparison of the two RAGAS runs, plus intervals on the retrieval benchmark.
 
 Why this exists: `reports/eval_summary.md` reports a mean over whichever items scored on that run,
-and the two runs didn't score the same items. The pre-improvement run scored 34; the post run
+and the two runs didn't score the same items. The pre-improvement run scored 34. The post run
 scored 39, because reranking pulled six previously-refused questions into an actual answer (and
-pushed one the other way). Comparing those two means directly conflates two different things —
+pushed one the other way). Comparing those two means directly conflates two different things,
 a change in answer quality on a fixed set of questions, and a change in *which* questions are in
 the average at all. The second effect is real and worth reporting, but it isn't a quality gain.
 
 So this reports three things instead of one:
-  1. the raw means over each full run, which is what a naive before/after table shows;
+  1. the raw means over each full run, which is what a naive before/after table shows.
   2. the same metrics restricted to the 33 items both runs scored, which is the paired comparison
-     that actually isolates quality;
+     that actually isolates quality.
   3. a per-item win/loss count with a two-sided sign test, because a mean can drift on noise while
-     the underlying items split evenly — which is exactly what happens to faithfulness here.
+     the underlying items split evenly, which is exactly what happens to faithfulness here.
 
 Retrieval hit-rate gets Wilson score intervals for the same reason: 85% -> 95% on a 20-question
 benchmark is a difference of two questions, and the interval makes the weight of that obvious in
@@ -52,7 +52,7 @@ def _parse_summary(path) -> dict[str, dict[str, float]]:
 
 
 def _wilson(successes: int, n: int, z: float = 1.96) -> tuple[float, float]:
-    """Wilson score interval — holds up at small n and near the boundary, where the textbook
+    """Wilson score interval, holds up at small n and near the boundary, where the textbook
     normal-approximation interval on 19/20 would run past 100%."""
     p = successes / n
     denom = 1 + z**2 / n
@@ -115,7 +115,7 @@ def write_report(r: dict) -> None:
     lines = [
         "# Is the improvement real? A paired re-analysis",
         "",
-        "The headline before/after table in the README compares the mean of one RAGAS run against "
+        "The historical before/after table compared the mean of one RAGAS run against "
         "the mean of another. Those two runs did not score the same questions: the pre-improvement "
         f"run scored {r['n_before']} items and the post-improvement run scored {r['n_after']}, "
         f"overlapping on {r['n_shared']}. Reranking pulled {len(r['entered'])} previously-refused "
@@ -150,39 +150,33 @@ def write_report(r: dict) -> None:
         "",
         "### What survives",
         "",
-        f"**Context precision is the strongest result, though not a significant one at this "
-        f"sample size.** It gains {prec['after_paired'] - prec['before_paired']:+.3f} on the paired "
-        f"set, with {prec['wins']} items improving against {prec['losses']} regressing — a sign "
-        f"test p of {prec['p_value']:.2f}, which falls just outside the conventional 0.05 "
-        "threshold and would not clear peer review on its own. What makes me treat it as real "
-        "rather than lucky is that it is the only metric where the effect has a mechanism behind "
-        "it: dropping chunks the bi-encoder surfaced on loose topical similarity is precisely and "
-        "solely what a cross-encoder does, so a precision-shaped gain is the prediction, not a "
-        "post-hoc reading of whichever number happened to move. Thirty-three items is too few to "
-        "confirm it; a larger golden set is the fix, and it isn't built.",
+        f"Context precision gains {prec['after_paired'] - prec['before_paired']:+.3f} on the paired "
+        f"set, with {prec['wins']} items improving and {prec['losses']} regressing. The sign "
+        f"test p of {prec['p_value']:.2f} does not meet the conventional 0.05 threshold. "
+        "The direction is consistent with reranking removing irrelevant chunks, but that "
+        "mechanism does not establish a reliable effect. Thirty-three items cannot confirm it.",
         "",
-        f"**Faithfulness does not survive.** The headline gain of "
+        f"The headline faithfulness gain of "
         f"{faith['after_all'] - faith['before_all']:+.3f} shrinks to "
         f"{faith['after_paired'] - faith['before_paired']:+.3f} once the item set is held fixed, and the "
-        f"per-item split is {faith['wins']} improved against {faith['losses']} regressed — a coin "
-        f"flip (p = {faith['p_value']:.2f}). Most of the apparent gain was composition: the six "
-        "questions that entered the average happened to score above the old mean. I am not "
-        "claiming reranking improved faithfulness.",
+        f"per-item split is {faith['wins']} improved against {faith['losses']} regressed. This does not show a faithfulness gain "
+        f"(p = {faith['p_value']:.2f}). Most of the apparent gain was composition: the six "
+        "questions that entered the average happened to score above the old mean.",
         "",
-        f"**Context recall was already at the ceiling.** It reads "
+        f"Context recall rises "
         f"{rec['after_all'] - rec['before_all']:+.3f} across the full runs but only "
         f"{rec['after_paired'] - rec['before_paired']:+.3f} paired, with {rec['ties']} of "
         f"{r['n_shared']} items completely unchanged and exactly {rec['wins']} item moving. At a "
         f"paired baseline of {rec['before_paired']:.3f} there was almost nothing left to win.",
         "",
-        f"**Answer relevancy drifts slightly negative** ({rel['after_paired'] - rel['before_paired']:+.3f} "
+        f"Answer relevancy drifts slightly negative ({rel['after_paired'] - rel['before_paired']:+.3f} "
         f"paired, {rel['wins']} improved against {rel['losses']} regressed, p = {rel['p_value']:.2f}). "
         "Also indistinguishable from noise, and reported rather than dropped.",
         "",
-        "## Retrieval benchmark: 20 questions is a small ruler",
+        "## Retrieval benchmark: 20 questions",
         "",
         "Hit-rate@5 went from 85% to 95%. In absolute terms that is "
-        f"{before_hits}/{RETRIEVAL_N} to {after_hits}/{RETRIEVAL_N} — **two questions**. Wilson "
+        f"{before_hits}/{RETRIEVAL_N} to {after_hits}/{RETRIEVAL_N}, two questions. Wilson "
         "score intervals:",
         "",
         "| | hit-rate@5 | 95% CI |",
@@ -192,27 +186,22 @@ def write_report(r: dict) -> None:
         f"| after | {after_hits}/{RETRIEVAL_N} ({after_hits / RETRIEVAL_N:.0%}) | "
         f"{after_ci[0]:.0%} – {after_ci[1]:.0%} |",
         "",
-        "The intervals overlap heavily. On this benchmark alone the hit-rate difference is not "
-        "separable from sampling noise, and a 20-question set cannot resolve a two-question gap. "
-        "MRR (0.654 → 0.808) is the better-powered signal in the same data, because it moves on "
-        "*where* the correct chunk ranks rather than only whether it cleared a cutoff, so a "
-        "question going from rank 4 to rank 1 registers instead of being scored identically.",
+        "The intervals overlap. The 20-question benchmark does not establish a reliable "
+        "hit-rate gain. MRR (0.654 → 0.808) records rank changes that hit-rate misses: "
+        "moving a correct chunk from rank 4 to rank 1 changes MRR even when both ranks "
+        "meet the cutoff. No power calculation or paired interval for MRR is reported.",
         "",
-        "## What I would say about this config, honestly",
+        "## Scope and cost",
         "",
-        "Reranking at 800-token chunks earns its place on one measured effect and one unambiguous "
-        "one. The measured effect is context precision, directionally clear and mechanistically "
-        "expected but short of significance on 33 items. The unambiguous one is coverage: five net "
-        "refusals became answered questions, and that needs no significance test, because it is a "
-        "count of behaviour changing, not an estimate of a mean. It did not demonstrably improve "
-        "faithfulness or recall, and the retrieval hit-rate gain sits inside the noise floor of a "
-        "20-question benchmark. The costs are equally concrete — a cross-encoder pass over 20 "
-        "candidates on every query, and a coarser citation, since an 800-token chunk spans more "
-        "pages than a 500-token one and the citation inherits that span.",
+        "The 800-token configuration produced five net additional answers on the observed "
+        "runs. The paired analysis covers 33 items. Those counts describe this dataset; "
+        "they do not establish how the change will perform on new questions. The "
+        "20-question retrieval benchmark is also too small to settle the difference. "
+        "Each query adds a cross-encoder pass over 20 candidates. An 800-token chunk can span "
+        "more pages than a 500-token chunk, so its page-range citation can be less precise.",
         "",
-        "The honest summary is a coverage win with a probable precision win attached, not an "
-        "across-the-board improvement. The README says that rather than the four-green-arrows "
-        "version, which the raw means would have supported and the paired data does not.",
+        "These are archived results. Use the current sealed-test reports when assessing "
+        "the shipped pipeline.",
     ]
 
     (REPORTS_DIR / "paired_comparison.md").write_text("\n".join(lines) + "\n", encoding="utf-8")

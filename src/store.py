@@ -1,6 +1,6 @@
 """Chunks -> a persistent ChromaDB collection, embedded with sentence-transformers.
 
-`all-MiniLM-L6-v2` is small (~80MB) and fast on CPU; for a corpus of ~1,000 chunks the accuracy
+`all-MiniLM-L6-v2` is small (~80MB) and fast on CPU. For a corpus of ~1,000 chunks the accuracy
 gap to larger models did not show in the retrieval benchmark (reports/retrieval_bench.md).
 
 Rebuilding is idempotent and incremental: each chunk's content hash (`Chunk.chunk_hash`) is its
@@ -54,7 +54,7 @@ def _get_collection_by_name(name: str):
 
     # No reason for a local research tool to phone home. Doesn't actually suppress the
     # "Failed to send telemetry event" stderr noise chromadb's telemetry code produces against
-    # this project's pinned posthog version — see requirements.txt's posthog comment — but it's
+    # this project's pinned posthog version, see requirements.txt's posthog comment, but it's
     # still the right default regardless of whether that call would otherwise succeed.
     client = chromadb.PersistentClient(
         path=str(CHROMA_DIR), settings=Settings(anonymized_telemetry=False)
@@ -84,8 +84,7 @@ def _load_build_record() -> dict | None:
 
 
 def embed_texts(texts: list[str]) -> list[list[float]]:
-    """The one place text turns into a vector — retrieve.py embeds queries through this same
-    function so a query and the chunks it's compared against always share a model."""
+    """Queries and stored chunks must use the same embedding model."""
     return _get_model().encode(texts, show_progress_bar=False).tolist()
 
 
@@ -173,7 +172,7 @@ def rebuild() -> dict:
 def _write_build_record(chunk_count: int, *, collection_name: str, index_identity: str) -> None:
     """Written last, after ingestion has already succeeded, and via a temp-file-then-replace swap
     so an interrupted rebuild can never leave a build.json that claims a build finished when it
-    didn't — see src/provenance.py, which readiness/release tooling trusts this file to reflect."""
+    didn't, see src/provenance.py, which readiness/release tooling trusts this file to reflect."""
     from src.provenance import store_build_record
 
     record = store_build_record(chunk_count=chunk_count, index_identity=index_identity)

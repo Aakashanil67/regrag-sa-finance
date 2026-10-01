@@ -1,4 +1,4 @@
-"""api/main.py against a mocked answer pipeline — TestClient, no real LLM or vector store."""
+"""api/main.py against a mocked answer pipeline, TestClient, no real LLM or vector store."""
 
 import logging
 

@@ -29,7 +29,7 @@ SPLITS = {
     "test": ROOT / "evals" / "questions_test.jsonl",
 }
 PROTOCOL = ROOT / "evals" / "protocol_test.json"
-# (input, output) tokens per question: ~4.5k of context for RAG; closed-book sends the question only.
+# (input, output) tokens per question: ~4.5k of context for RAG. Closed-book sends the question only.
 TOKENS_PER_ITEM = {"rag": (4500, 350), "closed_book": (150, 350)}
 CLOSED_BOOK_SYSTEM = (
     "You answer questions about South African financial regulation from your own knowledge. "

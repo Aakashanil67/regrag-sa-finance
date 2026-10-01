@@ -44,7 +44,7 @@ class LLMSettings:
 
 
 def effective_llm_settings() -> LLMSettings:
-    """The one place provider/model/temperature are resolved from the environment — both the
+    """The one place provider/model/temperature are resolved from the environment, both the
     generation call and provenance.pipeline_fingerprint() call this, so a fingerprint can never
     silently disagree with what a request actually sent."""
     provider = (os.environ.get("LLM_PROVIDER") or "openai").lower()
@@ -136,7 +136,7 @@ def _complete_openai(settings: LLMSettings, system: str, user: str, max_tokens: 
 
 
 def _complete_ollama(settings: LLMSettings, system: str, user: str, max_tokens: int) -> LLMResponse:
-    """Ollama has no official Python SDK in this project's dependency list — its REST API is
+    """Ollama has no official Python SDK in this project's dependency list, its REST API is
     small and stable enough that raw HTTP is the simpler, lighter-weight choice here."""
     response = httpx.post(
         f"{settings.host}/api/chat",

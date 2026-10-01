@@ -1,8 +1,8 @@
 """The property src/retrieve.py's exact-cosine rewrite exists to guarantee: the same query, run in
-two separate interpreters, returns the same top-k chunk ids. Nothing is mocked on purpose — a fake
+two separate interpreters, returns the same top-k chunk ids. Nothing is mocked on purpose, a fake
 collection cannot reproduce the original bug (ChromaDB's HNSW segment rebuilding its graph with a
-CPU-count thread pool on each fresh process launch; see DECISIONS.md's "The v1.1 fixes"
-section). Skipped, not failed, when the real vector store hasn't been built — it's gitignored and
+CPU-count thread pool on each fresh process launch. See DECISIONS.md's "The v1.1 fixes"
+section). Skipped, not failed, when the real vector store hasn't been built, it's gitignored and
 neither CI nor a fresh clone has it before `python -m src.store --rebuild` runs.
 """
 
@@ -14,10 +14,10 @@ import pytest
 
 from src.config import CHROMA_DIR, ROOT
 
-# Two queries, not one — a single query can be accidentally robust to the graph-construction
+# Two queries, not one, a single query may return the same result despite the graph-construction
 # non-determinism this guards against. Each query costs two full interpreter launches (embedding
 # model load dominates, well over a minute here), so this stays the slowest test in the suite by
-# a wide margin; that cost buys back a real, previously-shipped bug that no mocked test can catch.
+# a wide margin. That cost buys back a real, previously-shipped bug that no mocked test can catch.
 _QUERIES = [
     "What date is Banks Act Circular 6/2004 dated?",
     "How many categories does the 2021 issued IFRS 9 text classify financial assets into?",

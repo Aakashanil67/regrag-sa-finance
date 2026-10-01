@@ -12,7 +12,7 @@ corpus/.ocr_cache/
 .env
 *.env.local
 
-# query log (local SQLite, grows with usage — not a build artifact worth versioning)
+# local query logs
 *.db
 *.sqlite3
 
@@ -30,11 +30,25 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Editor and tool state live in ~/.gitignore_global, not here.
+# Local workspace files
+.claude/
+.codex/
+.agents/
+.cursor/
+.windsurf/
+.aider*
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+NOTES.md
+mcp.json
+.mcp.json
+.github/copilot-instructions.md
+docs/superpowers/
+/regrag-release-hardening-plan.md
+/regrag-release-hardening-spec.md
 
-# personal planning docs, and the regulation PDFs themselves — public documents, but
-# redistributing them isn't the point of this repo; corpus/manifest.json + corpus/README.md
-# are enough for anyone to rebuild the corpus from source
+# local planning document and corpus PDFs (download using corpus/manifest.json)
 *.pdf
 Project 4 - AUTOPILOT - RegRAG (RAG + Evals).md
 chroma_variants/

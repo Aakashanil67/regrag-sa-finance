@@ -2,7 +2,7 @@
 
 Garbage here means a PDF-extraction artifact, not a subjective quality judgment: a chunk is
 flagged if its token count falls under `MIN_CHUNK_TOKENS` (chunking.py's own merge step should
-have absorbed these into a neighbour; any that remain are documents with no real neighbour to
+have absorbed these into a neighbour. Any that remain are documents with no real neighbour to
 merge into) or if under half its characters are alphanumeric (a telltale sign of extracting a
 table, a signature block, or garbled ligatures instead of prose).
 """

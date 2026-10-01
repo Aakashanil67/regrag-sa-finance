@@ -7,7 +7,7 @@ services:
       - "127.0.0.1:8000:8000"
     env_file: .env
     # bind-mounts the whole repo over the image's /app so corpus/, chroma/, reports/ and the
-    # sqlite log/cache files (none of them baked into the image — corpus and chroma are
+    # sqlite log/cache files (none of them baked into the image. corpus and chroma are
     # gitignored, built locally via fetch_corpus.py + store.py --rebuild) are visible without a
     # rebuild, and so a code change is picked up on container restart rather than a full rebuild
     volumes:

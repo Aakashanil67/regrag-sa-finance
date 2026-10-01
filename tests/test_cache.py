@@ -1,6 +1,6 @@
-"""cache.py against a throwaway SQLite file — exact-match on normalised question text, keyed by a
+"""cache.py against a throwaway SQLite file, exact-match on normalised question text, keyed by a
 provenance fingerprint that must change whenever the effective pipeline changes (src/provenance.py
-owns that computation; cache.py must not keep a second, drifting copy of it — see src/cache.py's
+owns that computation. Cache.py must not keep a second, drifting copy of it, see src/cache.py's
 own docstring for the incident that made this the rule)."""
 
 import sqlite3
@@ -81,7 +81,7 @@ def test_different_question_is_a_miss(tmp_path, monkeypatch):
 
 def test_a_different_k_is_a_miss(tmp_path, monkeypatch):
     # k changes what retrieval returns, so it must change what a cached answer means, exactly like
-    # a chunk-size or reranker change does — this was previously not part of the key at all
+    # a chunk-size or reranker change does, this was previously not part of the key at all
     monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
     cache.set_cached("What must banks do?", _result(), k=5)
 
@@ -110,7 +110,7 @@ def test_a_retrieval_config_change_invalidates_previously_cached_answers(tmp_pat
     # the real scenario: adopting chunk_size=800 + reranking rebuilt the store and changed what
     # retrieval returns, but a question-text-only key kept serving the answers generated under the
     # old config. Every cached answer stayed "valid" forever while the eval reports described
-    # different behaviour — invisible unless you diff a live answer against a fresh one.
+    # different behaviour, invisible unless you diff a live answer against a fresh one.
     monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
     cache.set_cached("What must banks do?", _result(), k=5)
     assert cache.get_cached("What must banks do?", k=5) is not None
@@ -147,8 +147,8 @@ def test_a_citation_contract_version_bump_invalidates_previously_cached_answers(
 
 
 def test_cache_hit_still_carries_source_notices(tmp_path, monkeypatch):
-    # get_cached used to hardcode flagged_injection=False; source_notices is the same shape of
-    # bug waiting to happen if it were ever stored as a stale snapshot instead of recomputed —
+    # get_cached used to hardcode flagged_injection=False. Source_notices is the same shape of
+    # bug waiting to happen if it were ever stored as a stale snapshot instead of recomputed,
     # it's derived from citations_json, which the cache does store, so it must survive a hit
     monkeypatch.setattr(cache, "CACHE_DB_PATH", tmp_path / "cache.sqlite3")
     from src import rag as rag_module

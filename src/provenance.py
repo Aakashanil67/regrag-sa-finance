@@ -1,13 +1,7 @@
-"""Canonical fingerprints tying a cached, logged or reported result to the pipeline that made it.
+"""Record pipeline settings and reject stores built with incompatible settings.
 
-`pipeline_fingerprint` covers everything that changes an answer: provider, model, temperature, k,
-corpus bytes, prompt bytes, chunking and reranking config, and the citation-contract version. If any
-of these is left out, a change aliases under one cache identity instead of missing.
-
-`store_build_record` and `assert_store_compatible` do the same for the vector store:
-`chroma/build.json` records what it was built from, so a stale store is detectable without loading
-a model.
-"""
+Model revisions, corpus hashes and chunking settings form part of the fingerprint. This keeps
+retrieval and caching tied to the configuration that produced their data."""
 
 import hashlib
 import json

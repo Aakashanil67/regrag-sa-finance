@@ -1,14 +1,8 @@
-"""Bounded retrieve-decide-requery loop, built to test one diagnosed failure class.
+"""Experimental pipeline that retrieves again when a named source is missing.
 
-Not a serving path: nothing in api/, app/ or src/rag.py imports it. Two-document comparison
-questions embed as one query and under-retrieve the smaller document (reports/failure_analysis.md);
-this loop looks at what came back and issues one targeted second search. It is kept as a recorded
-negative result (reports/agent_eval.md) and because tests/test_pipeline_contract.py uses it as the
-second caller of validate_generated_answer.
-
-The decision step is a one-line structured text reply rather than SDK tool use, to keep a single
-calling convention alongside rag.py's plain completions.
-"""
+The HTTP app uses src.rag. This module is retained for the archived comparison and as another
+caller of validate_generated_answer in the pipeline contract tests. The decision reply uses
+plain completions, like the answer pipeline."""
 
 from dataclasses import dataclass, field
 
